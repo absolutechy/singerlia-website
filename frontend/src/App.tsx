@@ -1,34 +1,35 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Header, SearchBar } from './components/common'
+import type { SearchData } from './components/common/SearchBar'
+import landingBgImage from '@/assets/images/landingtopbg.png'
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const handleSearch = (data: SearchData) => {
+    console.log('Search submitted:', data);
+    // Handle search logic here
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 ">
+      <div 
+        className="w-full space-y-8 bg-cover bg-center p-5 "
+        style={{ backgroundImage: `url(${landingBgImage})`, backgroundSize: 'cover', backgroundPosition: 'top' }}
+      >
+        <Header />
+        
+        <div className="w-full mt-12">
+          <div className="text-center mb-8">
+            <h1 className="text-5xl font-bold text-gray-900 mb-3">
+              Find Your Perfect Singer
+            </h1>
+            <p className="text-lg text-gray-600">
+              Search and book talented singers for your special events
+            </p>
+          </div>
+          
+          <SearchBar onSearch={handleSearch} />
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   )
 }
 
