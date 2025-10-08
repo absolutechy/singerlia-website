@@ -82,6 +82,10 @@
   font-display: swap;
 }
 
+.custom-container {
+  @apply mx-auto px-4 max-w-7xl;
+}
+
 .heading-1 {
     font-family: 'Chocolates', sans-serif;
     font-weight: 700;

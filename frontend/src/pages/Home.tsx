@@ -1,6 +1,5 @@
-import { Header, SearchBar } from '@/components/common'
+import { SearchBar } from '@/components/common'
 import type { SearchData } from '@/components/common/SearchBar'
-import landingBgImage from '@/assets/images/landingtopbg.png'
 
 const Home = () => {
   const handleSearch = (data: SearchData) => {
@@ -9,12 +8,8 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 ">
-      <div 
-        className="w-full space-y-8 bg-cover bg-center p-5 "
-        style={{ backgroundImage: `url(${landingBgImage})`, backgroundSize: 'cover', backgroundPosition: 'top' }}
-      >
-        <Header />
+    <div className="">
+      
         
         <div className="w-full mt-12">
           <div className="text-center mb-8">
@@ -28,7 +23,6 @@ const Home = () => {
           
           <SearchBar onSearch={handleSearch} />
         </div>
-      </div>
     </div>
   )
 }
