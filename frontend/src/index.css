@@ -4,10 +4,10 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-    --color-primary: #371552;
-    --color-primary-light: rgba(255, 255, 255, 0.20);
-    --color-secondary: #FFD700;
-    --color-secondary-dark: #B8860B;
+  --color-primary: #371552;
+  --color-primary-light: rgba(255, 255, 255, 0.20);
+  --color-secondary: #FFD700;
+  --color-secondary-dark: #B8860B;
 }
 
 /* ExtraLight (200) */
@@ -87,44 +87,51 @@
 }
 
 .heading-1 {
-    font-family: 'Chocolates', sans-serif;
-    font-weight: 700;
-    font-size: 4rem;
+  font-family: 'Chocolates', sans-serif;
+  font-weight: 700;
+  font-size: 4rem;
 }
 
 .heading-2 {
-    font-family: 'Chocolates', sans-serif;
-    font-weight: 700;
-    font-size: 3.375rem;
+  font-family: 'Chocolates', sans-serif;
+  font-weight: 700;
+  font-size: 3.375rem;
 }
 
 .heading-3 {
-    font-family: 'Chocolates', sans-serif;
-    font-weight: 700;
-    font-size: 2.75rem;
+  font-family: 'Chocolates', sans-serif;
+  font-weight: 700;
+  font-size: 2.75rem;
 }
+
 .heading-4 {
-    font-family: 'Chocolates', sans-serif;
-    font-weight: 700;
-    font-size: 2.125rem;
+  font-family: 'Chocolates', sans-serif;
+  font-weight: 700;
+  font-size: 2.125rem;
 }
 
 .heading-5 {
-    font-family: 'Chocolates', sans-serif;
-    font-weight: 700;
-    font-size: 1.5rem;
+  font-family: 'Chocolates', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
 }
 
 .heading-6 {
-    font-family: 'Chocolates', sans-serif;
-    font-weight: 600;
-    font-size: 1rem;
+  font-family: 'Chocolates', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
 }
 
 .btn-text {
   @apply text-center text-sm font-medium leading-normal;
   font-family: "Chocolates", sans-serif;
   font-style: normal;
+}
+
+.blur-effect {
+  background: rgba(28, 28, 28, 0.40);
+  box-shadow: 0 15px 24px 0 rgba(0, 0, 0, 0.10);
+  backdrop-filter: blur(7px);
 }
 
 

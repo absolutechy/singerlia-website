@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import Input from './Input';
-import Button from './Button';
-import DatePicker from './DatePicker';
+import React, { useState } from "react";
+import Input from "./Input";
+import Button from "./Button";
+import DatePicker from "./DatePicker";
 
 interface SearchBarProps {
   onSearch?: (data: SearchData) => void;
@@ -17,17 +17,14 @@ export interface SearchData {
 
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [searchData, setSearchData] = useState<SearchData>({
-    singerName: '',
-    city: '',
-    date: '',
-    duration: '',
-    pricing: '',
+    singerName: "",
+    city: "",
+    date: "",
+    duration: "",
+    pricing: "",
   });
 
-  const handleInputChange = (
-    field: keyof SearchData,
-    value: string
-  ) => {
+  const handleInputChange = (field: keyof SearchData, value: string) => {
     setSearchData((prev) => ({
       ...prev,
       [field]: value,
@@ -38,7 +35,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
     if (onSearch) {
       onSearch(searchData);
     }
-    console.log('Search data:', searchData);
+    console.log("Search data:", searchData);
   };
 
   return (
@@ -52,7 +49,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
             label="Search Favorite Singer"
             placeholder="Select your active singers"
             value={searchData.singerName}
-            onChange={(e) => handleInputChange('singerName', e.target.value)}
+            onChange={(e) => handleInputChange("singerName", e.target.value)}
             className=""
           />
         </div>
@@ -63,20 +60,19 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
             label="Select Date"
             placeholder="Select Date"
             value={searchData.date}
-            onChange={(value) => handleInputChange('date', value)}
+            onChange={(value) => handleInputChange("date", value)}
             className=""
           />
         </div>
         <Button
           variant="primary"
           onClick={handleSearch}
-          size='large'
+          size="large"
           className="flex items-center gap-2 col-span-2"
         >
           Search
         </Button>
       </div>
-
     </div>
   );
 };
