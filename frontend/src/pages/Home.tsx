@@ -1,8 +1,13 @@
 import { SearchBar } from "@/components/common";
 import type { SearchData } from "@/components/common/SearchBar";
 import Artists from "@/components/pageComponents/Home/Artists";
+import ContactSection from "@/components/pageComponents/Home/ContactSection";
 import Genre from "@/components/pageComponents/Home/Genre";
 import HowItWorks from "@/components/pageComponents/Home/HowItWorks";
+import MissionGrowth from "@/components/pageComponents/Home/MissionGrowth";
+import PartyExperience from "@/components/pageComponents/Home/PartyExperience";
+import PostReviewCTA from "@/components/pageComponents/Home/PostReviewCTA";
+import Reviews from "@/components/pageComponents/Home/Reviews";
 import Welcome from "@/components/pageComponents/Home/Welcome";
 import Why from "@/components/pageComponents/Home/Why";
 
@@ -30,6 +35,11 @@ const Home = () => {
       <Genre />
       <Welcome />
       <Why />
+      <MissionGrowth />
+      <PartyExperience />
+      <ContactSection />
+      <Reviews />
+      <PostReviewCTA />
     </div>
   );
 };

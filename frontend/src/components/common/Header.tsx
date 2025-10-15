@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Globe } from 'lucide-react';
 import Button from './Button';
 import LogoFull from "../../assets/images/common/logofull.png"
+import { useNavigate } from 'react-router';
 
 interface NavItem {
     id: string;
@@ -10,6 +11,7 @@ interface NavItem {
 }
 
 const Header: React.FC = () => {
+    const navigate = useNavigate();
     const [activeNav, setActiveNav] = useState<string>('home');
 
     const navItems: NavItem[] = [
@@ -19,8 +21,11 @@ const Header: React.FC = () => {
         { id: 'testimonials', label: 'Testimonials', href: '/testimonials' },
     ];
 
-    const handleNavClick = (id: string) => {
+    const handleNavClick = (id: string, href: string) => {
         setActiveNav(id);
+        if (href === '/') {
+            navigate(href);
+        }
     };
 
     return (
@@ -41,7 +46,7 @@ const Header: React.FC = () => {
                             href={item.href}
                             onClick={(e) => {
                                 e.preventDefault();
-                                handleNavClick(item.id);
+                                handleNavClick(item.id, item.href);
                             }}
                             className="relative group"
                         >
@@ -71,12 +76,12 @@ const Header: React.FC = () => {
                 </button>
 
                 {/* Log In Button */}
-                <Button variant="default" size="medium">
+                <Button variant="default" size="medium" onClick={() => navigate("/auth/login")}>
                     Log In
                 </Button>
 
                 {/* Sign Up Button */}
-                <Button variant="primary" className='!px-10' size="medium">
+                <Button variant="primary" className='!px-10' size="medium" onClick={() => navigate("/auth/signup")}>
                     Sign Up
                 </Button>
             </div>
