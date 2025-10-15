@@ -34,7 +34,9 @@ const OtpInput: React.FC<OtpInputProps> = ({ length = 6, onChange }) => {
           type="text"
           inputMode="numeric"
           maxLength={1}
-          ref={(input) => (refs.current[index] = input)}
+          ref={(input) => {
+            refs.current[index] = input;
+          }}
           onChange={(event) => handleChange(index, event.target.value)}
           onKeyDown={(event) => handleKeyDown(index, event)}
           className="h-12 w-10 rounded-2xl border border-[#E6DCFF] bg-white text-center text-lg font-semibold text-[#371552] shadow-[0_12px_30px_-20px_rgba(55,21,82,0.45)] focus:border-[#B8860B] focus:outline-none focus:ring-2 focus:ring-[#FFD700]/40 md:h-14 md:w-12"
