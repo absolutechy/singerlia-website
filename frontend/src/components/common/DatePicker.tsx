@@ -51,7 +51,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
           <button
             type="button"
             className={cn(
-              'w-full h-9 rounded-lg pr-10 bg-white text-left border-0 outline-none focus:outline-none focus:border-0 focus:ring-0 transition-all flex items-center justify-start',
+              'w-full h-9 rounded-lg pr-10 !bg-white text-left border-0 outline-none focus:outline-none focus:border-0 focus:ring-0 transition-all flex items-center justify-start',
               !date && 'text-gray-400',
               date && 'text-gray-900',
               error && 'border-red-500',
@@ -70,7 +70,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
             )}
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent className="w-auto p-0 bg-white" align="start">
           <Calendar
             mode="single"
             selected={date}
