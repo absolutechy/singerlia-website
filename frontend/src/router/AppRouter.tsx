@@ -7,6 +7,7 @@ import SelectVerification from "@/pages/auth/SelectVerification"
 import SingerSignup from "@/pages/auth/SingerSignup"
 import VerificationCode from "@/pages/auth/VerificationCode"
 import { Route, Routes } from "react-router"
+import SingerProfile from "@/pages/SingerProfile"
 
 const AppRouter = () => {
   return (
@@ -19,6 +20,7 @@ const AppRouter = () => {
         <Route path="/auth/singer-signup" element={<SingerSignup />} />
         <Route path="/auth/verification-method" element={<SelectVerification />} />
         <Route path="/auth/verification-code" element={<VerificationCode />} />
+        <Route path="/singer-profile" element={<SingerProfile />} />
       </Routes>
   )
 }
