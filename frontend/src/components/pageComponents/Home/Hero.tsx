@@ -1,11 +1,49 @@
-import { SearchBar } from '@/components/common'
+import { Button, SearchBar } from "@/components/common";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import UserOneAvatar from "@/assets/images/common/user1.png";
+import UserTwoAvatar from "@/assets/images/common/user2.png";
+import UserThreeAvatar from "@/assets/images/common/user3.png";
+import UserFourAvatar from "@/assets/images/common/user4.png";
+import { Dot } from "lucide-react";
+import SocialIcons from "./SocialIcons";
+import VerifiedArtistsHeading from "./VerifiedArtist";
+import VerifiedArtistsLogo from "./VerifiedArtist";
+
+const users = [
+  { id: 1, src: UserOneAvatar, alt: "@user1", fallback: "U1" },
+  { id: 2, src: UserTwoAvatar, alt: "@user2", fallback: "U2" },
+  { id: 3, src: UserThreeAvatar, alt: "@user3", fallback: "U3" },
+  { id: 4, src: UserFourAvatar, alt: "@user4", fallback: "U4" },
+];
 
 const Hero = () => {
   return (
     <div>
-        <SearchBar />
+      <SearchBar />
+      <div className="flex items-center justify-center mt-10 gap-x-5 outfit">
+        <Button
+          variant="default"
+          size="large"
+          className="!text-primary bg-white border border-primary"
+        >
+          See How It Works
+        </Button>
+        <div className="*:data-[slot=avatar]:ring-background flex -space-x-2">
+          {users.map((user) => (
+            <Avatar key={user.id} className="w-10 h-10" >
+              <AvatarImage src={user.src} alt="@shadcn"  />
+              <AvatarFallback>{user.fallback}</AvatarFallback>
+            </Avatar>
+          ))}
+        </div>
+        <span>10.5k active users</span>
+        <Dot size={40}/>
+        <span>Trusted by customers worldwide</span>
       </div>
-  )
-}
+      <SocialIcons />
+      <VerifiedArtistsLogo />
+    </div>
+  );
+};
 
-export default Hero
+export default Hero;
