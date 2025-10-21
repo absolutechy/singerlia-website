@@ -3,7 +3,7 @@ import { Globe, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "./Button";
 import LogoFull from "../../assets/images/common/logofull.png";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 interface NavItem {
   id: string;
@@ -81,18 +81,20 @@ const Header: React.FC = () => {
     >
       {/* Logo */}
       <div className="flex items-center">
+        <Link to="/">
         <motion.img
           src={LogoFull}
           alt="Singerlia Logo"
           className="object-cover"
           animate={{
-            scale: compact ? 0.75 : 1,
-            marginRight: compact ? 8 : 56,
+              scale: compact ? 0.75 : 1,
+              marginRight: compact ? 8 : 56,
             width: compact ? 120 : 160,
             height: compact ? 60 : 80,
-          }}
-          transition={{ type: "spring", stiffness: 300, damping: 28 }}
+        }}
+        transition={{ type: "spring", stiffness: 300, damping: 28 }}
         />
+        </Link>
 
         {/* Navigation Links */}
         <nav className="hidden md:flex items-center gap-6 lg:gap-12">

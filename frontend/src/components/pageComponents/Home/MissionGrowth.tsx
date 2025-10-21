@@ -16,7 +16,7 @@ const highlightCards: Highlight[] = [
   {
     title: "Customer",
     description:
-      "Book top-rated singers near you, explore real portfolios, and pay securely with confidence.",
+      "Book top-rated stylists near you, view real portfolios, and pay securely.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -40,9 +40,9 @@ const highlightCards: Highlight[] = [
     ),
   },
   {
-    title: "Singer's",
+    title: "Signer's",
     description:
-      "Showcase your work, accept bookings, and manage your calendar from any device.",
+      "Showcase your work, accept bookings, and manage your calendar from your phone.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -206,70 +206,76 @@ const MissionGrowth: React.FC = () => {
   return (
     <div className="w-full bg-white">
       <div className="custom-container px-6 py-24 lg:px-24 space-y-20">
-        <section className="grid items-start gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
-          <div className="space-y-6">
-            <h2 className="heading-1 text-primary">About Our Mission</h2>
-            <div className="space-y-6 text-lg text-gray-700">
-              <div className="space-y-2">
-                <h3 className="text-xl font-semibold text-gray-900">
-                  For Customers
-                </h3>
-                <p>
-                  Our mission is to make finding the perfect singer effortless.
-                  We connect you with performers who match your event&apos;s
-                  style so you can listen, compare, and book all in one place.
-                </p>
+        <section className="space-y-8">
+          <h2 className="heading-2 text-primary">About Our Mission</h2>
+          
+          {/* For Customers Section */}
+          <div className="grid items-start gap-8 lg:grid-cols-[1fr_600px]">
+            <div className="space-y-3">
+              <h3 className="text-xl font-semibold text-gray-900">
+                For Customers
+              </h3>
+              <p className="text-base text-[#4169E1] leading-relaxed">
+                Our mission is to make finding the perfect singer effortless. We connect you with talented performers who match your event&apos;s style, whether it&apos;s a wedding, corporate function, private party, or concert. Customers can explore a wide range of singers, listen to their samples, and book with confidence—all in one convenient platform.
+              </p>
+            </div>
+            
+            {/* Customer Card */}
+            <div className="flex items-start gap-4 rounded-2xl bg-primary p-6 text-white shadow-lg">
+              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-white/10 text-white">
+                {highlightCards[0].icon}
               </div>
               <div className="space-y-2">
-                <h3 className="text-xl font-semibold text-gray-900">
-                  For Singer&apos;s
-                </h3>
-                <p>
-                  We empower singers with visibility, opportunities, and direct
-                  access to clients who appreciate their craft. Grow your
-                  audience and build lasting relationships.
-                </p>
+                <p className="text-xl font-semibold">{highlightCards[0].title}</p>
+                <p className="text-sm text-white/90 leading-relaxed">{highlightCards[0].description}</p>
               </div>
             </div>
           </div>
-          <div className="space-y-6">
-            {highlightCards.map((card) => (
-              <div
-                key={card.title}
-                className="flex items-start gap-4 rounded-2xl bg-[#3C1E66] p-6 text-white shadow-lg"
-              >
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-#B8860B33 text-white">
-                  {card.icon}
-                </div>
-                <div className="space-y-1">
-                  <p className="text-lg font-semibold">{card.title}</p>
-                  <p className="text-sm text-white/80">{card.description}</p>
-                </div>
+
+          {/* For Singer's Section */}
+          <div className="grid items-start gap-8 lg:grid-cols-[1fr_600px]">
+            <div className="space-y-3">
+              <h3 className="text-xl font-semibold text-gray-900">
+                For Singer&apos;s
+              </h3>
+              <p className="text-base text-[#4169E1] leading-relaxed">
+                We are committed to supporting singers by providing them with greater visibility, valuable opportunities, and direct connections with clients who truly appreciate their art. From solo acts to bands, classical to contemporary, we give singers the tools to showcase their talent, grow their audience, and build lasting relationships with customers.
+              </p>
+            </div>
+            
+            {/* Singer Card */}
+            <div className="flex items-start gap-4 rounded-2xl bg-primary p-6 text-white shadow-lg">
+              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-white/10 text-white">
+                {highlightCards[1].icon}
               </div>
-            ))}
+              <div className="space-y-2">
+                <p className="text-xl font-semibold">{highlightCards[1].title}</p>
+                <p className="text-sm text-white/90 leading-relaxed">{highlightCards[1].description}</p>
+              </div>
+            </div>
           </div>
         </section>
         <section className="space-y-12">
           <div className="text-center">
             <h2 className="heading-1 text-primary">Today Growth Singerlia</h2>
           </div>
-<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-  {growthStats.map((stat, index) => (
-    <React.Fragment key={stat.label}>
-      {/* Insert empty cell at the start of 2nd row (after 4th item) */}
-      {index === 4 && <div></div>}
-      <div className="rounded-2xl p-6 text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#B8860B33] text-[#B8860B] shadow">
-          {stat.icon}
-        </div>
-        <p className="text-lg font-semibold text-gray-900">
-          {stat.label}
-        </p>
-        <p className="text-sm text-gray-600">{stat.subLabel}</p>
-      </div>
-    </React.Fragment>
-  ))}
-</div>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {growthStats.map((stat, index) => (
+              <React.Fragment key={stat.label}>
+                {/* Insert empty cell at the start of 2nd row (after 4th item) */}
+                {index === 4 && <div></div>}
+                <div className="rounded-2xl p-6 text-center">
+                  <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#B8860B33] text-[#B8860B] shadow">
+                    {stat.icon}
+                  </div>
+                  <p className="text-lg font-semibold text-gray-900">
+                    {stat.label}
+                  </p>
+                  <p className="text-sm text-gray-600">{stat.subLabel}</p>
+                </div>
+              </React.Fragment>
+            ))}
+          </div>
 
           <div className="border-t border-dashed border-gray-300 pt-10">
             <p className="mx-auto max-w-3xl text-center text-base text-gray-700">
