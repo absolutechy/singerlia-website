@@ -138,6 +138,18 @@
   font-style: normal;
 }
 
+.paragraph {
+  text-align: center;
+  -webkit-leading-trim: both;
+  leading-trim: both;
+  text-edge: cap;
+  font-family: "TT Chocolates Trl", 'Chocolates', sans-serif;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
 .blur-effect {
   background: rgba(28, 28, 28, 0.4);
   box-shadow: 0 15px 24px 0 rgba(0, 0, 0, 0.1);
