@@ -170,7 +170,7 @@ const SingerSignup: React.FC = () => {
           />
           <SocialButton
             label="Sign in with Facebook"
-            icon={<span className="text-lg font-semibold text-white">f</span>}
+            icon={<span className="text-lg font-semibold text-black">f</span>}
             iconWrapperClassName="border border-[#E5E0FF] bg-[#1877F2]"
           />
         </div>
