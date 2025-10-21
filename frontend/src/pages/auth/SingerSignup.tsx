@@ -29,11 +29,11 @@ const SingerSignup: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <AuthModalLayout title="Welcome to Sign up" size="lg">
-      <div className="space-y-4">
+    <AuthModalLayout title="Welcome to Sign up" size="xl">
+      <div className="space-y-2">
         <LogoBadge size="md" />
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <AuthTextField
             id="firstName"
             label="First Name"
