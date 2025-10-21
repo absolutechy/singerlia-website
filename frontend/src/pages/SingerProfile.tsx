@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router";
-import { ArrowLeft, BadgeCheck, Bell, CircleDot, Edit2, Globe, MapPin, Pencil, Play, Search, Settings, Star, Video } from "lucide-react";
+import { ArrowLeft, BadgeCheck, Bell, CircleDot, Edit2, Globe, MapPin, Pencil, Play, Search, Settings, Star, Video,Trash } from "lucide-react";
 
 const profile = {
   name: "John Doberman",
@@ -231,8 +231,12 @@ const SingerProfile: React.FC = () => {
                       Video title show here. Video title show here. Video title show here.
                     </p>
                     <div className="mt-3 flex items-center gap-2">
-                      <button className="rounded-md bg-[#371552] px-4 py-2 text-xs font-semibold text-white hover:bg-[#4A1F6B]">Edit</button>
-                      <button className="rounded-md bg-[#F65B5B] px-4 py-2 text-xs font-semibold text-white hover:bg-[#e04a4a]">Delete</button>
+                      <button className="rounded-md flex items-center justify-center gap-1 bg-[#F7F7F7] border border-[#CDCDCD] px-4 py-2 text-xs font-semibold hover:text-white hover:bg-primary">
+                        <Edit2 className="h-3 w-3"/>
+                        Edit</button>
+                      <button className="rounded-md flex items-center justify-center gap-1 bg-[#F7F7F7] border border-[#CDCDCD] px-4 py-2 text-xs font-semibold hover:text-white hover:bg-[#e04a4a]">
+                        <Trash className="h-3 w-3"/>
+                        Delete</button>
                     </div>
                   </div>
                 ))}
