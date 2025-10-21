@@ -23,7 +23,7 @@ const HowItWorks: React.FC = () => {
       <p className="text-[#666666] text-center">
         Simple, secure, and seamless booking in three steps.
       </p>
-      <div className="w-full flex items-center gap-5 mt-14">
+      <div className="w-full flex items-end gap-5 mt-14">
         {data.map((item, idx) => (
           <SimpleCard
             key={idx}

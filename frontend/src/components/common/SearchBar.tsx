@@ -39,7 +39,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   };
 
   return (
-    <div className="bg-white custom-container rounded-2xl !p-6 shadow-lg">
+    <div className="bg-white max-w-5xl mx-auto rounded-2xl !p-6 shadow-lg">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
         {/* Search Favorites Signer */}
         {/* Search Your Favourite Singer */}

@@ -4,7 +4,7 @@ import logo from "@/assets/images/common/artise-card.png";
 
 const SingerCard: React.FC = () => {
   return (
-    <div className="bg-white hover:bg-[#F7F7F7] w-full rounded-3xl shadow-xl p-4 border-2 border-[#CDCDCD] group transition-all duration-500">
+    <div className=" hover:bg-[#F7F7F7] w-full rounded-2xl shadow-xl p-4 border border-[#CDCDCD] group transition-all duration-500">
       <div className="w-full h-64 relative bg-primary rounded-xl overflow-hidden">
         <img
           src={logo}
@@ -24,7 +24,7 @@ const SingerCard: React.FC = () => {
       <p className="text-lg font-medium text-primary py-3">
         Signer Service title here
       </p>
-      <button className="text-lg font-medium border-2 border-[#CDCDCD] group-hover:border-primary group-hover:bg-primary group-hover:rounded-full group-hover:text-white w-full rounded-lg p-2 cursor-pointer transition-all duration-500">
+      <button className="text-lg font-medium border border-[#CDCDCD] group-hover:border-primary group-hover:bg-primary group-hover:text-white w-full rounded-lg p-2 cursor-pointer transition-all duration-500">
         View details
       </button>
     </div>

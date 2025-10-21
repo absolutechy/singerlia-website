@@ -1,0 +1,56 @@
+import ArtistBgText from "@/assets/images/common/Artistshd.png"
+import SingerOne from "@/assets/images/common/singer1.png";
+import SingerTwo from "@/assets/images/common/singer2.png";
+import SingerThree from "@/assets/images/common/singer3.png";
+import Marquee from "react-fast-marquee";
+import SingerCircle from "./SingerCircle";
+
+
+const users = [
+    { id: 1, src: SingerOne },
+    { id: 2, src: SingerTwo },
+    { id: 3, src: SingerThree },
+    { id: 4, src: SingerOne },
+    { id: 5, src: SingerTwo },
+    { id: 6, src: SingerThree },
+    { id: 7, src: SingerOne },
+    { id: 8, src: SingerTwo },
+    { id: 9, src: SingerThree },
+    { id: 10, src: SingerOne },
+    { id: 11, src: SingerTwo },
+    { id: 12, src: SingerThree },
+    { id: 13, src: SingerOne },
+    { id: 14, src: SingerTwo },
+    { id: 15, src: SingerThree },
+    { id: 16, src: SingerOne },
+    { id: 17, src: SingerTwo },
+    { id: 18, src: SingerThree },
+    { id: 19, src: SingerOne },
+    { id: 20, src: SingerTwo },
+];
+
+
+const VerifiedArtists = () => {
+  return (
+    <div className="flex flex-col items-center p-8">
+      <div className="relative flex items-center justify-center">
+        <img src={ArtistBgText} alt="Verified Artists" className="h-28" />
+        <div className="absolute left-0 right-0 bottom-0 flex items-center justify-center">
+          <h2 className="text-5xl font-bold text-primary heading-2">
+            Verified Artists
+          </h2>
+        </div>
+      </div>
+      <span className="paragraph text-gray-500 mt-5">All the best Artists are featured on My
+<br/>Singerlia Platform collected in one place.</span>
+
+    <Marquee gradient={false} speed={40}  className="w-full mt-10 py-2">
+        {users.map((user) => (
+            <SingerCircle key={user.id} imageUrl={user.src} />
+        ))}
+    </Marquee>
+    </div>
+  );
+}
+
+export default VerifiedArtists;

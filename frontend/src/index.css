@@ -5,15 +5,18 @@
 
 @theme {
   --color-primary: #371552;
-  --color-primary-light: rgba(255, 255, 255, 0.20);
-  --color-secondary: #FFD700;
-  --color-secondary-dark: #B8860B;
+  --color-primary-text: #0c1421;
+  --color-primary-light: rgba(255, 255, 255, 0.2);
+  --color-secondary: #ffd700;
+  --color-secondary-dark: #b8860b;
+  --color-secondary-text: #313957;
 }
 
 /* ExtraLight (200) */
 @font-face {
-  font-family: 'Chocolates';
-  src: url('./assets/fonts/TT Chocolates Trial ExtraLight.otf') format('opentype');
+  font-family: "Chocolates";
+  src: url("./assets/fonts/TT Chocolates Trial ExtraLight.otf")
+    format("opentype");
   font-weight: 200;
   font-style: normal;
   font-display: swap;
@@ -21,8 +24,8 @@
 
 /* Light (300) */
 @font-face {
-  font-family: 'Chocolates';
-  src: url('./assets/fonts/TT Chocolates Trial Light.otf') format('opentype');
+  font-family: "Chocolates";
+  src: url("./assets/fonts/TT Chocolates Trial Light.otf") format("opentype");
   font-weight: 300;
   font-style: normal;
   font-display: swap;
@@ -30,8 +33,8 @@
 
 /* Regular (400) */
 @font-face {
-  font-family: 'Chocolates';
-  src: url('./assets/fonts/TT Chocolates Trial Regular.otf') format('opentype');
+  font-family: "Chocolates";
+  src: url("./assets/fonts/TT Chocolates Trial Regular.otf") format("opentype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -39,8 +42,8 @@
 
 /* Medium (500) */
 @font-face {
-  font-family: 'Chocolates';
-  src: url('./assets/fonts/TT Chocolates Trial Medium.otf') format('opentype');
+  font-family: "Chocolates";
+  src: url("./assets/fonts/TT Chocolates Trial Medium.otf") format("opentype");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -48,8 +51,8 @@
 
 /* SemiBold (600) */
 @font-face {
-  font-family: 'Chocolates';
-  src: url('./assets/fonts/TT Chocolates Trial DemiBold.otf') format('opentype');
+  font-family: "Chocolates";
+  src: url("./assets/fonts/TT Chocolates Trial DemiBold.otf") format("opentype");
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -57,8 +60,8 @@
 
 /* Bold (700) */
 @font-face {
-  font-family: 'Chocolates';
-  src: url('./assets/fonts/TT Chocolates Trial Bold.otf') format('opentype');
+  font-family: "Chocolates";
+  src: url("./assets/fonts/TT Chocolates Trial Bold.otf") format("opentype");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -66,8 +69,9 @@
 
 /* ExtraBold (800) */
 @font-face {
-  font-family: 'Chocolates';
-  src: url('./assets/fonts/TT Chocolates Trial ExtraBold.otf') format('opentype');
+  font-family: "Chocolates";
+  src: url("./assets/fonts/TT Chocolates Trial ExtraBold.otf")
+    format("opentype");
   font-weight: 800;
   font-style: normal;
   font-display: swap;
@@ -75,8 +79,8 @@
 
 /* Black (900) */
 @font-face {
-  font-family: 'Chocolates';
-  src: url('./assets/fonts/TT Chocolates Trial Black.otf') format('opentype');
+  font-family: "Chocolates";
+  src: url("./assets/fonts/TT Chocolates Trial Black.otf") format("opentype");
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -87,39 +91,45 @@
 }
 
 .heading-1 {
-  font-family: 'Chocolates', sans-serif;
+  font-family: "Chocolates", sans-serif;
   font-weight: 700;
   font-size: 4rem;
 }
 
 .heading-2 {
-  font-family: 'Chocolates', sans-serif;
+  font-family: "Chocolates", sans-serif;
   font-weight: 700;
   font-size: 3.375rem;
 }
 
 .heading-3 {
-  font-family: 'Chocolates', sans-serif;
+  font-family: "Chocolates", sans-serif;
   font-weight: 700;
   font-size: 2.75rem;
 }
 
 .heading-4 {
-  font-family: 'Chocolates', sans-serif;
+  font-family: "Chocolates", sans-serif;
   font-weight: 700;
   font-size: 2.125rem;
 }
 
 .heading-5 {
-  font-family: 'Chocolates', sans-serif;
+  font-family: "Chocolates", sans-serif;
   font-weight: 700;
   font-size: 1.5rem;
 }
 
 .heading-6 {
-  font-family: 'Chocolates', sans-serif;
+  font-family: "Chocolates", sans-serif;
   font-weight: 600;
   font-size: 1rem;
+}
+
+/* Utility to apply Chocolates font at 600 weight */
+.font-chocolates {
+  font-family: "Chocolates", sans-serif;
+  font-weight: 600;
 }
 
 .btn-text {
@@ -128,13 +138,23 @@
   font-style: normal;
 }
 
-.blur-effect {
-  background: rgba(28, 28, 28, 0.40);
-  box-shadow: 0 15px 24px 0 rgba(0, 0, 0, 0.10);
-  backdrop-filter: blur(7px);
+.paragraph {
+  text-align: center;
+  -webkit-leading-trim: both;
+  leading-trim: both;
+  text-edge: cap;
+  font-family: "TT Chocolates Trl", 'Chocolates', sans-serif;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 }
 
-
+.blur-effect {
+  background: rgba(28, 28, 28, 0.4);
+  box-shadow: 0 15px 24px 0 rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(7px);
+}
 
 /* @theme inline {
     --radius-sm: calc(var(--radius) - 4px);

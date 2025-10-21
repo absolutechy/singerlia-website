@@ -1,0 +1,30 @@
+import React from "react";
+
+interface SocialButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  icon: React.ReactNode;
+  label: string;
+  iconWrapperClassName?: string;
+}
+
+const SocialButton: React.FC<SocialButtonProps> = ({
+  icon,
+  label,
+  iconWrapperClassName = "",
+  ...props
+}) => {
+  return (
+    <button
+      {...props}
+      className="flex w-full items-center justify-center gap-3 rounded-xl border border-[#E5E0FF] bg-white py-2 text-sm font-semibold text-[#2C174B] transition hover:border-[#C3B4FF]"
+    >
+      <span
+        className={`flex h-8 w-8 items-center justify-center rounded-xl bg-white shadow-inner ${iconWrapperClassName}`}
+      >
+        {icon}
+      </span>
+      {label}
+    </button>
+  );
+};
+
+export default SocialButton;
