@@ -15,7 +15,7 @@ const CreateAccountWelcome: React.FC = () => {
           <h3 className="text-2xl font-semibold text-[#2E1B4D]">
             Welcome to Singerlia
           </h3>
-          <p className="text-sm text-[#6F5D9E]">
+          <p className="text-sm text-secondary-text">
             Woohoo! You’re on your way to saving time and money. Let’s get
             started and make skills management a breeze!
           </p>

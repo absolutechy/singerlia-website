@@ -1,11 +1,12 @@
-import React from 'react';
+import React from "react";
 import {
   Select as ShadcnSelect,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 export interface SelectOption {
   value: string;
@@ -27,8 +28,8 @@ const Select: React.FC<SelectProps> = ({
   label,
   options,
   error,
-  placeholder = 'Select an option',
-  className = '',
+  placeholder = "Select an option",
+  className = "",
   value,
   onChange,
   disabled,
@@ -41,14 +42,17 @@ const Select: React.FC<SelectProps> = ({
         </label>
       )}
       <ShadcnSelect value={value} onValueChange={onChange} disabled={disabled}>
-        <SelectTrigger 
-          className={`w-full p-0 pr-10 h-full border-0 outline-none focus:ring-0 focus:ring-offset-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none shadow-none bg-transparent ${
-            error ? 'text-red-500' : ''
-          } ${className}`}
+        <SelectTrigger
+          className={cn(
+            // Match text/email input styles
+            "w-full rounded-xl border border-[#E7DEFF] bg-[#F9F7FF] z-50 px-4 py-3 pr-10 text-sm text-[#2F1C4E] shadow-inner focus:border-[#B8860B] focus:outline-none",
+            error && "border-red-500",
+            className
+          )}
         >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="z-50 bg-white">
           {options.map((option) => (
             <SelectItem key={option.value} value={option.value}>
               {option.label}
@@ -56,9 +60,7 @@ const Select: React.FC<SelectProps> = ({
           ))}
         </SelectContent>
       </ShadcnSelect>
-      {error && (
-        <span className="text-xs text-red-500">{error}</span>
-      )}
+      {error && <span className="text-xs text-red-500">{error}</span>}
     </div>
   );
 };

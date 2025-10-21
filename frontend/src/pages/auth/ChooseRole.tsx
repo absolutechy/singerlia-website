@@ -36,7 +36,9 @@ const ChooseRole: React.FC = () => {
               title={option.title}
               icon={option.icon}
               selected={selectedRole === option.id}
-              onClick={() => setSelectedRole(option.id)}
+              onClick={() => {
+                setSelectedRole(option.id);
+              }}
             />
           ))}
         </div>
@@ -47,7 +49,9 @@ const ChooseRole: React.FC = () => {
           disabled={!selectedRole}
           onClick={() => {
             if (!selectedRole) return;
-            navigate("/auth/login");
+            navigate(
+              selectedRole === "artist" ? "/auth/singer-signup" : "/auth/signup"
+            );
           }}
         >
           <span className="font-semibold">

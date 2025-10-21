@@ -1,6 +1,7 @@
 import { Header } from "@/components/common";
 import AppRouter from "@/router/AppRouter";
 import landingBgImage from "@/assets/images/landingtopbg.png";
+import Footer from "./components/layout/Footer";
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
     >
       <Header />
       <AppRouter />
+      <Footer/>
     </div>
   );
 };

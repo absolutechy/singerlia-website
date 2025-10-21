@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router";
 import AuthModalLayout from "@/components/auth/AuthModalLayout";
 import LogoBadge from "@/components/auth/LogoBadge";
+import AuthTextField from "@/components/auth/AuthTextField";
 import SocialButton from "@/components/auth/SocialButton";
 import { Button } from "@/components/common";
 
@@ -19,26 +20,22 @@ const Signup: React.FC = () => {
 
   return (
     <AuthModalLayout title="Welcome to Sign up" size="lg">
-      <div className="space-y-8">
+      <div className="space-y-4">
         <LogoBadge size="md" />
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {fields.map((field) => (
-            <label
+            <AuthTextField
               key={field.id}
-              htmlFor={field.id}
-              className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8D7CC1]"
-            >
-              {field.label}
-              <input
-                id={field.id}
-                type={field.type}
-                placeholder="Type here"
-                className="mt-2 w-full rounded-2xl border border-[#E7DEFF] bg-[#F9F7FF] px-4 py-3 text-sm text-[#2F1C4E] shadow-inner focus:border-[#B8860B] focus:outline-none"
-              />
-            </label>
+              id={field.id}
+              label={field.label}
+              type={field.type}
+              placeholder="Type here"
+              labelClassName="text-xs text-start font-semibold uppercase tracking-[0.16em] text-primary-text"
+              inputClassName="mt-2 w-full rounded-xl border border-[#E7DEFF] bg-[#F9F7FF] px-4 py-3 text-sm text-[#8897AD] shadow-inner focus:border-[#B8860B] focus:outline-none"
+            />
           ))}
         </div>
-        <label className="flex items-center gap-3 text-sm text-[#6F5D9E]">
+        <label className="flex items-center gap-3 text-sm text-primary-text">
           <input
             type="checkbox"
             className="h-4 w-4 rounded border-[#D5CAFF] text-[#371552] focus:ring-[#B8860B]"
