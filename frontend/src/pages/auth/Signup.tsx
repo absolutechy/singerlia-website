@@ -19,7 +19,22 @@ const Signup: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <AuthModalLayout title="Welcome to Sign up" size="lg">
+    <AuthModalLayout
+      footerNote={
+        <p className="text-center text-sm text-[#6F5D9E]">
+          Don’t you have an account?{" "}
+          <button
+            type="button"
+            className="font-semibold text-[#371552] underline-offset-4 hover:underline"
+            onClick={() => navigate("/auth/login")}
+          >
+            Sign Up
+          </button>
+        </p>
+      }
+      title="Welcome to Sign up"
+      size="lg"
+    >
       <div className="space-y-4">
         <LogoBadge size="md" />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -41,7 +56,8 @@ const Signup: React.FC = () => {
             className="h-4 w-4 rounded border-[#D5CAFF] text-[#371552] focus:ring-[#B8860B]"
           />
           <span>
-            I agree to the <span className="font-semibold">Terms of Service</span> and{" "}
+            I agree to the{" "}
+            <span className="font-semibold">Terms of Service</span> and{" "}
             <span className="font-semibold">Privacy Policy</span>.
           </span>
         </label>
@@ -56,7 +72,9 @@ const Signup: React.FC = () => {
         <div className="grid gap-3 md:grid-cols-2">
           <SocialButton
             label="Sign in with Google"
-            icon={<span className="text-lg font-semibold text-[#EA4335]">G</span>}
+            icon={
+              <span className="text-lg font-semibold text-[#EA4335]">G</span>
+            }
             iconWrapperClassName="border border-[#E5E0FF]"
           />
           <SocialButton
@@ -65,16 +83,6 @@ const Signup: React.FC = () => {
             iconWrapperClassName="border border-[#E5E0FF] bg-[#1877F2]"
           />
         </div>
-        <p className="text-center text-sm text-[#6F5D9E]">
-          Don’t you have an account?{" "}
-          <button
-            type="button"
-            className="font-semibold text-[#371552] underline-offset-4 hover:underline"
-            onClick={() => navigate("/auth/login")}
-          >
-            Sign Up
-          </button>
-        </p>
       </div>
     </AuthModalLayout>
   );
