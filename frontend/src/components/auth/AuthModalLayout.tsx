@@ -33,7 +33,7 @@ const AuthModalLayout: React.FC<AuthModalLayoutProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center px-4 py-12">
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-12">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-md" />
       <div
         className={`relative w-full ${sizeMap[size]} rounded-[32px] border border-[#F0E6FF] bg-white/95 shadow-[0_40px_80px_-30px_rgba(55,21,82,0.35)] ${className}`}
