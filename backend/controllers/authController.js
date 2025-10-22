@@ -6,6 +6,8 @@ const {
   userIfAlreadyExists,
   updateUser,
 } = require("../services/users");
+const { hashPassword, verifyPassword } = require("../utils/hashPassword");
+const { generateToken } = require("../utils/tokenUtils");
 
 const registerUser = async (req, res) => {
   try {
@@ -42,6 +44,7 @@ const registerUser = async (req, res) => {
     const timestamp = new Date().toISOString();
     const decodedRole = role ? decodeURIComponent(role) : "user";
     const { otp, expiresAt } = generateSecureOTP();
+    const hashedPassword = await hashPassword(userId, password);
 
     const newUser = {
       userId,
@@ -52,7 +55,7 @@ const registerUser = async (req, res) => {
       intro_vid_link: intro_vid_link || null,
       city: city || null,
       address: address || null,
-      password,
+      password: hashedPassword,
       role: decodedRole,
       token: null,
       createdAt: timestamp,
@@ -119,7 +122,69 @@ const verifyUser = async (req, res) => {
   }
 };
 
+const loginUser = async (req, res) => {
+  try {
+    const { phonenumber, password } = req.body;
+    if (!phonenumber || !password) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const user = await userIfAlreadyExists(phonenumber);
+    if (!user) {
+      return res.status(404).json({ message: "Invalid phone number" });
+    }
+
+    const isPasswordValid = await verifyPassword(
+      user.userId,
+      password,
+      user.password
+    );
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid password" });
+    }
+
+    const token = generateToken(user.userId);
+    user.token = token;
+
+    const updatedUser = await updateUser(user);
+    if (!updatedUser) {
+      return res.status(500).json({ message: "Failed to login user" });
+    }
+
+    res.status(200).json({
+      message: "User logged in successfully",
+      token: updatedUser.token,
+      user_metadata: {
+        userId: updatedUser.userId,
+        name: updatedUser.name,
+        role: updatedUser.role,
+      },
+    });
+  } catch (error) {
+    console.error("Error in loginUser:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const getUserProfile = async (req, res) => {
+  try {
+    const user = req.user;
+
+    res.status(200).json({
+      userId: user.userId,
+      name: user.name,
+      role: user.role,
+    });
+  } catch (error) {
+    console.error("Error in getUserProfile:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   registerUser,
   verifyUser,
+  loginUser,
+  getUserProfile,
 };
