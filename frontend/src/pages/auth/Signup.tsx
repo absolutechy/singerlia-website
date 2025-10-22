@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router";
 import AuthModalLayout from "@/components/auth/AuthModalLayout";
-import LogoBadge from "@/components/auth/LogoBadge";
 import SocialButton from "@/components/auth/SocialButton";
 import { Button, Input } from "@/components/common";
 import GoogleIcon from "@/assets/images/common/Google.png";

@@ -1,8 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router";
 import AuthModalLayout from "@/components/auth/AuthModalLayout";
-import LogoBadge from "@/components/auth/LogoBadge";
-import AuthTextField from "@/components/auth/AuthTextField";
 import SocialButton from "@/components/auth/SocialButton";
 import { Button, Input } from "@/components/common";
 import GoogleIcon from "@/assets/images/common/Google.png";
@@ -18,7 +16,7 @@ const Login: React.FC = () => {
         <div className="grid w-full items-start gap-8 md:grid-cols-2 md:gap-12">
           <div className="space-y-9">
             <h3 className="text-lg font-semibold text-black">
-              Login With Accents
+              Login With Accounts
             </h3>
             <SocialButton
               label="Sign in with Google"
@@ -31,9 +29,9 @@ const Login: React.FC = () => {
               }
             />
           </div>
-          <div className="">
+          <div className="border-l-2 border-gray-300 pl-10">
             <div className="space-y-9">
-              <h3 className="text-lg font-semibold text-[#2F1C4E]">Login</h3>
+              <h3 className="text-xl text-start font-semibold ">Login</h3>
               <Input
                 id="email"
                 // label="Email"

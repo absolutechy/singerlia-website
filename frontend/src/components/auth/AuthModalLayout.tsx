@@ -34,7 +34,7 @@ const AuthModalLayout: React.FC<AuthModalLayoutProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+    <div className="fixed inset-0 z-50 min-h-screen flex items-center no-doc-scroll justify-center px-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-md" />
       <div
         className={`relative w-full ${sizeMap[size]} rounded-[32px] border border-[#F0E6FF] bg-white shadow-[0_40px_80px_-30px_rgba(55,21,82,0.35)] ${className}`}
@@ -54,9 +54,9 @@ const AuthModalLayout: React.FC<AuthModalLayoutProps> = ({
         <div className="px-8 pt-4 text-center md:px-14">
           <div className="mt-4">{children}</div>
         </div>
-        <div className="mt-8 rounded-b-[32px] border-t border-[#EFE5FF] bg-[#FBF9FF] text-primary-text py-4 text-center text-xs font-medium">
+        <h6 className="mt-8 rounded-b-[32px] border-t border-[#EFE5FF] bg-[#FBF9FF] py-4 text-center text-base font-medium">
           {footerNote}
-        </div>
+        </h6>
       </div>
     </div>
   );
