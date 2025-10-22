@@ -38,7 +38,7 @@ const PostReviewCTA: React.FC = () => {
   return (
     <div className="w-full bg-white py-14">
       <div className="custom-container px-6 lg:px-24">
-        <div className="relative overflow-hidden rounded-[48px] border border-[#F2E6FF] bg-gradient-to-b from-[#371552] via-[#51255F] to-[#B8860B99] px-6 py-16 text-center text-white shadow-[0_30px_60px_-25px_rgba(55,21,82,0.45)] md:px-20 mx-auto md:max-w-10/12">
+        <div className="relative overflow-hidden rounded-[48px] border border-[#F2E6FF] bg-gradient-to-b from-primary via-[#51255F] to-[#B8860B99] px-6 py-16 text-center text-white shadow-[0_30px_60px_-25px_rgba(55,21,82,0.45)] md:px-20 mx-auto md:max-w-10/12">
           <div className="pointer-events-none absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40 mix-blend-overlay" />
             {backgroundImages.map((image) => (
@@ -63,7 +63,7 @@ const PostReviewCTA: React.FC = () => {
               variant="primary"
               size="large"
               type="button"
-              className="flex items-center gap-2 col-span-2 bg-gradient-to-r from-[#FFD700] to-[#B8860B99] text-[#371552] hover:opacity-90"
+              className="flex items-center gap-2 col-span-2 bg-gradient-to-r from-[#FFD700] to-[#B8860B99] text-primary hover:opacity-90"
             >
               <p className="font-medium">Send Message</p>
             </Button>

@@ -13,12 +13,12 @@ const sizeClass: Record<NonNullable<LogoBadgeProps["size"]>, string> = {
 const LogoBadge: React.FC<LogoBadgeProps> = ({ size = "md" }) => {
   return (
     <div
-      className={`mx-auto flex items-center justify-center rounded-3xl bg-[#371552] shadow-[0_20px_40px_-20px_rgba(55,21,82,0.6)] ${sizeClass[size]}`}
+      className={`mx-auto flex items-center w-28 h-24 justify-center rounded-2xl bg-primary shadow-sm ${sizeClass[size]}`}
     >
       <img
         src="/logo.png"
         alt="Singerlia logo"
-        className="h-3/4 w-3/4 object-contain"
+        className="w-40 object-contain"
       />
     </div>
   );

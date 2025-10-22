@@ -178,31 +178,12 @@ const Reviews: React.FC = () => {
       <div className="custom-container px-6 py-24 lg:px-24">
         <div className="mb-12 flex flex-col items-center gap-6 text-center lg:flex-row lg:items-end lg:justify-between lg:text-left">
           <div>
-            <h2 className="heading-1 text-primary">
+            <h2 className="font-bold text-4xl lg:text-6xl text-primary">
               Trusted by Customers, and Singer&apos;s
             </h2>
             <p className="mt-3 text-sm font-medium text-[#2357C5]">
               Real people sharing their experiences with our platform
             </p>
-          </div>
-          <div className="flex items-center gap-4 rounded-full bg-white p-2 shadow-[0px_18px_40px_-20px_rgba(60,30,102,0.3)]">
-            {filters.map((filter) => {
-              const isActive = activeFilter === filter;
-              return (
-                <button
-                  key={filter}
-                  type="button"
-                  onClick={() => setActiveFilter(filter)}
-                  className={`rounded-full px-6 py-2 text-sm font-semibold transition ${
-                    isActive
-                      ? "bg-gradient-to-r from-[#F4C64F] to-[#B8860B] text-white shadow-md"
-                      : "text-gray-600 hover:text-primary"
-                  }`}
-                >
-                  {filter}
-                </button>
-              );
-            })}
           </div>
         </div>
 

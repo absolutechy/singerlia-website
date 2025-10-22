@@ -25,14 +25,14 @@ const VerificationCode: React.FC = () => {
         <div className="flex flex-col">
           <button
             type="button"
-            className="text-sm font-semibold text-[#371552] underline-offset-4 hover:underline"
+            className="text-sm font-semibold text-primary underline-offset-4 hover:underline"
           >
             Send again
           </button>
           <Button
             variant="secondary"
             size="large"
-            className="mx-auto w-full max-w-sm rounded-full bg-[#371552] text-white hover:bg-[#4A1F6B]"
+            className="mx-auto w-full max-w-sm rounded-full bg-primary text-white hover:bg-[#4A1F6B]"
             onClick={() => navigate("/")}
             disabled={code.length < 6}
           >
@@ -43,7 +43,7 @@ const VerificationCode: React.FC = () => {
           Having problems?{" "}
           <a
             href="#"
-            className="font-semibold text-[#371552] underline-offset-4 hover:underline"
+            className="font-semibold text-primary underline-offset-4 hover:underline"
           >
             Let us help and contact us!
           </a>

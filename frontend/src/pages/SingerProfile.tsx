@@ -30,9 +30,9 @@ const SingerProfile: React.FC = () => {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="inline-flex items-center gap-2 text-sm text-[#6F5D9E] hover:text-[#371552]"
+              className="inline-flex items-center gap-2 text-sm text-[#6F5D9E] hover:text-primary"
             >
-              <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[#E7DEFF] text-[#371552] bg-white">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[#E7DEFF] text-primary bg-white">
                 <ArrowLeft className="h-4 w-4" />
               </span>
               Back
@@ -49,7 +49,7 @@ const SingerProfile: React.FC = () => {
           {/* Search + actions */}
           <div className="ml-auto flex items-center gap-3 justify-self-end">
             <div className="flex h-11 w-full max-w-md items-center gap-2 rounded-full border border-[#E7DEFF] bg-white px-4">
-              <Search className="h-4 w-4 text-[#371552]" />
+              <Search className="h-4 w-4 text-primary" />
               <input
                 type="text"
                 placeholder="Search..."
@@ -93,7 +93,7 @@ const SingerProfile: React.FC = () => {
                   ))}
                 </div>
                 <div className="flex items-start gap-2 text-sm text-[#6F5D9E]">
-                  <MapPin className="mt-0.5 h-4 w-4 text-[#371552]" />
+                  <MapPin className="mt-0.5 h-4 w-4 text-primary" />
                   <span>{profile.location}</span>
                 </div>
               </div>
@@ -102,7 +102,7 @@ const SingerProfile: React.FC = () => {
             <div className="bg-white p-6">
               <div className="flex items-center justify-between">
                 <p className="text-sm font-semibold text-[#2E1B4D]">Per Event ${profile.price}</p>
-                <button className="text-[#6F5D9E] hover:text-[#371552]">
+                <button className="text-[#6F5D9E] hover:text-primary">
                   <Pencil className="h-4 w-4" />
                 </button>
               </div>
@@ -147,7 +147,7 @@ const SingerProfile: React.FC = () => {
                   <BadgeCheck className="h-4 w-4" />
                   {profile.available ? "Available" : "Unavailable"}
                 </span>
-                <button className="rounded-full border border-[#E7DEFF] px-4 py-2 text-sm font-semibold text-[#371552] hover:bg-[#F7F4FF]">
+                <button className="rounded-full border border-[#E7DEFF] px-4 py-2 text-sm font-semibold text-primary hover:bg-[#F7F4FF]">
                   <Edit2 className="mr-2 inline h-4 w-4" />Edit
                 </button>
               </div>
@@ -157,27 +157,27 @@ const SingerProfile: React.FC = () => {
             <section className="space-y-3 bg-white p-6">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-[#2E1B4D]">My Bio</h3>
-                <button className="text-[#6F5D9E] hover:text-[#371552]">
+                <button className="text-[#6F5D9E] hover:text-primary">
                   <Pencil className="h-4 w-4" />
                 </button>
               </div>
               <ul className="space-y-4 text-sm text-[#2F1C4E]">
                 <li className="flex gap-3">
-                  <Video className="mt-0.5 h-4 w-4 text-[#371552]" />
+                  <Video className="mt-0.5 h-4 w-4 text-primary" />
                   <div>
                     <p className="font-semibold">14 years of experience</p>
                     <p className="text-[#6F5D9E]">{paragraph}</p>
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <CircleDot className="mt-0.5 h-4 w-4 text-[#371552]" />
+                  <CircleDot className="mt-0.5 h-4 w-4 text-primary" />
                   <div>
                     <p className="font-semibold">Career highlight</p>
                     <p className="text-[#6F5D9E]">Over 10 years singing customers around UK and Europe!</p>
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <CircleDot className="mt-0.5 h-4 w-4 text-[#371552]" />
+                  <CircleDot className="mt-0.5 h-4 w-4 text-primary" />
                   <div>
                     <p className="font-semibold">Education and training</p>
                     <p className="text-[#6F5D9E]">Singing Diploma of ETIC and earned an MBA in Marketing at University of Sunderland.</p>
@@ -190,7 +190,7 @@ const SingerProfile: React.FC = () => {
             <section className="space-y-3 rounded-3xl bg-white p-6">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-[#2E1B4D]">About me</h3>
-                <button className="text-[#6F5D9E] hover:text-[#371552]">
+                <button className="text-[#6F5D9E] hover:text-primary">
                   <Pencil className="h-4 w-4" />
                 </button>
               </div>
@@ -210,7 +210,7 @@ const SingerProfile: React.FC = () => {
                 </button>
               </div>
               <div className="inline-flex rounded-full bg-[#F2ECFF] p-1">
-                <button className="rounded-full bg-[#371552] px-5 py-1.5 text-sm font-semibold text-white">Videos</button>
+                <button className="rounded-full bg-primary px-5 py-1.5 text-sm font-semibold text-white">Videos</button>
                 <button className="rounded-full px-5 py-1.5 text-sm font-semibold text-[#6F5D9E]">Photos</button>
               </div>
 
@@ -223,7 +223,7 @@ const SingerProfile: React.FC = () => {
                         alt="video thumb"
                         className="h-48 w-full rounded-2xl object-cover"
                       />
-                      <button className="absolute left-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-[#371552] shadow">
+                      <button className="absolute left-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-primary shadow">
                         <Play className="h-5 w-5" />
                       </button>
                     </div>

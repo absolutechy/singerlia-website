@@ -45,7 +45,7 @@ const ChooseRole: React.FC = () => {
         <Button
           variant="secondary"
           size="large"
-          className="mx-auto w-full max-w-sm rounded-full bg-[#371552] text-white hover:bg-[#4A1F6B]"
+          className="mx-auto w-full max-w-sm rounded-full bg-primary text-white hover:bg-[#4A1F6B]"
           disabled={!selectedRole}
           onClick={() => {
             if (!selectedRole) return;

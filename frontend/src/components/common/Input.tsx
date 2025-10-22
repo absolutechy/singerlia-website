@@ -88,7 +88,7 @@ const Input: React.FC<InputProps> = ({
   return (
     <div className="flex flex-col gap-1 w-full">
       {label && (
-        <label className="heading-6 text-gray-900">
+        <label className="heading-6 text-gray-900 text-start !font-normal">
           {label}
         </label>
       )}
@@ -97,7 +97,7 @@ const Input: React.FC<InputProps> = ({
         value={value}
         onChange={onChange}
         className={cn(
-          'rounded-lg pr-10 !pl-0 bg-white text-gray-900 placeholder:text-gray-400 border-0 outline-none focus:outline-none focus:border-0 focus:ring-0 focus-visible:ring-0 focus-visible:border-0 focus-visible:outline-none transition-all',
+          'rounded-lg pr-10 !pl-0 font-chocolates !font-normal bg-white text-gray-900 placeholder:text-gray-400 border-0 outline-none focus:outline-none focus:border-0 focus:ring-0 focus-visible:ring-0 focus-visible:border-0 focus-visible:outline-none transition-all',
           error && 'border-red-500',
           className
         )}

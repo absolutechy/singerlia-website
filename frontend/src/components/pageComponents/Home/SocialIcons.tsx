@@ -237,7 +237,7 @@ const LinkedInIcon = () => (
 
 const SocialIcons = () => {
   return (
-  <div className="flex items-center justify-center gap-x-5 mt-5">
+  <div className="flex items-center justify-center gap-x-3 sm:gap-x-5 mt-5">
     <FacebookIcon />
     <InstagramIcon />
     <TicktockIcon />

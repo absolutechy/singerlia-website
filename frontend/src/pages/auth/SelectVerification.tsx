@@ -40,7 +40,7 @@ const SelectVerification: React.FC = () => {
                 onClick={() => setSelected(option.id)}
                 className={`flex w-full items-center justify-between rounded-2xl border px-5 py-4 text-left transition ${
                   isSelected
-                    ? "border-[#371552] bg-[#F8F4FF] shadow-[0_16px_34px_-24px_rgba(55,21,82,0.45)]"
+                    ? "border-primary bg-[#F8F4FF] shadow-[0_16px_34px_-24px_rgba(55,21,82,0.45)]"
                     : "border-[#E8DEFF] bg-white hover:border-[#CBB9FF]"
                 }`}
               >
@@ -48,8 +48,8 @@ const SelectVerification: React.FC = () => {
                   <span
                     className={`flex h-12 w-12 items-center justify-center rounded-2xl ${
                       isSelected
-                        ? "bg-[#371552] text-white"
-                        : "bg-[#F4EEFF] text-[#371552]"
+                        ? "bg-primary text-white"
+                        : "bg-[#F4EEFF] text-primary"
                     }`}
                   >
                     {option.icon}
@@ -64,7 +64,7 @@ const SelectVerification: React.FC = () => {
                 <span
                   className={`flex h-4 w-4 items-center justify-center rounded-full border ${
                     isSelected
-                      ? "border-[#371552] bg-[#371552]"
+                      ? "border-primary bg-primary"
                       : "border-[#D8CCFF]"
                   }`}
                 >
@@ -77,7 +77,7 @@ const SelectVerification: React.FC = () => {
         <Button
           variant="secondary"
           size="large"
-          className="mx-auto w-full max-w-sm rounded-full bg-[#371552] text-white hover:bg-[#4A1F6B]"
+          className="mx-auto w-full max-w-sm rounded-full bg-primary text-white hover:bg-[#4A1F6B]"
           onClick={() => navigate("/auth/verification-code")}
         >
           <span className="font-semibold">Continue</span>

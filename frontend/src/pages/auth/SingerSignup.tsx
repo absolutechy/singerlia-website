@@ -1,11 +1,10 @@
 import React from "react";
 import { useNavigate } from "react-router";
 import AuthModalLayout from "@/components/auth/AuthModalLayout";
-import LogoBadge from "@/components/auth/LogoBadge";
 import SocialButton from "@/components/auth/SocialButton";
-import AuthTextField from "@/components/auth/AuthTextField";
-import { Button } from "@/components/common";
-import Select from "@/components/common/Select";
+import { Button, Input, Select } from "@/components/common";
+import GoogleIcon from "@/assets/images/common/Google.png";
+import FacebookIcon from "@/assets/images/common/Facebook.png";
 
 const genderOptions = [
   { value: "male", label: "Male" },
@@ -25,6 +24,23 @@ const cityOptions = [
   { value: "dxb", label: "Dubai" },
 ];
 
+const selects = [
+    { label: "Select Gender", options: genderOptions },
+    { label: "Select Country", options: countryOptions },
+    { label: "Select City", options: cityOptions },
+  ];
+
+const fields = [
+    { id: "firstName", label: "First Name", placeholder: "Type here" },
+    { id: "lastName", label: "Last Name", placeholder: "Type here" },
+    { id: "phone", label: "Phone Number", type: "tel", placeholder: "Type here" },
+    { id: "email", label: "Email", type: "email", placeholder: "Type here" },
+    { id: "introVideo", label: "Introduction Video Link", type: "url", placeholder: "Add YouTube video link" },
+    { id: "location", label: "Add Location", placeholder: "Type here" },
+    { id: "password", label: "Password", type: "password", placeholder: "Type here" },
+    { id: "confirmPassword", label: "Re-Enter Password", type: "password", placeholder: "Type here" },
+  ];
+
 const SingerSignup: React.FC = () => {
   const navigate = useNavigate();
 
@@ -36,7 +52,7 @@ const SingerSignup: React.FC = () => {
           Don’t you have an account?{" "}
           <button
             type="button"
-            className="font-semibold text-[#371552] underline-offset-4 hover:underline"
+            className="font-semibold text-primary underline-offset-4 hover:underline"
             onClick={() => navigate("/auth/login")}
           >
             Sign Up
@@ -46,103 +62,33 @@ const SingerSignup: React.FC = () => {
       size="xl"
     >
       <div className="space-y-2">
-        <LogoBadge size="md" />
+        {/* <LogoBadge size="md" /> */}
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <AuthTextField
-            id="firstName"
-            label="First Name"
-            placeholder="Type here"
-            labelClassName="text-xs text-start font-semibold uppercase tracking-[0.16em] text-primary-text"
-            inputClassName="mt-2 w-full rounded-xl border border-[#E7DEFF] bg-[#F9F7FF] px-4 py-3 text-sm text-[#8897AD] shadow-inner focus:border-[#B8860B] focus:outline-none"
-          />
-          <AuthTextField
-            id="lastName"
-            label="Last Name"
-            placeholder="Type here"
-            labelClassName="text-xs text-start font-semibold uppercase tracking-[0.16em] text-primary-text"
-            inputClassName="mt-2 w-full rounded-xl border border-[#E7DEFF] bg-[#F9F7FF] px-4 py-3 text-sm text-[#8897AD] shadow-inner focus:border-[#B8860B] focus:outline-none"
-          />
-          <AuthTextField
-            id="phone"
-            type="tel"
-            label="Phone Number"
-            placeholder="Type here"
-            labelClassName="text-xs text-start font-semibold uppercase tracking-[0.16em] text-primary-text"
-            inputClassName="mt-2 w-full rounded-xl border border-[#E7DEFF] bg-[#F9F7FF] px-4 py-3 text-sm text-[#8897AD] shadow-inner focus:border-[#B8860B] focus:outline-none"
-          />
-
-          <AuthTextField
-            id="email"
-            type="email"
-            label="Email"
-            placeholder="Type here"
-            labelClassName="text-xs text-start font-semibold uppercase tracking-[0.16em] text-primary-text"
-            inputClassName="mt-2 w-full rounded-xl border border-[#E7DEFF] bg-[#F9F7FF] px-4 py-3 text-sm text-[#8897AD] shadow-inner focus:border-[#B8860B] focus:outline-none"
-          />
-          <label className="text-xs text-start font-semibold uppercase tracking-[0.16em] text-primary-text">
-            Select Gender
-            <Select
-              placeholder="Select here"
-              options={genderOptions}
-              className="mt-2 w-full rounded-xl border border-[#E7DEFF] bg-[#F9F7FF] px-4 py-[22px] text-sm text-[#8897AD] shadow-inner focus:border-[#B8860B] focus:outline-none"
+          {fields.map((field) => (
+            <Input 
+              key={field.id}
+              id={field.id}
+              label={field.label}
+              type={field.type}
+              placeholder="Type here"
+              className="bg-[#F7FBFF] border border-[#D4D7E3] !pl-2 !py-6"
             />
-          </label>
-          <AuthTextField
-            id="introVideo"
-            type="url"
-            label="Introduction Video Link"
-            placeholder="Add YouTube video link"
-            labelClassName="text-xs text-start font-semibold uppercase tracking-[0.16em] text-primary-text"
-            inputClassName="mt-2 w-full rounded-xl border border-[#E7DEFF] bg-[#F9F7FF] px-4 py-3 text-sm text-[#8897AD] shadow-inner focus:border-[#B8860B] focus:outline-none"
-          />
-
-          <label className="text-xs text-start font-semibold uppercase tracking-[0.16em] text-primary-text">
-            Select Country
-            <Select
-              placeholder="Select here"
-              options={countryOptions}
-              className="mt-2 w-full rounded-xl border border-[#E7DEFF] bg-[#F9F7FF] px-4 py-[22px] text-sm text-[#8897AD] shadow-inner focus:border-[#B8860B] focus:outline-none"
+          ))}
+          {selects.map((select) => (
+            <Select 
+              key={select.label}
+              label={select.label}
+              options={select.options}
+              className="bg-[#F7FBFF] border border-[#D4D7E3] !pl-2 !py-6"
             />
-          </label>
-          <label className="text-xs text-start font-semibold uppercase tracking-[0.16em] text-primary-text">
-            Select City
-            <Select
-              placeholder="Select here"
-              options={cityOptions}
-              className="mt-2 w-full rounded-xl border border-[#E7DEFF] bg-[#F9F7FF] px-4 py-[22px] text-sm text-[#8897AD] shadow-inner focus:border-[#B8860B] focus:outline-none"
-            />
-          </label>
-          <AuthTextField
-            id="location"
-            label="Add Location"
-            placeholder="Add YouTube video link"
-            labelClassName="text-xs text-start font-semibold uppercase tracking-[0.16em] text-primary-text"
-            inputClassName="mt-2 w-full rounded-xl border border-[#E7DEFF] bg-[#F9F7FF] px-4 py-3 text-sm text-[#8897AD] shadow-inner focus:border-[#B8860B] focus:outline-none"
-          />
-
-          <AuthTextField
-            id="password"
-            type="password"
-            label="Password"
-            placeholder="Type here"
-            labelClassName="text-xs text-start font-semibold uppercase tracking-[0.16em] text-primary-text"
-            inputClassName="mt-2 w-full rounded-xl border border-[#E7DEFF] bg-[#F9F7FF] px-4 py-3 text-sm text-[#8897AD] shadow-inner focus:border-[#B8860B] focus:outline-none"
-          />
-          <AuthTextField
-            id="confirmPassword"
-            type="password"
-            label="Re-Enter Password"
-            placeholder="Type here"
-            labelClassName="text-xs text-start font-semibold uppercase tracking-[0.16em] text-primary-text"
-            inputClassName="mt-2 w-full rounded-xl border border-[#E7DEFF] bg-[#F9F7FF] px-4 py-3 text-sm text-[#8897AD] shadow-inner focus:border-[#B8860B] focus:outline-none"
-          />
+          ))}
         </div>
 
-        <label className="flex items-center gap-3 text-sm text-[#6F5D9E]">
+        <label className="flex items-center gap-3 text-sm text-[#6F5D9E] mb-10">
           <input
             type="checkbox"
-            className="h-4 w-4 rounded border-[#D5CAFF] text-[#371552] focus:ring-[#B8860B]"
+            className="h-4 w-4 rounded border-[#D5CAFF] text-primary focus:ring-[#B8860B]"
           />
           <span>
             I agree to the{" "}
@@ -154,7 +100,7 @@ const SingerSignup: React.FC = () => {
         <Button
           variant="secondary"
           size="large"
-          className="mx-auto w-full max-w-md rounded-full bg-[#371552] text-white hover:bg-[#4A1F6B]"
+          className="mx-auto w-full max-w-md rounded-full bg-primary text-white hover:bg-[#4A1F6B] mb-5"
           onClick={() => navigate("/auth/verification-method")}
         >
           <span className="font-semibold">Sign Up</span>
@@ -162,16 +108,14 @@ const SingerSignup: React.FC = () => {
 
         <div className="grid gap-3 md:grid-cols-2">
           <SocialButton
-            label="Sign in with Google"
+            label="Sign in with Google" 
             icon={
-              <span className="text-lg font-semibold text-[#EA4335]">G</span>
+              <img src={GoogleIcon} alt="Google" className="h-6 w-6" />
             }
-            iconWrapperClassName="border border-[#E5E0FF]"
           />
           <SocialButton
             label="Sign in with Facebook"
-            icon={<span className="text-lg font-semibold text-black">f</span>}
-            iconWrapperClassName="border border-[#E5E0FF] bg-[#1877F2]"
+            icon={<img src={FacebookIcon} alt="Facebook" className="h-7 w-7" />}
           />
         </div>
       </div>

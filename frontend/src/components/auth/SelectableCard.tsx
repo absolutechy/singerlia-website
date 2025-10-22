@@ -27,13 +27,13 @@ const SelectableCard: React.FC<SelectableCardProps> = ({
       }`}
     >
       {selected && (
-        <span className="absolute right-5 top-5 flex h-6 w-6 items-center justify-center rounded-full bg-[#FFD700] text-[#371552]">
+        <span className="absolute right-5 top-5 flex h-6 w-6 items-center justify-center rounded-full bg-[#FFD700] text-primary">
           <Check className="h-4 w-4" strokeWidth={2.5} />
         </span>
       )}
       <div
         className={`flex h-16 w-16 items-center justify-center rounded-2xl ${
-          selected ? "bg-[#FFD700] text-[#371552]" : "bg-[#F5F0FF] text-[#371552]"
+          selected ? "bg-[#FFD700] text-primary" : "bg-[#F5F0FF] text-primary"
         }`}
       >
         {icon}

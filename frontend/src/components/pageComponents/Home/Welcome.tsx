@@ -4,9 +4,9 @@ import React from "react";
 const Welcome: React.FC = () => {
   return (
     <div className="w-full bg-primary text-white">
-      <div className="custom-container py-28 px-24 flex justify-between">
+      <div className="custom-container py-10 lg:py-28 px-10 lg:px-24 flex flex-col lg:flex-row justify-between">
         <div className="w-fit space-y-6">
-          <h1 className="heading-1 leading-none max-w-xl">
+          <h1 className="font-bold text-4xl lg:text-7xl leading-none max-w-xl">
             Welcome Singerlia Earn Income as a Signer
           </h1>
           <p className="text-lg">Put your Portfolio to work.</p>
@@ -17,7 +17,7 @@ const Welcome: React.FC = () => {
           <Button
             variant="primary"
             size="large"
-            className="flex items-center gap-2 col-span-2"
+            className="flex items-center gap-2 col-span-2 mb-5 lg:mb-0"
           >
             <p className="font-medium">List your space</p>
           </Button>

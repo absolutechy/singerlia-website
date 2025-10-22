@@ -17,7 +17,7 @@ const supportLinks = ["Help Center", "Contact Support", "Terms", "Policy"];
 
 const Footer: React.FC = () => {
   return (
-    <footer className="mt-24 w-full bg-[#371552] text-white">
+    <footer className="mt-24 w-full bg-primary text-white">
       <div className="custom-container px-6 py-20 lg:px-24">
         <div className="flex flex-col gap-10 border-b border-white/15 pb-12 md:flex-row md:items-end md:justify-between">
           <div className="space-y-3">
@@ -45,7 +45,7 @@ const Footer: React.FC = () => {
               </div>
               <span className="text-xs">| 34,000+ Reviews</span>
             </div>
-            <div className="flex items-center gap-2 rounded-2xl border border-white/20 bg-white/40 p-1 pr-1 shadow-[0_12px_24px_-16px_rgba(0,0,0,0.7)]">
+            <div className="flex flex-col lg:flex-row items-center gap-2 rounded-2xl border border-white/20 bg-white/40 p-1 pr-1 shadow-[0_12px_24px_-16px_rgba(0,0,0,0.7)]">
               <input
                 className="h-12 flex-1 rounded-full bg-transparent px-6 text-sm text-white placeholder:text-white/40 focus:outline-none"
                 type="email"
