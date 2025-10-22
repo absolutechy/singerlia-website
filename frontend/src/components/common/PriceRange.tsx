@@ -51,7 +51,8 @@ const PriceRange: React.FC<PriceRangeProps> = ({
           max={max}
           value={value.min}
           onChange={handleMin}
-          className="range-dual-thumb absolute inset-0 appearance-none bg-transparent pointer-events-auto"
+          className="range-dual-thumb absolute inset-0 appearance-none bg-transparent range-min"
+          style={{ zIndex: 3 }}
         />
         <input
           type="range"
@@ -59,7 +60,8 @@ const PriceRange: React.FC<PriceRangeProps> = ({
           max={max}
           value={value.max}
           onChange={handleMax}
-          className="range-dual-thumb absolute inset-0 appearance-none bg-transparent pointer-events-auto"
+          className="range-dual-thumb absolute inset-0 appearance-none bg-transparent range-max"
+          style={{ zIndex: 2 }}
         />
       </div>
     </div>
@@ -67,4 +69,3 @@ const PriceRange: React.FC<PriceRangeProps> = ({
 };
 
 export default PriceRange;
-
