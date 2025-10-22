@@ -15,7 +15,7 @@ interface AuthModalLayoutProps {
 
 const sizeMap: Record<ModalSize, string> = {
   md: "max-w-xl",
-  lg: "max-w-7xl",
+  lg: "max-w-5xl",
   xl: "max-w-7xl",
 };
 

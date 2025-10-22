@@ -4,7 +4,8 @@ import AuthModalLayout from "@/components/auth/AuthModalLayout";
 import LogoBadge from "@/components/auth/LogoBadge";
 import SelectableCard from "@/components/auth/SelectableCard";
 import { Button } from "@/components/common";
-import { Mic2, Users } from "lucide-react";
+import IAMSingerImage from "@/assets/images/common/iamanartist.png";
+import IAMCustomerImage from "@/assets/images/common/iamcustomer.png";
 
 type RoleOption = "artist" | "customer";
 
@@ -12,12 +13,12 @@ const roleOptions = [
   {
     id: "artist" as RoleOption,
     title: "I am an Artist",
-    icon: <Mic2 className="h-7 w-7" />,
+    icon: <img src={IAMSingerImage} alt="Artist" className="w-40 h-28 object-cover" />,
   },
   {
     id: "customer" as RoleOption,
     title: "I am a Customer",
-    icon: <Users className="h-7 w-7" />,
+    icon: <img src={IAMCustomerImage} alt="Customer" className="w-36 h-28 object-cover" />,
   },
 ];
 
@@ -26,10 +27,10 @@ const ChooseRole: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <AuthModalLayout title="Choose Role">
-      <div className="space-y-8">
+    <AuthModalLayout size="lg" title="Choose Role">
+      <div className="space-y-10">
         <LogoBadge size="md" />
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="flex items-center justify-center gap-6 md:gap-12">
           {roleOptions.map((option) => (
             <SelectableCard
               key={option.id}
