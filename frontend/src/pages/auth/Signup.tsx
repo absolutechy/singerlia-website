@@ -2,9 +2,10 @@ import React from "react";
 import { useNavigate } from "react-router";
 import AuthModalLayout from "@/components/auth/AuthModalLayout";
 import LogoBadge from "@/components/auth/LogoBadge";
-import AuthTextField from "@/components/auth/AuthTextField";
 import SocialButton from "@/components/auth/SocialButton";
-import { Button } from "@/components/common";
+import { Button, Input } from "@/components/common";
+import GoogleIcon from "@/assets/images/common/Google.png";
+import FacebookIcon from "@/assets/images/common/Facebook.png";
 
 const fields = [
   { id: "firstName", label: "First Name", type: "text" },
@@ -22,13 +23,13 @@ const Signup: React.FC = () => {
     <AuthModalLayout
       footerNote={
         <p className="text-center text-sm text-[#6F5D9E]">
-          Don’t you have an account?{" "}
+          Already have an account?{" "}
           <button
             type="button"
-            className="font-semibold text-[#371552] underline-offset-4 hover:underline"
+            className="font-semibold text-primary underline-offset-4 hover:underline"
             onClick={() => navigate("/auth/login")}
           >
-            Sign Up
+            Log In
           </button>
         </p>
       }
@@ -36,51 +37,48 @@ const Signup: React.FC = () => {
       size="lg"
     >
       <div className="space-y-4">
-        <LogoBadge size="md" />
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {/* <LogoBadge size="lg" /> */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 ">
           {fields.map((field) => (
-            <AuthTextField
+            <Input 
               key={field.id}
               id={field.id}
               label={field.label}
               type={field.type}
               placeholder="Type here"
-              labelClassName="text-xs text-start font-semibold uppercase tracking-[0.16em] text-primary-text"
-              inputClassName="mt-2 w-full rounded-xl border border-[#E7DEFF] bg-[#F9F7FF] px-4 py-3 text-sm text-[#8897AD] shadow-inner focus:border-[#B8860B] focus:outline-none"
+              className="bg-[#F7FBFF] border border-[#D4D7E3] !pl-2 !py-6"
             />
           ))}
         </div>
-        <label className="flex items-center gap-3 text-sm text-primary-text">
+        <label className="flex items-center gap-3 text-sm text-primary-text mb-10">
           <input
             type="checkbox"
-            className="h-4 w-4 rounded border-[#D5CAFF] text-[#371552] focus:ring-[#B8860B]"
+            className="h-4 w-4 rounded border-[#D5CAFF] text-primary focus:ring-[#B8860B]"
           />
-          <span>
+          <h6>
             I agree to the{" "}
             <span className="font-semibold">Terms of Service</span> and{" "}
             <span className="font-semibold">Privacy Policy</span>.
-          </span>
+          </h6>
         </label>
         <Button
           variant="secondary"
           size="large"
-          className="mx-auto w-full max-w-md rounded-full bg-[#371552] text-white hover:bg-[#4A1F6B]"
+          className="mx-auto w-full max-w-md rounded-full bg-primary text-white hover:bg-[#4A1F6B]"
           onClick={() => navigate("/auth/verification-method")}
         >
           <span className="font-semibold">Sign Up</span>
         </Button>
         <div className="grid gap-3 md:grid-cols-2">
           <SocialButton
-            label="Sign in with Google"
+            label="Sign in with Google" 
             icon={
-              <span className="text-lg font-semibold text-[#EA4335]">G</span>
+              <img src={GoogleIcon} alt="Google" className="h-6 w-6" />
             }
-            iconWrapperClassName="border border-[#E5E0FF]"
           />
           <SocialButton
             label="Sign in with Facebook"
-            icon={<span className="text-lg font-semibold text-black">f</span>}
-            iconWrapperClassName="border border-[#E5E0FF] bg-[#1877F2]"
+            icon={<img src={FacebookIcon} alt="Facebook" className="h-7 w-7" />}
           />
         </div>
       </div>

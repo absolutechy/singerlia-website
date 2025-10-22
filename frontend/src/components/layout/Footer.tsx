@@ -17,7 +17,7 @@ const supportLinks = ["Help Center", "Contact Support", "Terms", "Policy"];
 
 const Footer: React.FC = () => {
   return (
-    <footer className="mt-24 w-full bg-[#371552] text-white">
+    <footer className="mt-24 w-full bg-primary text-white">
       <div className="custom-container px-6 py-20 lg:px-24">
         <div className="flex flex-col gap-10 border-b border-white/15 pb-12 md:flex-row md:items-end md:justify-between">
           <div className="space-y-3">

@@ -36,7 +36,7 @@ const SingerSignup: React.FC = () => {
           Don’t you have an account?{" "}
           <button
             type="button"
-            className="font-semibold text-[#371552] underline-offset-4 hover:underline"
+            className="font-semibold text-primary underline-offset-4 hover:underline"
             onClick={() => navigate("/auth/login")}
           >
             Sign Up
@@ -142,7 +142,7 @@ const SingerSignup: React.FC = () => {
         <label className="flex items-center gap-3 text-sm text-[#6F5D9E]">
           <input
             type="checkbox"
-            className="h-4 w-4 rounded border-[#D5CAFF] text-[#371552] focus:ring-[#B8860B]"
+            className="h-4 w-4 rounded border-[#D5CAFF] text-primary focus:ring-[#B8860B]"
           />
           <span>
             I agree to the{" "}
@@ -154,7 +154,7 @@ const SingerSignup: React.FC = () => {
         <Button
           variant="secondary"
           size="large"
-          className="mx-auto w-full max-w-md rounded-full bg-[#371552] text-white hover:bg-[#4A1F6B]"
+          className="mx-auto w-full max-w-md rounded-full bg-primary text-white hover:bg-[#4A1F6B]"
           onClick={() => navigate("/auth/verification-method")}
         >
           <span className="font-semibold">Sign Up</span>

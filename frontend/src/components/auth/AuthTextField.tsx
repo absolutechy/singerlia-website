@@ -17,14 +17,14 @@ const AuthTextField: React.FC<AuthTextFieldProps> = ({
   inputClassName = "",
   ...rest
 }) => {
-  return (
-    <label htmlFor={id} className={`${labelClassName} z-10`}>
+  return ( 
+    <label htmlFor={id} className={`${labelClassName } font-Chocolates z-10`}>
       {label}
       <input
         id={id}
         type={type}
         placeholder={placeholder}
-        className={`${inputClassName} z-10`}
+        className={`${inputClassName} z-10  font-Chocolates`}
         {...rest}
       />
     </label>

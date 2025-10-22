@@ -15,8 +15,8 @@ interface AuthModalLayoutProps {
 
 const sizeMap: Record<ModalSize, string> = {
   md: "max-w-xl",
-  lg: "max-w-3xl",
-  xl: "max-w-5xl",
+  lg: "max-w-7xl",
+  xl: "max-w-7xl",
 };
 
 const AuthModalLayout: React.FC<AuthModalLayoutProps> = ({
@@ -34,12 +34,12 @@ const AuthModalLayout: React.FC<AuthModalLayoutProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-md" />
       <div
-        className={`relative w-full ${sizeMap[size]} rounded-[32px] border border-[#F0E6FF] bg-white/95 shadow-[0_40px_80px_-30px_rgba(55,21,82,0.35)] ${className}`}
+        className={`relative w-full ${sizeMap[size]} rounded-[32px] border border-[#F0E6FF] bg-white shadow-[0_40px_80px_-30px_rgba(55,21,82,0.35)] ${className}`}
       >
-        <div className="flex pt-10 pb-4 px-6 border-b border-[#CDCDCD]">
+        <div className="flex py-4 px-6 border-b border-[#CDCDCD]">
           <h2 className="text-2xl font-semibold ms-auto font-chocolates text-primary-text md:text-3xl">
             {title}
           </h2>
@@ -54,7 +54,7 @@ const AuthModalLayout: React.FC<AuthModalLayoutProps> = ({
         <div className="px-8 pt-4 text-center md:px-14">
           <div className="mt-4">{children}</div>
         </div>
-        <div className="mt-8 rounded-b-[32px] border-t border-[#EFE5FF] bg-[#FBF9FF] text-primary-text py-4 text-center text-xs font-medium uppercase tracking-[0.18em]">
+        <div className="mt-8 rounded-b-[32px] border-t border-[#EFE5FF] bg-[#FBF9FF] text-primary-text py-4 text-center text-xs font-medium">
           {footerNote}
         </div>
       </div>
