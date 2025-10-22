@@ -90,11 +90,11 @@ const PartyExperience: React.FC = () => {
           </div>
         </div>
       )}
-      <div className=" py-24 pl-6 lg:pl-24">
+      <div className="py-10 lg:py-24 pl-6 lg:pl-24">
         <div className="grid items-center gap-16 lg:grid-cols-2">
           <div className="space-y-6">
             <motion.h1
-              className="text-6xl font-normal leading-tight text-gray-900 w-[500px]"
+              className="text-4xl lg:text-6xl font-normal leading-tight text-gray-900 lg:w-[500px]"
               initial={{ opacity: 0, y: 28 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: "easeOut" }}

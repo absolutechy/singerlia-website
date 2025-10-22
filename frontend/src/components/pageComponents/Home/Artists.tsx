@@ -4,11 +4,11 @@ import React from "react";
 const Artists: React.FC = () => {
   return (
     <div className="py-10 px-5 w-full custom-container">
-      <h1 className="heading-2 text-primary text-center">Featured Artists</h1>
+      <h1 className="font-bold text-4xl lg:text-6xl text-primary text-center">Featured Artists</h1>
       <p className="text-[#666666] text-center">
         Discover top-rated musicians ready to make your event unforgettable
       </p>
-      <div className="w-full grid grid-cols-3 gap-5 my-14">
+      <div className="w-full grid lg:grid-cols-3 gap-5 my-14">
         <SingerCard />
         <SingerCard />
         <SingerCard />

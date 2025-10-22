@@ -39,11 +39,10 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   };
 
   return (
-    <div className="bg-white max-w-5xl mx-auto rounded-2xl !p-6 shadow-lg">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-        {/* Search Favorites Signer */}
-        {/* Search Your Favourite Singer */}
-        <div className="border-r-2 col-span-8 border-[#CDCDCD]">
+    <div className="bg-white max-w-5xl mx-3 lg:mx-auto rounded-2xl p-4 md:p-6 shadow-lg">
+      <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-end">
+        {/* Search Favorite Singer */}
+        <div className="flex-1 md:border-r-2 md:border-[#CDCDCD] md:pr-4">
           <Input
             type="text"
             label="Search Favorite Singer"
@@ -55,7 +54,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
         </div>
 
         {/* Select Date */}
-        <div className="col-span-2">
+        <div className="w-full md:w-48">
           <DatePicker
             label="Select Date"
             placeholder="Select Date"
@@ -64,11 +63,13 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
             className=""
           />
         </div>
+
+        {/* Search Button */}
         <Button
           variant="primary"
           onClick={handleSearch}
           size="large"
-          className="flex items-center gap-2 col-span-2"
+          className="flex items-center justify-center gap-2 w-full md:w-auto md:min-w-[140px]"
         >
           Search
         </Button>

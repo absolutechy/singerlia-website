@@ -205,9 +205,9 @@ const growthStats: Stat[] = [
 const MissionGrowth: React.FC = () => {
   return (
     <div className="w-full bg-white">
-      <div className="custom-container px-6 py-24 lg:px-24 space-y-20">
+      <div className="custom-container px-6 py-10 lg:py-24 lg:px-24 space-y-20">
         <section className="space-y-8">
-          <h2 className="heading-2 text-primary">About Our Mission</h2>
+          <h2 className="font-bold text-4xl lg:text-6xl text-primary">About Our Mission</h2>
           
           {/* For Customers Section */}
           <div className="grid items-start gap-8 lg:grid-cols-[1fr_600px]">
@@ -257,7 +257,7 @@ const MissionGrowth: React.FC = () => {
         </section>
         <section className="space-y-12">
           <div className="text-center">
-            <h2 className="heading-1 text-primary">Today Growth Singerlia</h2>
+            <h2 className="font-bold text-4xl lg:text-6xl text-primary">Today Growth Singerlia</h2>
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {growthStats.map((stat, index) => (

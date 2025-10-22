@@ -9,7 +9,7 @@ interface SimpleCardProps {
 
 const SimpleCard: React.FC<SimpleCardProps> = ({ num, title, des }) => {
   return (
-    <div className={`bg-white w-full rounded-xl ${num === '02' ? 'shadow-xl transform -translate-y-5' : 'border border-gray-200'} group`}>
+    <div className={`bg-white w-full rounded-xl ${num === '02' ? 'shadow-xl transform lg:-translate-y-5' : 'border border-gray-200'} group`}>
       <div className="p-4">
         <div className="flex items-center gap-3">
           <img src={logo} alt="icon" className="w-8 h-8 object-cover" />
