@@ -7,6 +7,7 @@ export interface SearchResultCardProps {
   name: string;
   serviceTitle: string;
   responseTime?: string;
+  onViewDetails?: () => void;
 }
 
 const SearchResultCard: React.FC<SearchResultCardProps> = ({
@@ -14,6 +15,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   name,
   serviceTitle,
   responseTime = "Responds within 1hr",
+  onViewDetails,
 }) => {
   return (
     <div className="bg-white w-full rounded-3xl p-4 border-[0.5px] border-[#CDCDCD] group transition-all duration-300 hover:bg-[#F9F7FF]">
@@ -55,6 +57,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
       <button
         type="button"
         className="text-base font-medium border-[0.5px] border-[#CDCDCD] group-hover:border-primary group-hover:bg-primary group-hover:text-white w-full rounded-xl p-3 cursor-pointer transition-all duration-300"
+        onClick={onViewDetails}
       >
         View details
       </button>
@@ -63,4 +66,3 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 };
 
 export default SearchResultCard;
-
