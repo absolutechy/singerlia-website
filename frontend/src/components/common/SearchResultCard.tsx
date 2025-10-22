@@ -16,7 +16,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   responseTime = "Responds within 1hr",
 }) => {
   return (
-    <div className="bg-white w-full rounded-3xl p-4 border-2 border-[#EBE4FF] group transition-all duration-300 hover:bg-[#F9F7FF]">
+    <div className="bg-white w-full rounded-3xl p-4 border-[0.5px] border-[#CDCDCD] group transition-all duration-300 hover:bg-[#F9F7FF]">
       <div className="w-full h-56 md:h-60 relative rounded-2xl overflow-hidden">
         <img src={image} alt={name} className="w-full h-full object-cover" />
 
@@ -54,7 +54,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
       <p className="text-[17px] font-medium text-primary py-3">{serviceTitle}</p>
       <button
         type="button"
-        className="text-base font-medium border-2 border-[#CDCDCD] group-hover:border-primary group-hover:bg-primary group-hover:text-white w-full rounded-xl p-3 cursor-pointer transition-all duration-300"
+        className="text-base font-medium border-[0.5px] border-[#CDCDCD] group-hover:border-primary group-hover:bg-primary group-hover:text-white w-full rounded-xl p-3 cursor-pointer transition-all duration-300"
       >
         View details
       </button>

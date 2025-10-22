@@ -5,12 +5,20 @@ import singer1 from "@/assets/images/common/Singer1.png";
 import singer2 from "@/assets/images/common/Singer2.png";
 import singer3 from "@/assets/images/common/Singer3.png";
 import Button from "@/components/common/Button";
+import PriceRange from "@/components/common/PriceRange";
 
 const SearchResults: React.FC = () => {
-  const [price, setPrice] = useState(25000);
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 75000 });
   const [zone, setZone] = useState<string>("");
   const [tags, setTags] = useState<string[]>([]);
+  const [active, setActive] = useState("Today");
 
+  const buttons = ["Today", "Tomorrow", "This Week", "Custom Dates"];
+
+  const getButtonClasses = (label: any) =>
+    label === active
+      ? "px-4 py-2 text-sm rounded-xl bg-gradient-to-b from-secondary to-secondary-dark border border-primary text-white font-semibold"
+      : "px-4 py-2 text-sm rounded-xl border border-[#E3D8FF] text-[#2E1B4D] hover:border-primary hover:text-primary transition";
   const items = useMemo(
     () => [
       {
@@ -92,7 +100,7 @@ const SearchResults: React.FC = () => {
   const [visibleCount, setVisibleCount] = useState(6);
 
   return (
-    <div className="custom-container px-5 pb-16">
+    <div className="custom-container pb-16">
       {/* Top search controls */}
       <div className="w-full flex justify-between items-center gap-4">
         {/* Combined search box */}
@@ -130,14 +138,14 @@ const SearchResults: React.FC = () => {
         </div>
 
         {/* Filters pill */}
-        <button className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-3 shadow border border-[#EBE4FF]">
+        <button className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-3 shadow border border-[#EBE4FF] mr-0 lg:mr-12">
           <Filter className="h-4 w-4 text-[#2E1B4D]" />
           <span className="text-sm font-semibold text-[#2E1B4D]">Filters</span>
         </button>
       </div>
 
       {/* Heading */}
-      <h2 className="mt-8 heading-5 text-[#2E1B4D]">
+      <h2 className="mt-8 heading-5 text-[#1C1C1C]">
         45+ Singer’s spaces near city name here, country name here
       </h2>
 
@@ -146,40 +154,29 @@ const SearchResults: React.FC = () => {
         <aside className="space-y-8">
           {/* Select dates quick actions */}
           <div className="space-y-3">
-            <p className="font-semibold text-[#2E1B4D]">Select dates</p>
+            <p className="text-2xl font-bold text-[#1C1C1C]">Select dates</p>
             <div className="flex flex-wrap gap-2">
-              <button className="px-4 py-2 text-sm rounded-full bg-[#F0C84B] text-black font-semibold">
-                Today
-              </button>
-              <button className="px-4 py-2 text-sm rounded-full border border-[#E3D8FF] text-[#2E1B4D]">
-                Tomorrow
-              </button>
-              <button className="px-4 py-2 text-sm rounded-full border border-[#E3D8FF] text-[#2E1B4D]">
-                This Week
-              </button>
+              {buttons.map((label) => (
+                <button
+                  key={label}
+                  onClick={() => setActive(label)}
+                  className={getButtonClasses(label)}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
-            <button className="px-4 py-2 text-sm rounded-full border border-[#E3D8FF] text-[#2E1B4D]">
-              Custom Dates
-            </button>
           </div>
 
           {/* Price range */}
           <div className="space-y-4">
-            <p className="font-semibold text-[#2E1B4D]">Price range</p>
-            <div className="text-xs text-[#6F5D9E]">0 SAR - 75,000 SAR</div>
-            <input
-              type="range"
-              min={0}
-              max={75000}
-              value={price}
-              onChange={(e) => setPrice(Number(e.target.value))}
-              className="w-full accent-[#F0C84B]"
-            />
+            <p className="text-2xl font-bold text-[#1C1C1C]">Price range</p>
+            <PriceRange value={priceRange} onChange={setPriceRange} />
           </div>
 
           {/* Category */}
           <div className="space-y-3">
-            <p className="font-semibold text-[#2E1B4D]">Category</p>
+            <p className="text-2xl font-bold text-[#1C1C1C]">Category</p>
             {[
               "Sports",
               "Theater and Performing Arts",
@@ -204,7 +201,7 @@ const SearchResults: React.FC = () => {
 
           {/* Zone */}
           <div className="space-y-3">
-            <p className="font-semibold text-[#2E1B4D]">Zone</p>
+            <p className="text-2xl font-bold text-[#1C1C1C]">Zone</p>
             {[
               "HORROR CON",
               "Boulevard City",
@@ -236,7 +233,7 @@ const SearchResults: React.FC = () => {
 
           {/* Tags */}
           <div className="space-y-3">
-            <p className="font-semibold text-[#2E1B4D]">Tags</p>
+            <p className="text-2xl font-bold text-[#1C1C1C]">Tags</p>
             <div className="flex flex-wrap gap-2">
               {[
                 "Riyadh Combat Club",
@@ -292,19 +289,19 @@ const SearchResults: React.FC = () => {
               serviceTitle={it.service}
             />
           ))}
-        <div className="col-span-2 flex justify-center mt-6">
-          {visibleCount < items.length && (
-            <button
-              type="button"
-              onClick={() =>
-                setVisibleCount((c) => Math.min(items.length, c + 4))
-              }
-              className="px-6 py-3 rounded-full bg-primary text-white text-sm font-semibold shadow-[0_8px_24px_rgba(55,21,82,0.25)] hover:shadow-[0_10px_28px_rgba(55,21,82,0.35)] transition-shadow"
-            >
-              Show more
-            </button>
-          )}
-        </div>
+          <div className="col-span-2 flex justify-center mt-6">
+            {visibleCount < items.length && (
+              <button
+                type="button"
+                onClick={() =>
+                  setVisibleCount((c) => Math.min(items.length, c + 4))
+                }
+                className="px-6 py-3 rounded-full bg-primary text-white text-lg font-semibold shadow-[0_8px_24px_rgba(55,21,82,0.25)] hover:shadow-[0_10px_28px_rgba(55,21,82,0.35)] transition-shadow"
+              >
+                Show more
+              </button>
+            )}
+          </div>
         </section>
 
         {/* Show more button */}
