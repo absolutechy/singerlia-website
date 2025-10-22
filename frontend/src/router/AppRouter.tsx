@@ -9,6 +9,7 @@ import VerificationCode from "@/pages/auth/VerificationCode"
 import { Route, Routes } from "react-router"
 import SingerProfile from "@/pages/SingerProfile"
 import SearchResults from "@/pages/SearchResults"
+import SingerDetails from "@/pages/SingerDetails"
 
 const AppRouter = () => {
   return (
@@ -23,6 +24,7 @@ const AppRouter = () => {
         <Route path="/auth/verification-code" element={<VerificationCode />} />
         <Route path="/singer-profile" element={<SingerProfile />} />
         <Route path="/search" element={<SearchResults />} />
+        <Route path="/singers/:id" element={<SingerDetails />} />
       </Routes>
   )
 }

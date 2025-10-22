@@ -6,6 +6,7 @@ import singer2 from "@/assets/images/common/Singer2.png";
 import singer3 from "@/assets/images/common/Singer3.png";
 import Button from "@/components/common/Button";
 import PriceRange from "@/components/common/PriceRange";
+import { useNavigate } from "react-router";
 
 const SearchResults: React.FC = () => {
   const [priceRange, setPriceRange] = useState({ min: 0, max: 75000 });
@@ -98,6 +99,7 @@ const SearchResults: React.FC = () => {
   );
 
   const [visibleCount, setVisibleCount] = useState(6);
+  const navigate = useNavigate();
 
   return (
     <div className="custom-container pb-16">
@@ -287,6 +289,7 @@ const SearchResults: React.FC = () => {
               image={it.image}
               name={it.name}
               serviceTitle={it.service}
+              onViewDetails={() => navigate(`/singers/${it.id}`)}
             />
           ))}
           <div className="col-span-2 flex justify-center mt-6">
