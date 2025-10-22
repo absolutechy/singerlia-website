@@ -6,7 +6,6 @@ import UserThreeAvatar from "@/assets/images/common/user3.png";
 import UserFourAvatar from "@/assets/images/common/user4.png";
 import { Dot } from "lucide-react";
 import SocialIcons from "./SocialIcons";
-import VerifiedArtistsHeading from "./VerifiedArtist";
 import VerifiedArtistsLogo from "./VerifiedArtist";
 
 const users = [
