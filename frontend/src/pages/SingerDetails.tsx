@@ -12,13 +12,13 @@ const SingerDetails: React.FC = () => {
 
   return (
     <div className="custom-container pb-16">
-      <div className="grid gap-8 lg:grid-cols-[360px_1fr]">
+      <div className="grid gap-8 lg:grid-cols-[0.4fr_1fr] ">
         {/* Left fixed column */}
         <aside className="self-start sticky top-28 space-y-5">
           {/* Main card */}
           <div className="rounded-3xl bg-white p-4">
-            <div className="relative bg-red-300 rounded-2xl overflow-hidden">
-              <img src={singer2} alt="cover" className="w-full h-56 object-cover" />
+            <div className="relative">
+              <img src={singer2} alt="cover" className="w-full rounded-2xl h-52 object-cover overflow-hidden" />
               {/* small avatar */}
               <img
                 src={singer1}
@@ -32,21 +32,8 @@ const SingerDetails: React.FC = () => {
                   <h2 className="text-2xl font-bold text-[#1C1C1C]">{name}</h2>
                   <p className="text-sm text-[#6F5D9E]">Responds within 1/hr</p>
                 </div>
-                <div className="flex items-center gap-1 text-[#F59E0B]">
-                  <Star size={16} fill="#F59E0B" />
-                  <span className="text-sm text-[#1C1C1C]">5.0</span>
-                </div>
               </div>
 
-              <div className="mt-3 flex items-center gap-2">
-                <span className="rounded-full bg-[#EAF8EE] text-[#1C6B3F] text-xs px-3 py-1">Available</span>
-              </div>
-
-              <div className="mt-4 flex flex-wrap gap-2">
-                {['English','Mandarin'].map((l) => (
-                  <span key={l} className="rounded-full bg-[#F5F0FF] px-3 py-1 text-xs text-[#6F5D9E]">{l}</span>
-                ))}
-              </div>
 
               <div className="mt-4 flex gap-2">
                 <button className="h-10 w-10 rounded-full border border-[#E7DEFF] bg-white flex items-center justify-center"><Share2 size={18} className="text-[#6F5D9E]"/></button>
