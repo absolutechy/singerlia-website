@@ -45,6 +45,25 @@ const Header: React.FC = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const [windowWidth, setWindowWidth] = useState<number>(
+    typeof window !== "undefined" ? window.innerWidth : 0
+  );
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    // initialize in case SSR started with 0
+    handleResize();
+    window.addEventListener("resize", handleResize, { passive: true });
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // optional: automatically close mobile menu when switching to desktop width
+  useEffect(() => {
+    if (windowWidth >= 768 && mobileMenuOpen) {
+      setMobileMenuOpen(false);
+    }
+  }, [windowWidth, mobileMenuOpen]);
+
   return (
     <motion.header
       initial={false}
@@ -54,33 +73,35 @@ const Header: React.FC = () => {
         expanded: {
           paddingTop: 12,
           paddingBottom: 12,
-          paddingLeft: 32,
-          paddingRight: 32,
+          paddingLeft: 16,
+          paddingRight: 16,
           borderRadius: 20,
           top: 16,
-          left: "50%",
-          x: "-50%",
-          width: "90%",
-          maxWidth: "100%",
+          left: windowWidth > 1024 ? '50%' : 32,
+          x: 0,
+          transform: windowWidth > 1024 ? "translateX(-50%)" : "translateX(-15px)",
+          width: "90vw",
+          maxWidth: "100vw",
         },
         compact: {
           paddingTop: 8,
           paddingBottom: 8,
-          paddingLeft: 24,
-          paddingRight: 24,
+          paddingLeft: 16,
+          paddingRight: 16,
           borderRadius: 0,
           top: 0,
-          left: 0,
+          left: windowWidth > 640 ? '50%' : 0,
+          transform: windowWidth > 640 ? "translateX(-50%)" : "none",
           x: 0,
-          width: "100%",
-          maxWidth: "100%",
+          width: "100vw",
+          maxWidth: "100vw",
         },
       }}
-      className="bg-primary shadow-lg flex items-center justify-between fixed z-50"
-      style={{ willChange: "transform, width, padding" }}
+      className="bg-primary shadow-lg flex items-center justify-between fixed z-50 box-border"
+      style={{ willChange: "transform, width, padding", maxWidth: "100vw" }}
     >
       {/* Logo */}
-      <div className="flex items-center">
+      <div className="flex items-center min-w-0">
         <Link to="/">
         <motion.img
           src={LogoFull}
@@ -88,9 +109,9 @@ const Header: React.FC = () => {
           className="object-cover"
           animate={{
               scale: compact ? 0.75 : 1,
-              marginRight: compact ? 8 : 56,
-            width: compact ? 120 : 160,
-            height: compact ? 60 : 80,
+              marginRight: compact ? 4 : 24,
+            width: compact ? 100 : 140,
+            height: compact ? 50 : 70,
         }}
         transition={{ type: "spring", stiffness: 300, damping: 28 }}
         />
@@ -130,7 +151,7 @@ const Header: React.FC = () => {
       </div>
 
       {/* Right side actions */}
-      <div className="flex items-center gap-2 md:gap-4">
+      <div className="flex items-center gap-2 md:gap-4 shrink-0">
         {/* Hamburger Menu - Mobile Only */}
         <button
           className="md:hidden text-white hover:text-secondary transition-colors p-2"
@@ -203,7 +224,8 @@ const Header: React.FC = () => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="absolute top-6/7 left-0 w-full bg-primary shadow-lg md:hidden overflow-hidden"
+            className="absolute top-5/6 left-0 w-full bg-primary shadow-lg md:hidden overflow-hidden box-border"
+            style={{ maxWidth: "100vw" }}
           >
             <div className="flex flex-col p-4 space-y-4">
               {/* Mobile Navigation Links */}

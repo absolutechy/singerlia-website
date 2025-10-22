@@ -19,15 +19,15 @@ const Hero = () => {
   return (
     <div>
       <SearchBar />
-      <div className="flex items-center justify-center mt-10 gap-x-5 outfit">
+      <div className="flex flex-col lg:flex-row gap-y-3 items-center justify-center mt-5 lg:mt-10 gap-x-5 outfit">
         <Button
           variant="default"
           size="large"
-          className="!text-primary bg-white border border-primary"
+          className="!text-primary bg-white border border-primary mt-4 lg:mt-0"
         >
           See How It Works
         </Button>
-        <div className="*:data-[slot=avatar]:ring-background flex -space-x-2">
+        <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 mt-4 lg:mt-0">
           {users.map((user) => (
             <Avatar key={user.id} className="w-10 h-10" >
               <AvatarImage src={user.src} alt="@shadcn"  />
@@ -35,9 +35,11 @@ const Hero = () => {
             </Avatar>
           ))}
         </div>
+        <div className="flex flex-col lg:flex-row gap-x-2 items-center mt-4">
         <span>10.5k active users</span>
         <Dot size={40}/>
         <span>Trusted by customers worldwide</span>
+        </div>
       </div>
       <SocialIcons />
       <VerifiedArtistsLogo />

@@ -19,11 +19,11 @@ const data = [
 const HowItWorks: React.FC = () => {
   return (
     <div className="py-10 px-5 custom-container">
-      <h1 className="heading-2 text-primary text-center">How It Works</h1>
+      <h1 className="font-bold text-4xl lg:text-6xl text-primary text-center">How It Works</h1>
       <p className="text-[#666666] text-center">
         Simple, secure, and seamless booking in three steps.
       </p>
-      <div className="w-full flex items-end gap-5 mt-14">
+      <div className="w-full flex flex-col lg:flex-row items-end gap-5 mt-14">
         {data.map((item, idx) => (
           <SimpleCard
             key={idx}

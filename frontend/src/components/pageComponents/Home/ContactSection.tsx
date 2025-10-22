@@ -1,12 +1,45 @@
-import { Button } from "@/components/common";
+import { Button, Input, Select } from "@/components/common";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 import React from "react";
+
+const fields = [
+  { id: "firstName", label: "First Name", type: "text", placeholder: "John" },
+  { id: "lastName", label: "Last Name", type: "text", placeholder: "Doe" },
+  {
+    id: "email",
+    label: "Email",
+    type: "email",
+    placeholder: "john@example.com",
+  },
+  {
+    id: "phone",
+    label: "Phone Number",
+    type: "tel",
+    placeholder: "+1 012 3456 789",
+  },
+  {
+    id: "company",
+    label: "Company Name",
+    type: "text",
+    placeholder: "Company Inc.",
+  },
+  {
+    id: "address",
+    label: "Office Address (if applicable)",
+    type: "text",
+    placeholder: "City, Country",
+  },
+];
 
 const ContactSection: React.FC = () => {
   return (
     <div className="w-full bg-white">
-      <div className="custom-container px-6 py-24 lg:px-24">
+      <div className="custom-container px-6 py-10 lg:py-24 lg:px-24">
         <div className="mb-12 text-center">
-          <h2 className="heading-1 text-primary">Contact Us</h2>
+          <h2 className="font-bold text-4xl lg:text-6xl text-primary">
+            Contact Us
+          </h2>
           <p className="mt-2 text-sm font-medium text-[#7C6AA6]">
             Need help? Any question? Fill out the form and our team will reach
             out to you soon.
@@ -22,7 +55,7 @@ const ContactSection: React.FC = () => {
                 How can we help you*
               </label>
               <div className="relative">
-                <select
+                {/* <select
                   id="topic"
                   className="w-full appearance-none rounded-xl border border-gray-200 bg-white px-4 py-4 text-base text-gray-700 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                   defaultValue=""
@@ -34,7 +67,17 @@ const ContactSection: React.FC = () => {
                   <option value="support">Platform support</option>
                   <option value="partnership">Partnership inquiry</option>
                   <option value="other">Other</option>
-                </select>
+                </select> */}
+                <Select
+                  options={[
+                    { label: "Booking assistance", value: "booking" },
+                    { label: "Platform support", value: "support" },
+                    { label: "Partnership inquiry", value: "partnership" },
+                    { label: "Other", value: "other" },
+                  ]}
+                  placeholder="Select an option"
+                  className="w-full rounded-xl border border-gray-200 bg-white px-4 py-4 text-base text-gray-700 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                />
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -53,90 +96,17 @@ const ContactSection: React.FC = () => {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              <div className="space-y-2">
-                <label
-                  htmlFor="firstName"
-                  className="text-sm font-medium text-gray-600"
-                >
-                  First Name
-                </label>
-                <input
-                  id="firstName"
-                  type="text"
-                  placeholder="John"
-                  className="w-full border-b border-gray-300 bg-transparent pb-2 text-sm text-gray-800 focus:border-primary focus:outline-none"
-                />
-              </div>
-              <div className="space-y-2">
-                <label
-                  htmlFor="lastName"
-                  className="text-sm font-medium text-gray-600"
-                >
-                  Last Name
-                </label>
-                <input
-                  id="lastName"
-                  type="text"
-                  placeholder="Doe"
-                  className="w-full border-b border-gray-300 bg-transparent pb-2 text-sm text-gray-800 focus:border-primary focus:outline-none"
-                />
-              </div>
-              <div className="space-y-2">
-                <label
-                  htmlFor="email"
-                  className="text-sm font-medium text-gray-600"
-                >
-                  Email
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="john@example.com"
-                  className="w-full border-b border-gray-300 bg-transparent pb-2 text-sm text-gray-800 focus:border-primary focus:outline-none"
-                />
-              </div>
-              <div className="space-y-2">
-                <label
-                  htmlFor="phone"
-                  className="text-sm font-medium text-gray-600"
-                >
-                  Phone Number
-                </label>
-                <input
-                  id="phone"
-                  type="tel"
-                  placeholder="+1 012 3456 789"
-                  className="w-full border-b border-gray-300 bg-transparent pb-2 text-sm text-gray-800 focus:border-primary focus:outline-none"
-                />
-              </div>
-              <div className="space-y-2">
-                <label
-                  htmlFor="company"
-                  className="text-sm font-medium text-gray-600"
-                >
-                  Company Name
-                </label>
-                <input
-                  id="company"
-                  type="text"
-                  placeholder="Company Inc."
-                  className="w-full border-b border-gray-300 bg-transparent pb-2 text-sm text-gray-800 focus:border-primary focus:outline-none"
-                />
-              </div>
-              <div className="space-y-2">
-                <label
-                  htmlFor="address"
-                  className="text-sm font-medium text-gray-600"
-                >
-                  Office Address (if applicable)
-                </label>
-                <input
-                  id="address"
-                  type="text"
-                  placeholder="City, Country"
-                  className="w-full border-b border-gray-300 bg-transparent pb-2 text-sm text-gray-800 focus:border-primary focus:outline-none"
-                />
-              </div>
+              {fields.map((field) => (
+                <div className="space-y-2" key={field.id}>
+                  <Input
+                    id={field.id}
+                    label={field.label}
+                    type={field.type}
+                    placeholder={field.placeholder}
+                    className="w-full !rounded-none border-b border-gray-300 bg-transparent pb-2 text-sm text-gray-800 focus:border-primary focus:outline-none"
+                  />
+                </div>
+              ))}
             </div>
 
             <div className="space-y-2">
@@ -146,11 +116,13 @@ const ContactSection: React.FC = () => {
               >
                 Message
               </label>
-              <textarea
+              <Textarea
                 id="message"
-                rows={4}
                 placeholder="Write your message..."
-                className="w-full resize-none border-b border-gray-200 bg-white px-4 py-3 text-sm text-gray-800 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className={cn(
+                  "w-full h-40 border border-gray-200 bg-white px-4 py-3 text-sm text-gray-800 rounded-md",
+                  "focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 focus:border-gray-300"
+                )}
               />
             </div>
 
