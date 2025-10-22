@@ -5,9 +5,10 @@ import singer1 from "@/assets/images/common/Singer1.png";
 import singer2 from "@/assets/images/common/Singer2.png";
 import singer3 from "@/assets/images/common/Singer3.png";
 import Button from "@/components/common/Button";
+import PriceRange from "@/components/common/PriceRange";
 
 const SearchResults: React.FC = () => {
-  const [price, setPrice] = useState(25000);
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 75000 });
   const [zone, setZone] = useState<string>("");
   const [tags, setTags] = useState<string[]>([]);
   const [active, setActive] = useState("Today");
@@ -137,7 +138,7 @@ const SearchResults: React.FC = () => {
         </div>
 
         {/* Filters pill */}
-        <button className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-3 shadow border border-[#EBE4FF]">
+        <button className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-3 shadow border border-[#EBE4FF] mr-0 lg:mr-12">
           <Filter className="h-4 w-4 text-[#2E1B4D]" />
           <span className="text-sm font-semibold text-[#2E1B4D]">Filters</span>
         </button>
@@ -170,15 +171,7 @@ const SearchResults: React.FC = () => {
           {/* Price range */}
           <div className="space-y-4">
             <p className="text-2xl font-bold text-[#1C1C1C]">Price range</p>
-            <div className="text-xs text-[#6F5D9E]">0 SAR - 75,000 SAR</div>
-            <input
-              type="range"
-              min={0}
-              max={75000}
-              value={price}
-              onChange={(e) => setPrice(Number(e.target.value))}
-              className="w-full accent-[#F0C84B]"
-            />
+            <PriceRange value={priceRange} onChange={setPriceRange} />
           </div>
 
           {/* Category */}
