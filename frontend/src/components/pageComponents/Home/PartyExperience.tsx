@@ -118,7 +118,7 @@ const PartyExperience: React.FC = () => {
               <Marquee gradient={false} speed={50} pauseOnHover={true}>
                 {carouselImages.map((src, index) => (
                   <div
-                    key={src}
+                    key={`party-image-${index}`}
                     className={`overflow-hidden rounded-2xl bg-white/10 mx-3 ${
                       index === 2 ? "hidden md:block" : ""
                     } ${index === 3 ? "hidden lg:block" : ""}`}
