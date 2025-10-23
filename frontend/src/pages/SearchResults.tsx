@@ -1,18 +1,19 @@
 import React, { useMemo, useState } from "react";
-import { Filter, Search, ChevronDown } from "lucide-react";
-import SearchResultCard from "@/components/common/SearchResultCard";
+import { Filter, X } from "lucide-react";
 import singer1 from "@/assets/images/common/Singer1.png";
 import singer2 from "@/assets/images/common/Singer2.png";
 import singer3 from "@/assets/images/common/Singer3.png";
 import Button from "@/components/common/Button";
 import PriceRange from "@/components/common/PriceRange";
-import { useNavigate } from "react-router";
+import SingerCard from "@/components/common/SingerCard";
+import { SearchBar } from "@/components/common";
 
 const SearchResults: React.FC = () => {
   const [priceRange, setPriceRange] = useState({ min: 0, max: 75000 });
   const [zone, setZone] = useState<string>("");
   const [tags, setTags] = useState<string[]>([]);
   const [active, setActive] = useState("Today");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const buttons = ["Today", "Tomorrow", "This Week", "Custom Dates"];
 
@@ -99,64 +100,43 @@ const SearchResults: React.FC = () => {
   );
 
   const [visibleCount, setVisibleCount] = useState(6);
-  const navigate = useNavigate();
 
   return (
     <div className="custom-container pb-16">
-      {/* Top search controls */}
       <div className="w-full flex justify-between items-center gap-4">
-        {/* Combined search box */}
-        <div className="flex-1 max-w-4xl flex items-center bg-white rounded-2xl shadow-md pl-4 pr-2 py-2">
-          {/* Search input */}
-          <div className="flex items-center gap-2 flex-1">
-            <Search className="h-4 w-4 text-[#6F5D9E]" />
-            <input
-              className="w-full h-10 bg-transparent text-sm text-[#2F1C4E] placeholder:text-[#9AA0B4] focus:outline-none"
-              placeholder="Search..."
-            />
-          </div>
-          {/* Divider */}
-          <span className="h-8 w-px bg-[#E7DEFF] mx-3" />
-          {/* Date display with chevron */}
-          <button className="flex items-center gap-8 pl-1 pr-2">
-            <div className="text-left leading-tight">
-              <p className="text-xs font-semibold text-[#2E1B4D]">
-                Select Date
-              </p>
-              <p className="text-xs text-[#6F5D9E]">Add Dates & Time</p>
-            </div>
-            <ChevronDown className="h-4 w-4 text-[#2E1B4D]" />
-          </button>
-          {/* Action button */}
-          <div className="ml-2">
-            <Button
-              variant="primary"
-              size="medium"
-              className="rounded-xl px-6 h-11"
-            >
-              Change Search
-            </Button>
-          </div>
-        </div>
-
-        {/* Filters pill */}
-        <button className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-3 shadow border border-[#EBE4FF] mr-0 lg:mr-12">
-          <Filter className="h-4 w-4 text-[#2E1B4D]" />
-          <span className="text-sm font-semibold text-[#2E1B4D]">Filters</span>
-        </button>
+        <SearchBar />
       </div>
 
-      {/* Heading */}
-      <h2 className="mt-8 heading-5 text-[#1C1C1C]">
-        45+ Singer’s spaces near city name here, country name here
-      </h2>
+      {/* Offcanvas Overlay */}
+      {isFilterOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 transition-opacity"
+          onClick={() => setIsFilterOpen(false)}
+        />
+      )}
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[300px_1fr]">
-        {/* Sidebar Filters */}
-        <aside className="space-y-8">
+      {/* Offcanvas Sidebar */}
+      <div 
+        className={`fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 overflow-y-auto ${
+          isFilterOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="p-6 space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between pb-4 border-b border-gray-200">
+            <h3 className="text-2xl font-bold text-[#1C1C1C]">Filters</h3>
+            <button 
+              onClick={() => setIsFilterOpen(false)}
+              className="p-2 hover:bg-gray-100 rounded-full transition"
+            >
+              <X className="h-5 w-5 text-[#2E1B4D]" />
+            </button>
+          </div>
+
+          {/* Filter Content */}
           {/* Select dates quick actions */}
           <div className="space-y-3">
-            <p className="text-2xl font-bold text-[#1C1C1C]">Select dates</p>
+            <p className="text-lg font-bold text-[#1C1C1C]">Select dates</p>
             <div className="flex flex-wrap gap-2">
               {buttons.map((label) => (
                 <button
@@ -172,13 +152,13 @@ const SearchResults: React.FC = () => {
 
           {/* Price range */}
           <div className="space-y-4">
-            <p className="text-2xl font-bold text-[#1C1C1C]">Price range</p>
+            <p className="text-lg font-bold text-[#1C1C1C]">Price range</p>
             <PriceRange value={priceRange} onChange={setPriceRange} />
           </div>
 
           {/* Category */}
           <div className="space-y-3">
-            <p className="text-2xl font-bold text-[#1C1C1C]">Category</p>
+            <p className="text-lg font-bold text-[#1C1C1C]">Category</p>
             {[
               "Sports",
               "Theater and Performing Arts",
@@ -203,7 +183,7 @@ const SearchResults: React.FC = () => {
 
           {/* Zone */}
           <div className="space-y-3">
-            <p className="text-2xl font-bold text-[#1C1C1C]">Zone</p>
+            <p className="text-lg font-bold text-[#1C1C1C]">Zone</p>
             {[
               "HORROR CON",
               "Boulevard City",
@@ -235,7 +215,7 @@ const SearchResults: React.FC = () => {
 
           {/* Tags */}
           <div className="space-y-3">
-            <p className="text-2xl font-bold text-[#1C1C1C]">Tags</p>
+            <p className="text-lg font-bold text-[#1C1C1C]">Tags</p>
             <div className="flex flex-wrap gap-2">
               {[
                 "Riyadh Combat Club",
@@ -267,7 +247,7 @@ const SearchResults: React.FC = () => {
                           : [...prev, t]
                       )
                     }
-                    className={`px-4 py-2 rounded-full text-sm border transition-colors ${
+                    className={`px-3 py-1.5 rounded-full text-xs border transition-colors ${
                       selected
                         ? "bg-primary text-white border-primary"
                         : "bg-white text-[#2E1B4D] border-[#E3D8FF]"
@@ -279,35 +259,63 @@ const SearchResults: React.FC = () => {
               })}
             </div>
           </div>
-        </aside>
 
-        {/* Results grid */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Apply Button */}
+          <div className="sticky bottom-0 bg-white pt-4 pb-2 border-t border-gray-200">
+            <Button
+              variant="primary"
+              size="large"
+              className="w-full rounded-xl"
+              onClick={() => setIsFilterOpen(false)}
+            >
+              Apply Filters
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Heading */}
+      <div className="mt-10 flex flex-col lg:flex-row justify-between items-center">
+      <h2 className="heading-5 text-[#1C1C1C]">
+        45+ Singer’s spaces near city name here, country name here
+      </h2>
+      {/* Filters pill */}
+        <button 
+          onClick={() => setIsFilterOpen(true)}
+          className="cursor-pointer inline-flex items-center justify-end gap-2 rounded-xl bg-white px-4 py-3 shadow border border-[#EBE4FF]"
+        >
+          <Filter className="h-4 w-4 text-[#2E1B4D]" />
+          <span className="text-sm font-semibold text-[#2E1B4D]">Filters</span>
+        </button>
+      </div>
+
+      <div className="mt-6">
+        {/* Results grid - Full width now */}
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {items.slice(0, visibleCount).map((it) => (
-            <SearchResultCard
+            <SingerCard
               key={it.id}
-              image={it.image}
-              name={it.name}
-              serviceTitle={it.service}
-              onViewDetails={() => navigate(`/singers/${it.id}`)}
+              // image={it.image}
+              // name={it.name}
+              // serviceTitle={it.service}
+              // onViewDetails={() => navigate(`/singers/${it.id}`)}
             />
           ))}
-          <div className="col-span-2 flex justify-center mt-6">
+          <div className="col-span-full flex justify-center mt-6">
             {visibleCount < items.length && (
-              <button
-                type="button"
+              <Button
+                variant="secondary"
+                size="large"
                 onClick={() =>
                   setVisibleCount((c) => Math.min(items.length, c + 4))
                 }
                 className="px-6 py-3 rounded-full bg-primary text-white text-lg font-semibold shadow-[0_8px_24px_rgba(55,21,82,0.25)] hover:shadow-[0_10px_28px_rgba(55,21,82,0.35)] transition-shadow"
               >
                 Show more
-              </button>
+              </Button>
             )}
           </div>
         </section>
-
-        {/* Show more button */}
       </div>
     </div>
   );

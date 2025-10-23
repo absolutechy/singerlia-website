@@ -1,8 +1,8 @@
 import React from "react";
 import { Share2, Heart, Image as ImageIcon } from "lucide-react";
-import singer1 from "@/assets/images/singer-detail-1.png";
-import singer2 from "@/assets/images/singer-detail-2.png";
-import singer3 from "@/assets/images/singer-detail-3.png";
+import singer1 from "@/assets/images/singer/singer-detail-1.png";
+import singer2 from "@/assets/images/singer/singer-detail-2.png";
+import singer3 from "@/assets/images/singer/singer-detail-3.png";
 
 const paragraph =
   "We are committed to supporting singers by providing them with greater visibility, valuable opportunities, and direct connections with clients who truly appreciate their art. From solo acts to bands, classical to contemporary, we give singers the tools to showcase their talent, grow their audience, and build lasting relationships with customers.";

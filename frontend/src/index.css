@@ -339,3 +339,21 @@
 :root:has(.no-doc-scroll) {
     overflow:hidden;
   }
+
+/* Swiper pagination styles for SingerCard */
+[class^="swiper-pagination-"] .swiper-pagination-bullet,
+[class*=" swiper-pagination-"] .swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 1;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+[class^="swiper-pagination-"] .swiper-pagination-bullet-active,
+[class*=" swiper-pagination-"] .swiper-pagination-bullet-active {
+  background: var(--color-secondary);
+  /* width: 8px; */
+  border-radius: 4px;
+}
