@@ -7,6 +7,7 @@ import Button from "@/components/common/Button";
 import PriceRange from "@/components/common/PriceRange";
 import SingerCard from "@/components/common/SingerCard";
 import { SearchBar } from "@/components/common";
+import { useNavigate } from "react-router";
 
 const SearchResults: React.FC = () => {
   const [priceRange, setPriceRange] = useState({ min: 0, max: 75000 });
@@ -14,6 +15,7 @@ const SearchResults: React.FC = () => {
   const [tags, setTags] = useState<string[]>([]);
   const [active, setActive] = useState("Today");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const navigate = useNavigate();
 
   const buttons = ["Today", "Tomorrow", "This Week", "Custom Dates"];
 
@@ -298,7 +300,7 @@ const SearchResults: React.FC = () => {
               // image={it.image}
               // name={it.name}
               // serviceTitle={it.service}
-              // onViewDetails={() => navigate(`/singers/${it.id}`)}
+              onViewDetails={() => navigate(`/singers/${it.id}`)}
             />
           ))}
           <div className="col-span-full flex justify-center mt-6">

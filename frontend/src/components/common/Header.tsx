@@ -3,7 +3,7 @@ import { Globe, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "./Button";
 import LogoFull from "../../assets/images/common/logofull.png";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useLocation } from "react-router";
 
 interface NavItem {
   id: string;
@@ -13,13 +13,14 @@ interface NavItem {
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeNav, setActiveNav] = useState<string>("home");
   const [compact, setCompact] = useState<boolean>(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
   const navItems: NavItem[] = [
     { id: "home", label: "Home", href: "/" },
-    { id: "singers", label: "Singers listing", href: "/singers" },
+    { id: "singers", label: "Singers listing", href: "/search" },
     { id: "about", label: "About Us", href: "/about" },
     { id: "testimonials", label: "Testimonials", href: "/testimonials" },
   ];
@@ -27,10 +28,18 @@ const Header: React.FC = () => {
   const handleNavClick = (id: string, href: string) => {
     setActiveNav(id);
     setMobileMenuOpen(false); // Close mobile menu on navigation
-    if (href === "/") {
-      navigate(href);
-    }
+    navigate(href);
   };
+
+  // Sync activeNav with current location and scroll to top
+  useEffect(() => {
+    const currentItem = navItems.find(item => item.href === location.pathname);
+    if (currentItem) {
+      setActiveNav(currentItem.id);
+    }
+    // Scroll to top on route change
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [location.pathname]);
 
   // Toggle compact header on scroll
   useEffect(() => {
@@ -120,9 +129,9 @@ const Header: React.FC = () => {
         {/* Navigation Links */}
         <nav className="hidden md:flex items-center gap-6 lg:gap-12">
           {navItems.map((item) => (
-            <a
+            <Link
               key={item.id}
-              href={item.href}
+              to={item.href}
               onClick={(e) => {
                 e.preventDefault();
                 handleNavClick(item.id, item.href);
@@ -145,7 +154,7 @@ const Header: React.FC = () => {
                   <div className="w-1 h-1 bg-secondary rounded-full" />
                 </div>
               )}
-            </a>
+            </Link>
           ))}
         </nav>
       </div>
@@ -231,9 +240,9 @@ const Header: React.FC = () => {
               {/* Mobile Navigation Links */}
               <nav className="flex flex-col space-y-3">
                 {navItems.map((item) => (
-                  <a
+                  <Link
                     key={item.id}
-                    href={item.href}
+                    to={item.href}
                     onClick={(e) => {
                       e.preventDefault();
                       handleNavClick(item.id, item.href);
@@ -253,7 +262,7 @@ const Header: React.FC = () => {
                         <div className="w-1 h-1 bg-secondary rounded-full" />
                       </div>
                     )}
-                  </a>
+                  </Link>
                 ))}
               </nav>
 
