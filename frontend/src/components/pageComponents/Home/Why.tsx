@@ -5,7 +5,7 @@ import logo from "@/assets/images/common/grid.png";
 const Why: React.FC = () => {
   return (
     <div className="w-full">
-      <div className="custom-container py-28 px-24 flex flex-col lg:flex-row justify-between">
+      <div className="custom-container pt-14 lg:pt-28 px-24 flex flex-col lg:flex-row justify-between">
         <div className="w-fit space-y-6">
           <h1 className="font-bold text-4xl lg:text-7xl">Why Singerlia</h1>
           <p className="text-lg text-[#B8860B]">

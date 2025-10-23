@@ -1,5 +1,5 @@
 import React from "react";
-import { Star, Share2, Heart, Image as ImageIcon } from "lucide-react";
+import { Share2, Heart, Image as ImageIcon } from "lucide-react";
 import singer1 from "@/assets/images/singer-detail-1.png";
 import singer2 from "@/assets/images/singer-detail-2.png";
 import singer3 from "@/assets/images/singer-detail-3.png";

@@ -30,7 +30,7 @@ const users = [
 
 const VerifiedArtists = () => {
   return (
-    <div className="flex flex-col items-center p-8">
+    <div className="flex flex-col items-center p-4 lg:p-8">
       <div className="relative flex items-center justify-center">
         <img src={ArtistBgText} alt="Verified Artists" className="h-28 object-cover" />
         <div className="absolute left-0 right-0 bottom-0 flex items-center justify-center">
@@ -45,10 +45,10 @@ const VerifiedArtists = () => {
         Singerlia Platform collected in one place.
       </span>
 
-      <div className="w-full mt-10 py-2 overflow-visible relative -mx-20">
-        <Marquee gradient={false} speed={40} className="w-[140%]">
+      <div className="mt-10 py-2 relative -mx-20 w-full">
+        <Marquee gradient={true} speed={40} gradientWidth={50}>
           {users.map((user) => (
-            <div key={user.id} className="px-4">
+            <div key={user.id} className="px-1 lg:px-4">
               <SingerCircle imageUrl={user.src} />
             </div>
           ))}

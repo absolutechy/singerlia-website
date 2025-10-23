@@ -54,20 +54,7 @@ const ContactSection: React.FC = () => {
               >
                 How can we help you*
               </label>
-              <div className="relative">
-                {/* <select
-                  id="topic"
-                  className="w-full appearance-none rounded-xl border border-gray-200 bg-white px-4 py-4 text-base text-gray-700 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  defaultValue=""
-                >
-                  <option disabled value="">
-                    Select an option
-                  </option>
-                  <option value="booking">Booking assistance</option>
-                  <option value="support">Platform support</option>
-                  <option value="partnership">Partnership inquiry</option>
-                  <option value="other">Other</option>
-                </select> */}
+              <div className="relative z-10">
                 <Select
                   options={[
                     { label: "Booking assistance", value: "booking" },
@@ -76,7 +63,7 @@ const ContactSection: React.FC = () => {
                     { label: "Other", value: "other" },
                   ]}
                   placeholder="Select an option"
-                  className="w-full rounded-xl border border-gray-200 bg-white px-4 py-4 text-base text-gray-700 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="w-full rounded-xl border border-gray-200 bg-[#FCFBFF] px-4 py-4 text-base text-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                 />
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
