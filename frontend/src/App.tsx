@@ -1,6 +1,6 @@
 import { Header } from "@/components/common";
 import AppRouter from "@/router/AppRouter";
-import landingBgImage from "@/assets/images/landingtopbg.png";
+import landingBgImage from "@/assets/images/common/landingtopbg.png";
 import Footer from "./components/layout/Footer";
 
 const App = () => {

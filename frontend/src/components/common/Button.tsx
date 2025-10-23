@@ -17,7 +17,7 @@ const Button: React.FC<ButtonProps> = ({
   className = '',
   ...props
 }) => {
-  const baseStyles = 'rounded-lg btn-text text-center transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center';
+  const baseStyles = 'cursor-pointer rounded-lg btn-text text-center transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center';
   
   const variantStyles: Record<ButtonVariant, string> = {
     default: 'bg-primary-light border border-[rgba(255,255,255,0.1)] text-white hover:bg-[rgba(255,255,255,0.3)] shadow-[0px_0px_14px_0px_inset_rgba(205,205,205,0.1)]',
