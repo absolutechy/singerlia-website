@@ -14,10 +14,11 @@ const Login: React.FC = () => {
       <div className="flex flex-col items-center gap-8">
         {/* <LogoBadge size="md" /> */}
         <div className="grid w-full items-start gap-8 md:grid-cols-2 md:gap-12">
-          <div className="space-y-9">
+          <div className="space-y-9 order-2 ">
             <h3 className="text-lg font-semibold text-black">
               Login With Accounts
             </h3>
+            <div className="flex flex-row md:flex-col gap-y-9 gap-x-3">
             <SocialButton
               label="Sign in with Google"
               icon={<img src={GoogleIcon} alt="Google" className="h-6 w-6" />}
@@ -28,10 +29,11 @@ const Login: React.FC = () => {
                 <img src={FacebookIcon} alt="Facebook" className="h-7 w-7" />
               }
             />
+            </div>
           </div>
-          <div className="border-l-2 border-gray-300 pl-10">
-            <div className="space-y-9">
-              <h3 className="text-xl text-start font-semibold ">Login</h3>
+          <div className="md:border-l-2 border-gray-300 md:pl-10 md:order-3">
+            <div className="space-y-5 md:space-y-9">
+              <h3 className="text-xl text-start font-semibold pt-28 md:pt-0">Login</h3>
               <Input
                 id="email"
                 // label="Email"

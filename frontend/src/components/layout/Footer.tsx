@@ -21,18 +21,7 @@ const Footer: React.FC = () => {
       <div className="custom-container px-6 py-20 lg:px-24">
         <div className="flex flex-col gap-10 border-b border-white/15 pb-12 md:flex-row md:items-end md:justify-between">
           <div className="space-y-3">
-            <h2 className="max-w-2xl text-2xl font-semibold text-[#FFD700] md:text-3xl">
-              Getting Started Singerlia in Easy Steps With Osm Experiences
-            </h2>
-            <div className="flex items-center gap-3 text-[#FFFFFF]">
-              <CircleCheck className="h-5 w-5 border" strokeWidth={1.5} />
-              <span className="text-xs font-semibold tracking-[0.18em] uppercase">
-                No credit card required
-              </span>
-            </div>
-          </div>
-          <div className="flex w-full flex-col gap-4 md:max-w-lg">
-            <div className="flex items-center gap-2 text-[#FFD700]">
+            <div className="md:flex hidden items-center gap-2 text-[#FFD700]">
               <div className="flex items-center gap-1 text-sm">
                 {[...Array(5)].map((_, index) => (
                   <Star
@@ -45,9 +34,33 @@ const Footer: React.FC = () => {
               </div>
               <span className="text-xs">| 34,000+ Reviews</span>
             </div>
-            <div className="flex flex-col lg:flex-row items-center gap-2 rounded-2xl border border-white/20 bg-white/40 p-1 pr-1 shadow-[0_12px_24px_-16px_rgba(0,0,0,0.7)]">
+            <h2 className="max-w-2xl text-2xl font-semibold text-[#FFD700] md:text-3xl">
+              Getting Started Singerlia in Easy Steps With Osm Experiences
+            </h2>
+            <div className="flex items-center gap-3 text-[#FFFFFF]">
+              <CircleCheck className="h-5 w-5 border" strokeWidth={1.5} />
+              <span className="text-xs font-semibold tracking-[0.18em] uppercase">
+                No credit card required
+              </span>
+            </div>
+          </div>
+          <div className="flex w-full flex-col gap-4 md:max-w-lg">
+            <div className="flex md:hidden items-center gap-2 text-[#FFD700]">
+              <div className="flex items-center gap-1 text-sm">
+                {[...Array(5)].map((_, index) => (
+                  <Star
+                    key={`star-${index}`}
+                    className="h-4 w-4 fill-[#FFD700] text-[#FFD700]"
+                    strokeWidth={1.2}
+                  />
+                ))}
+                <span className="ml-2 font-semibold">4.9 / 5</span>
+              </div>
+              <span className="text-xs">| 34,000+ Reviews</span>
+            </div>
+            <div className="flex flex-col lg:flex-row items-center gap-2 rounded-2xl lg:border border-white/20 lg:bg-white/40 p-1 pr-1 lg:shadow-sm">
               <input
-                className="h-12 flex-1 rounded-full bg-transparent px-6 text-sm text-white placeholder:text-white/40 focus:outline-none"
+                className="h-12 flex-1 my-3 rounded-2xl bg-transparent py-6 px-10 text-sm text-white border border-white/20 lg:border-none placeholder:text-white/40 focus:outline-none"
                 type="email"
                 placeholder="Enter your email"
                 aria-label="Enter your email"
@@ -85,7 +98,7 @@ const Footer: React.FC = () => {
               <a href="#" aria-label="Instagram" className="transition hover:text-[#FFD700] border rounded-full border-white p-1">
                 <Instagram className="h-5 w-5" strokeWidth={1.5} />
               </a>
-              <a href="#" aria-label="YouTube" className="transition hover:text-[#FFD700] order rounded-full border-white p-1">
+              <a href="#" aria-label="YouTube" className="transition hover:text-[#FFD700] border rounded-full border-white p-1">
                 <Youtube className="h-5 w-5" strokeWidth={1.5} />
               </a>
               <a href="#" aria-label="Pinterest" className="transition hover:text-[#FFD700] border rounded-full border-white p-1">

@@ -34,12 +34,12 @@ const AuthModalLayout: React.FC<AuthModalLayoutProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 min-h-screen flex items-center no-doc-scroll justify-center px-4">
+    <div className="fixed inset-0 z-50 flex sm:items-center justify-center sm:px-4 no-doc-scroll" style={{ inset: '0px 0 -32px 0px' }}>
       <div className="absolute inset-0 bg-black/40 backdrop-blur-md" />
       <div
-        className={`relative w-full ${sizeMap[size]} rounded-[32px] border border-[#F0E6FF] bg-white shadow-[0_40px_80px_-30px_rgba(55,21,82,0.35)] ${className}`}
+        className={`relative w-full h-full sm:h-auto sm:max-h-[90vh] ${sizeMap[size]} sm:rounded-[32px] border-0 sm:border border-[#F0E6FF] bg-white shadow-[0_40px_80px_-30px_rgba(55,21,82,0.35)] flex flex-col ${className}`}
       >
-        <div className="flex py-4 px-6 border-b border-[#CDCDCD]">
+        <div className="flex py-4 px-6 border-b border-[#CDCDCD] flex-shrink-0">
           <h2 className="text-2xl font-semibold ms-auto font-chocolates text-primary-text md:text-3xl">
             {title}
           </h2>
@@ -51,10 +51,10 @@ const AuthModalLayout: React.FC<AuthModalLayoutProps> = ({
             <X className="h-4 w-4 text-white group-hover:text-black" />
           </button>
         </div>
-        <div className="px-8 pt-4 text-center md:px-14">
-          <div className="mt-4">{children}</div>
+        <div className="px-4 sm:px-8 py-5 text-center md:px-14 flex-1 overflow-y-auto flex items-center justify-center">
+          <div className="mt-4 w-full">{children}</div>
         </div>
-        <h6 className="mt-8 rounded-b-[32px] border-t border-[#EFE5FF] bg-[#FBF9FF] py-4 text-center text-base font-medium">
+        <h6 className="rounded-b-none sm:rounded-b-[32px] border-t border-[#EFE5FF] bg-[#FBF9FF] py-4 text-center text-base font-medium flex-shrink-0">
           {footerNote}
         </h6>
       </div>

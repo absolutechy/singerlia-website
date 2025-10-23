@@ -11,7 +11,7 @@ const VerificationCode: React.FC = () => {
 
   return (
     <AuthModalLayout title="Identify Verification">
-      <div className="space-y-8 text-center">
+      <div className="space-y-5 text-center">
         <LogoBadge size="md" />
         <div className="space-y-2">
           <h3 className="text-xl font-semibold text-[#2F1C4E]">
@@ -23,12 +23,12 @@ const VerificationCode: React.FC = () => {
         </div>
         <OtpInput onChange={setCode} />
         <div className="flex flex-col">
-          <button
+          <Button
             type="button"
-            className="text-sm font-semibold text-primary underline-offset-4 hover:underline"
+            className="text-sm font-semibold mb-5 !text-primary underline-offset-4 hover:underline"
           >
-            Send again
-          </button>
+            Resend code
+          </Button>
           <Button
             variant="secondary"
             size="large"
@@ -36,7 +36,7 @@ const VerificationCode: React.FC = () => {
             onClick={() => navigate("/")}
             disabled={code.length < 6}
           >
-            <span className="font-semibold">Done</span>
+            <span className="font-semibold">Verify</span>
           </Button>
         </div>
         <p className="text-sm text-[#6F5D9E]">

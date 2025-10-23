@@ -35,9 +35,9 @@ const Signup: React.FC = () => {
       title="Welcome to Sign up"
       size="lg"
     >
-      <div className="space-y-4">
+      <div className="space-y-4 pt-96 lg:pt-0">
         {/* <LogoBadge size="lg" /> */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 ">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {fields.map((field) => (
             <Input 
               key={field.id}

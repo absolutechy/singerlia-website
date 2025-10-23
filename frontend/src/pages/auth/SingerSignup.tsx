@@ -61,7 +61,7 @@ const SingerSignup: React.FC = () => {
       }
       size="xl"
     >
-      <div className="space-y-2">
+      <div className="space-y-2 pt-[850px] lg:pt-0">
         {/* <LogoBadge size="md" /> */}
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

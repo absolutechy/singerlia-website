@@ -263,7 +263,7 @@ const MissionGrowth: React.FC = () => {
             {growthStats.map((stat, index) => (
               <React.Fragment key={stat.label}>
                 {/* Insert empty cell at the start of 2nd row (after 4th item) */}
-                {index === 4 && <div></div>}
+                {index === 4 && <div className="hidden lg:block"></div>}
                 <div className="rounded-2xl p-6 text-center">
                   <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#B8860B33] text-[#B8860B] shadow">
                     {stat.icon}
