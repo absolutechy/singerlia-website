@@ -96,9 +96,9 @@ const SingerDetails: React.FC = () => {
     <div className="custom-container pb-16">
       <div className="grid gap-8 lg:grid-cols-[0.4fr_1fr] ">
         {/* Left fixed column */}
-        <aside className="self-start sticky top-28 space-y-5">
+        <aside className="self-start lg:sticky top-28 space-y-5">
           {/* Main card */}
-          <div className="rounded-3xl bg-white p-4">
+          <div className="rounded-3xl bg-white p-2 sm:p-4">
             <div className="relative">
               <img
                 src={singer2}
@@ -109,7 +109,7 @@ const SingerDetails: React.FC = () => {
               <img
                 src={singer1}
                 alt="avatar"
-                className="w-14 h-14 z-50 rounded-full object-cover absolute -bottom-7 left-4 border-4 border-white"
+                className="h-14 z-50 rounded-full object-cover absolute -bottom-7 left-4 border-4 border-white"
               />
             </div>
             <div className="pt-10 z-10">
@@ -132,10 +132,10 @@ const SingerDetails: React.FC = () => {
           </div>
 
           {/* Booking card */}
-          <div className="relative rounded-2xl bg-white px-5 py-10 shadow border border-[#EBE4FF]">
+          <div className="relative rounded-2xl bg-white px-2.5 sm:px-5 py-10 shadow border border-[#EBE4FF]">
             <span className="absolute -top-3 right-6 text-xs bg-white shadow px-3 py-1 rounded-full border border-[#EBE4FF]">
               Free cancellation
-            </span>
+            </span> 
             <button className="w-full h-12 rounded-full bg-gradient-to-b from-secondary to-secondary-dark text-[#1C1C1C] font-semibold shadow">
               Book Singer
             </button>
@@ -145,8 +145,8 @@ const SingerDetails: React.FC = () => {
         {/* Right content */}
         <section className="space-y-8">
           {/* Title + show all media */}
-          <div className="flex items-center justify-between">
-            <h1 className="heading-4 text-[#2E1B4D]">
+          <div className="flex flex-col sm:flex-row items-center justify-between">
+            <h1 className="heading-6 sm:heading-4 text-[#2E1B4D]">
               Signer Service title here
             </h1>
             <button className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2 shadow border border-[#E7DEFF] text-sm font-semibold text-[#2E1B4D]">
@@ -156,7 +156,7 @@ const SingerDetails: React.FC = () => {
 
           {/* Media gallery - matches layout: big left (2x2), four small on right */}
           <div
-            className="grid grid-cols-4 gap-4"
+            className="grid grid-cols-2 md:grid-cols-4 gap-4"
             style={{ gridAutoRows: "160px" }}
           >
             <div className="col-span-2 row-span-2 rounded-2xl overflow-hidden">
@@ -198,7 +198,7 @@ const SingerDetails: React.FC = () => {
 
           {/* My Experience header aligned with social icons */}
           <div className="flex items-center justify-between pt-2">
-            <h3 className="text-2xl font-bold text-[#1C1C1C]">My Experience</h3>
+            <h3 className="text-lg lg:text-2xl font-bold text-[#1C1C1C]">My Experience</h3>
             <div className="flex gap-3">
               <IconBubble type="instagram" />
               <IconBubble type="music" />
@@ -355,10 +355,10 @@ const SingerDetails: React.FC = () => {
       {/* FAQ Section */}
       <div className="my-[8rem] rounded-3xl bg-[#F7F7F7] p-6 sm:p-8">
         <div className="text-center">
-          <h3 className="text-xl sm:text-4xl font-bold text-[#000]">
+          <h3 className="text-2xl sm:text-4xl font-bold text-[#000]">
             Frequently asked questions
           </h3>
-          <p className="mt-1 text-2xl font-semibold text-[#121212]">
+          <p className="mt-1 texl-lg sm:text-2xl font-semibold text-[#121212]">
             About This Singer
           </p>
         </div>
