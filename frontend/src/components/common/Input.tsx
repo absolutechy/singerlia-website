@@ -14,6 +14,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   className?: string;
+  ref?: React.Ref<HTMLInputElement>;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -23,6 +24,7 @@ const Input: React.FC<InputProps> = ({
   type = 'text',
   value,
   onChange,
+  ref,
   ...props
 }) => {
   const [date, setDate] = useState<Date | undefined>(
@@ -101,6 +103,7 @@ const Input: React.FC<InputProps> = ({
           error && 'border-red-500',
           className
         )}
+        ref={ref}
         {...props}
       />
       {error && (
