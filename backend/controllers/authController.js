@@ -202,10 +202,110 @@ const getUserProfile = async (req, res) => {
   }
 };
 
+const resetPassword = async (req, res) => {
+  try {
+    const user = req.user;
+    const { previousPassword, newPassword } = req.body;
+
+    if (!previousPassword || !newPassword) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const isPasswordValid = await verifyPassword(
+      user.userId,
+      previousPassword,
+      user.password
+    );
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid previous password" });
+    }
+
+    const hashedNewPassword = await hashPassword(user.userId, newPassword);
+    user.password = hashedNewPassword;
+    const updatedUser = await updateUser(user);
+    if (!updatedUser) {
+      return res.status(500).json({ message: "Failed to reset password" });
+    }
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    console.error("Error in resetPassword:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const sendResetPasswordCode = async (req, res) => {
+  try {
+    const { phonenumber } = req.body;
+    if (!phonenumber) {
+      return res.status(400).json({ message: "Phone number required" });
+    }
+    const user = await userIfAlreadyExists(phonenumber);
+    if (!user) {
+      return res.status(404).json({ message: "Invalid phone number provided" });
+    }
+    const { otp, expiresAt } = generateSecureOTP();
+    user.resetPasswordCode = otp;
+    user.resetPasswordExpireAt = expiresAt;
+    const updatedUser = await updateUser(user);
+    if (!updatedUser) {
+      return res.status(500).json({ message: "Failed to generate reset code" });
+    }
+
+    res.status(200).json({
+      message: "Reset code generated successfully",
+      userId: updatedUser.userId,
+      resetPasswordCode: updatedUser.resetPasswordCode,
+    });
+  } catch (error) {
+    console.error("Error in sendResetPasswordCode:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const resetForgottenPassword = async (req, res) => {
+  try {
+    const { userId, resetPasswordCode, newPassword } = req.body;
+    if (!userId || !resetPasswordCode || !newPassword) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const user = await userIfAlreadyExists(null, userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (user.resetPasswordCode !== resetPasswordCode) {
+      return res.status(400).json({ message: "Invalid reset password code" });
+    }
+    const currentTime = new Date();
+    const codeExpiryTime = new Date(user.resetPasswordExpireAt);
+    if (currentTime > codeExpiryTime) {
+      return res
+        .status(400)
+        .json({ message: "Reset password code has expired" });
+    }
+    const hashedNewPassword = await hashPassword(user.userId, newPassword);
+    user.password = hashedNewPassword;
+    user.resetPasswordCode = null;
+    user.resetPasswordExpireAt = null;
+    const updatedUser = await updateUser(user);
+    if (!updatedUser) {
+      return res.status(500).json({ message: "Failed to reset password" });
+    }
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    console.error("Error in resetForgottenPassword:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   registerUser,
   verifyUser,
   loginUser,
   getUserProfile,
   logoutUser,
+  resetPassword,
+  sendResetPasswordCode,
+  resetForgottenPassword,
 };
