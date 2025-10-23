@@ -144,6 +144,10 @@ const loginUser = async (req, res) => {
       return res.status(401).json({ message: "Invalid password" });
     }
 
+    if (!user.isVerified) {
+      return res.status(403).json({ message: "Please verify your account" });
+    }
+
     const token = generateToken(user.userId);
     user.token = token;
 
@@ -163,6 +167,22 @@ const loginUser = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in loginUser:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const logoutUser = async (req, res) => {
+  try {
+    const user = req.user;
+    user.token = null;
+
+    const updatedUser = await updateUser(user);
+    if (!updatedUser) {
+      return res.status(500).json({ message: "Failed to logout user" });
+    }
+    res.status(200).json({ message: "User logged out successfully" });
+  } catch (error) {
+    console.error("Error in logoutUser:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -187,4 +207,5 @@ module.exports = {
   verifyUser,
   loginUser,
   getUserProfile,
+  logoutUser,
 };
