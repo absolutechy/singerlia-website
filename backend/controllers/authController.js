@@ -91,6 +91,10 @@ const resendOTP = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    if (user.isVerified) {
+      return res.status(400).json({ message: "User is already verified" });
+    }
+
     const { otp, expiresAt } = generateSecureOTP();
     user.otp = otp;
     user.otpExpiresAt = expiresAt;
