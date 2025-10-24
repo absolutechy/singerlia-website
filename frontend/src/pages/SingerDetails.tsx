@@ -8,6 +8,7 @@ import MediaGrid from "@/components/pageComponents/SingerDetails/MediaGrid";
 import IconBubble from "@/components/pageComponents/SingerDetails/IconBubble";
 import ReviewsPreview from "@/components/pageComponents/SingerDetails/ReviewsPreview";
 import FAQSection from "@/components/pageComponents/SingerDetails/FAQSection";
+import { useNavigate } from "react-router";
 
 const paragraph =
   "We are committed to supporting singers by providing them with greater visibility, valuable opportunities, and direct connections with clients who truly appreciate their art. From solo acts to bands, classical to contemporary, we give singers the tools to showcase their talent, grow their audience, and build lasting relationships with customers.";
