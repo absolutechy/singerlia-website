@@ -17,7 +17,7 @@ const users = [
 
 const Hero = () => {
   return (
-    <div>
+    <div className="px-5">
       <SearchBar />
       <div className="flex flex-col lg:flex-row gap-y-3 items-center justify-center mt-5 lg:mt-10 gap-x-5 outfit">
         <Button

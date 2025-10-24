@@ -7,6 +7,7 @@ import {
   ChevronRight,
   X,
 } from "lucide-react";
+import { useNavigate } from "react-router";
 import ReviewCard from "@/components/common/ReviewCard";
 import Modal from "@/components/common/Modal";
 import singer1 from "@/assets/images/singer/singer-detail-1.png";
@@ -41,6 +42,7 @@ const faqs = [
 ];
 
 const SingerDetails: React.FC = () => {
+  const navigate = useNavigate();
   const name = "John Doberman";
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [reviewsOpen, setReviewsOpen] = useState(false);
@@ -136,7 +138,10 @@ const SingerDetails: React.FC = () => {
             <span className="absolute -top-3 right-6 text-xs bg-white shadow px-3 py-1 rounded-full border border-[#EBE4FF]">
               Free cancellation
             </span> 
-            <button className="w-full h-12 rounded-full bg-gradient-to-b from-secondary to-secondary-dark text-[#1C1C1C] font-semibold shadow">
+            <button 
+              onClick={() => navigate("/booking/singer/1")}
+              className="w-full h-12 rounded-full bg-gradient-to-b from-secondary to-secondary-dark text-[#1C1C1C] font-semibold shadow hover:shadow-lg transition-shadow"
+            >
               Book Singer
             </button>
           </div>
@@ -366,7 +371,6 @@ const SingerDetails: React.FC = () => {
         <div className="mt-6 space-y-4 flex flex-col items-center">
           {faqs.map((faq, i) => {
             const active = openIndex === i;
-            const highlighted = i === 1;
             return (
               <div
                 key={i}
