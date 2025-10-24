@@ -1,13 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { Heart, Share2 } from "lucide-react";
 import singer1 from "@/assets/images/singer/singer-detail-1.png";
 import singer2 from "@/assets/images/singer/singer-detail-2.png";
+import ShareModal from "@/components/pageComponents/SingerDetails/ShareModal";
 
-type Props = {
-  name: string;
-};
+type Props = { name: string };
 
 const ProfileSidebar: React.FC<Props> = ({ name }) => {
+  const [shareOpen, setShareOpen] = useState(false);
   return (
     <aside className="self-start lg:sticky top-28 space-y-5">
       {/* Main card */}
@@ -30,7 +30,7 @@ const ProfileSidebar: React.FC<Props> = ({ name }) => {
           </div>
 
           <div className="mt-4 flex gap-2">
-            <button className="h-10 w-10 rounded-full border border-[#E7DEFF] bg-white flex items-center justify-center">
+            <button onClick={() => setShareOpen(true)} className="h-10 w-10 rounded-full border border-[#E7DEFF] bg-white flex items-center justify-center">
               <Share2 size={18} className="text-[#6F5D9E]" />
             </button>
             <button className="h-10 w-10 rounded-full border border-[#E7DEFF] bg-white flex items-center justify-center">
@@ -49,9 +49,9 @@ const ProfileSidebar: React.FC<Props> = ({ name }) => {
           Book Singer
         </button>
       </div>
+      <ShareModal open={shareOpen} onClose={() => setShareOpen(false)} name={name} />
     </aside>
   );
 };
 
 export default ProfileSidebar;
-
