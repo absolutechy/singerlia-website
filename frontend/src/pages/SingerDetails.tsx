@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
   Share2,
   Heart,
@@ -6,12 +6,17 @@ import {
   Star,
   ChevronRight,
   X,
+  Play,
+  ChevronLeft,
 } from "lucide-react";
 import ReviewCard from "@/components/common/ReviewCard";
 import Modal from "@/components/common/Modal";
 import singer1 from "@/assets/images/singer/singer-detail-1.png";
 import singer2 from "@/assets/images/singer/singer-detail-2.png";
 import singer3 from "@/assets/images/singer/singer-detail-3.png";
+import { Swiper, SwiperSlide } from "swiper/react";
+import type { Swiper as SwiperType } from "swiper/types";
+import "swiper/css";
 
 const paragraph =
   "We are committed to supporting singers by providing them with greater visibility, valuable opportunities, and direct connections with clients who truly appreciate their art. From solo acts to bands, classical to contemporary, we give singers the tools to showcase their talent, grow their audience, and build lasting relationships with customers.";
@@ -44,6 +49,24 @@ const SingerDetails: React.FC = () => {
   const name = "John Doberman";
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [reviewsOpen, setReviewsOpen] = useState(false);
+  const [mediaOpen, setMediaOpen] = useState(false);
+  const [mediaTab, setMediaTab] = useState<"videos" | "photos">("videos");
+  const [activeSlide, setActiveSlide] = useState(0);
+  const swiperRef = useRef<SwiperType | null>(null);
+
+  const mediaData = useMemo(() => {
+    const base = [
+      { id: 1, src: singer1, title: "portfolio title show here" },
+      { id: 2, src: singer2, title: "portfolio title show here" },
+      { id: 3, src: singer3, title: "portfolio title show here" },
+      { id: 4, src: singer2, title: "portfolio title show here" },
+      { id: 5, src: singer1, title: "portfolio title show here" },
+    ];
+    return {
+      videos: base,
+      photos: [...base].reverse(),
+    } as const;
+  }, []);
 
   const allReviews = [
     {
@@ -54,8 +77,7 @@ const SingerDetails: React.FC = () => {
         "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=96&q=60",
       rating: 5.0,
       timeAgo: "1 week ago",
-      text:
-        "Jhon was awesome singer, knew exactly where to go for the best singer experience !",
+      text: "Jhon was awesome singer, knew exactly where to go for the best singer experience !",
     },
     {
       id: 2,
@@ -65,8 +87,7 @@ const SingerDetails: React.FC = () => {
         "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=96&q=60",
       rating: 5.0,
       timeAgo: "1 week ago",
-      text:
-        "Jhon was awesome singer, knew exactly where to go for the best singer experience !",
+      text: "Jhon was awesome singer, knew exactly where to go for the best singer experience !",
     },
     {
       id: 3,
@@ -76,8 +97,7 @@ const SingerDetails: React.FC = () => {
         "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=96&q=60",
       rating: 5.0,
       timeAgo: "1 week ago",
-      text:
-        "Jhon was awesome singer, knew exactly where to go for the best singer experience !",
+      text: "Jhon was awesome singer, knew exactly where to go for the best singer experience !",
     },
     {
       id: 4,
@@ -87,8 +107,7 @@ const SingerDetails: React.FC = () => {
         "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?auto=format&fit=crop&w=96&q=60",
       rating: 5.0,
       timeAgo: "1 week ago",
-      text:
-        "Jhon was awesome singer, knew exactly where to go for the best singer experience !",
+      text: "Jhon was awesome singer, knew exactly where to go for the best singer experience !",
     },
   ];
 
@@ -135,7 +154,7 @@ const SingerDetails: React.FC = () => {
           <div className="relative rounded-2xl bg-white px-2.5 sm:px-5 py-10 shadow border border-[#EBE4FF]">
             <span className="absolute -top-3 right-6 text-xs bg-white shadow px-3 py-1 rounded-full border border-[#EBE4FF]">
               Free cancellation
-            </span> 
+            </span>
             <button className="w-full h-12 rounded-full bg-gradient-to-b from-secondary to-secondary-dark text-[#1C1C1C] font-semibold shadow">
               Book Singer
             </button>
@@ -149,7 +168,14 @@ const SingerDetails: React.FC = () => {
             <h1 className="heading-6 sm:heading-4 text-[#2E1B4D]">
               Signer Service title here
             </h1>
-            <button className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2 shadow border border-[#E7DEFF] text-sm font-semibold text-[#2E1B4D]">
+            <button
+              onClick={() => {
+                setActiveSlide(0);
+                setMediaTab("videos");
+                setMediaOpen(true);
+              }}
+              className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2 shadow border border-[#E7DEFF] text-sm font-semibold text-[#2E1B4D]"
+            >
               <ImageIcon size={16} /> Show all media
             </button>
           </div>
@@ -198,7 +224,9 @@ const SingerDetails: React.FC = () => {
 
           {/* My Experience header aligned with social icons */}
           <div className="flex items-center justify-between pt-2">
-            <h3 className="text-lg lg:text-2xl font-bold text-[#1C1C1C]">My Experience</h3>
+            <h3 className="text-lg lg:text-2xl font-bold text-[#1C1C1C]">
+              My Experience
+            </h3>
             <div className="flex gap-3">
               <IconBubble type="instagram" />
               <IconBubble type="music" />
@@ -312,11 +340,140 @@ const SingerDetails: React.FC = () => {
               ))}
             </div>
 
-            <button onClick={() => setReviewsOpen(true)} className="mt-2 w-full h-11 rounded-xl border border-[#E7DEFF] bg-white text-[#2E1B4D] font-medium">
+            <button
+              onClick={() => setReviewsOpen(true)}
+              className="mt-2 w-full h-11 rounded-xl border border-[#E7DEFF] bg-white text-[#2E1B4D] font-medium"
+            >
               Show all reviews
             </button>
           </div>
         </section>
+        {/* Media Modal */}
+        <Modal
+          open={mediaOpen}
+          onClose={() => setMediaOpen(false)}
+          panelClassName="max-w-[1100px] w-full p-6"
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1C1C1C]">
+              My portfolio events videos & photos
+            </h2>
+            <button
+              onClick={() => setMediaOpen(false)}
+              aria-label="Close"
+              className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200"
+            >
+              <X size={16} />
+            </button>
+          </div>
+
+          {/* Tabs */}
+          <div className="mt-5 flex items-center justify-center">
+            <div className="inline-flex items-center rounded-full bg-[#F7F7F7] px-1 py-1">
+              {(["videos", "photos"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => {
+                    setMediaTab(tab);
+                    setActiveSlide(0);
+                    swiperRef.current?.slideTo(0);
+                  }}
+                  className={`px-12 py-2 rounded-full text-sm font-semibold transition-colors ${
+                    mediaTab === tab
+                      ? "text-white bg-primary"
+                      : "text-[#CDCDCD]"
+                  }`}
+                >
+                  {tab === "videos" ? "Videos" : "Photos"}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Slider with arrows */}
+          <div className="relative mt-6">
+            {/* Left arrow */}
+            <button
+              onClick={() => swiperRef.current?.slidePrev()}
+              className="absolute -left-5 top-1/2 -translate-y-1/2 z-10 h-9 w-9 rounded-full border border-[#E7DEFF] bg-white/90 shadow flex items-center justify-center"
+              aria-label="Previous"
+            >
+              <ChevronLeft size={18} className="text-[#2E1B4D]" />
+            </button>
+            {/* Right arrow */}
+            <button
+              onClick={() => swiperRef.current?.slideNext()}
+              className="absolute -right-5 top-1/2 -translate-y-1/2 z-10 h-9 w-9 rounded-full border border-[#E7DEFF] bg-white/90 shadow flex items-center justify-center"
+              aria-label="Next"
+            >
+              <ChevronRight size={18} className="text-[#2E1B4D]" />
+            </button>
+
+            <Swiper
+              onSwiper={(s) => (swiperRef.current = s)}
+              onSlideChange={(s) => setActiveSlide(s.realIndex)}
+              loop={true}
+              centeredSlides={true}
+              slidesPerView={3}
+              breakpoints={{
+                640: { slidesPerView: 1.4 },
+                768: { slidesPerView: 2.1 },
+                1024: { slidesPerView: 3 },
+              }}
+              spaceBetween={0}
+              className="px-4 h-[31rem]"
+            >
+              {mediaData[mediaTab].map((item, i) => (
+                <SwiperSlide key={`${mediaTab}-${item.id}`} className="!flex !items-center !justify-center">
+                  <div
+                    className={`relative flex items-center justify-center mx-auto rounded-3xl overflow-hidden p-1 transition-all duration-300 ${
+                      i === activeSlide
+                        ? "opacity-100 max-w-[23rem] w-full"
+                        : "opacity-50 max-w-[14rem]"
+                    }`}
+                  >
+                    <img
+                      src={item.src}
+                      alt={item.title}
+                      className={`w-full ${
+                        i === activeSlide ? "h-[29rem]" : "h-[18rem]"
+                      } object-cover`}
+                    />
+                    {mediaTab === "videos" && (
+                      <button
+                        className="absolute inset-0 m-auto h-14 w-14 rounded-full bg-[#FFCD00] flex items-center justify-center shadow"
+                        aria-label="Play video"
+                      >
+                        <Play className="text-[#1C1C1C]" />
+                      </button>
+                    )}
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+
+          {/* Meta under slide */}
+          <div className="mt-5 text-center">
+            <p className="text-2xl font-extrabold text-[#1C1C1C]">
+              portfolio title show here
+            </p>
+            <p className="mt-1 text-sm text-[#6F5D9E] max-w-xl mx-auto">
+              Learn How to Quickly Generate Placeholder Text Using a Lorem Ipsum
+              Tool. Explore How Lorem Ipsum Generators Can Liven up Your...
+            </p>
+          </div>
+
+          {/* Counter */}
+          <div className="mt-2 flex justify-end text-xs text-[#6F5D9E]">
+            {String((activeSlide % mediaData[mediaTab].length) + 1).padStart(
+              2,
+              "0"
+            )}
+            of{String(mediaData[mediaTab].length).padStart(2, "0")}
+          </div>
+        </Modal>
         {/* Reviews Modal */}
         <Modal
           open={reviewsOpen}
@@ -338,7 +495,7 @@ const SingerDetails: React.FC = () => {
             </button>
           </div>
           <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-2 divide-y">
-            {([...allReviews, ...allReviews, ...allReviews].map((r, idx) => (
+            {[...allReviews, ...allReviews, ...allReviews].map((r, idx) => (
               <ReviewCard
                 key={idx}
                 avatar={r.avatar}
@@ -348,7 +505,7 @@ const SingerDetails: React.FC = () => {
                 timeAgo={r.timeAgo}
                 text={r.text}
               />
-            )))}
+            ))}
           </div>
         </Modal>
       </div>
