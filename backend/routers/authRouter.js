@@ -8,11 +8,13 @@ const {
   resetPassword,
   sendResetPasswordCode,
   resetForgottenPassword,
+  resendOTP,
 } = require("../controllers/authController");
 const { Authenticator } = require("../middleWare/Authenticator");
 const router = express.Router();
 
 router.post("/register", registerUser);
+router.post("/resend-otp", resendOTP);
 router.post("/verify-user", verifyUser);
 router.post("/login", loginUser);
 router.delete("/logout", Authenticator, logoutUser);

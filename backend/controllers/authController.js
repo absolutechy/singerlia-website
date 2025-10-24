@@ -80,6 +80,36 @@ const registerUser = async (req, res) => {
   }
 };
 
+const resendOTP = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+    const user = await userIfAlreadyExists(null, userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const { otp, expiresAt } = generateSecureOTP();
+    user.otp = otp;
+    user.otpExpiresAt = expiresAt;
+    const updatedUser = await updateUser(user);
+    if (!updatedUser) {
+      return res.status(500).json({ message: "Failed to resend OTP" });
+    }
+
+    res.status(200).json({
+      message: "OTP resent successfully",
+      userId: updatedUser.userId,
+      otp: updatedUser.otp,
+    });
+  } catch (error) {
+    console.error("Error in resendOTP:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 const verifyUser = async (req, res) => {
   try {
     const { userId, otp } = req.body;
@@ -301,6 +331,7 @@ const resetForgottenPassword = async (req, res) => {
 
 module.exports = {
   registerUser,
+  resendOTP,
   verifyUser,
   loginUser,
   getUserProfile,
