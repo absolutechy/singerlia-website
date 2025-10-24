@@ -1,22 +1,13 @@
-import React, { useMemo, useRef, useState } from "react";
-import {
-  Share2,
-  Heart,
-  Image as ImageIcon,
-  Star,
-  ChevronRight,
-  X,
-  Play,
-  ChevronLeft,
-} from "lucide-react";
-import ReviewCard from "@/components/common/ReviewCard";
-import Modal from "@/components/common/Modal";
-import singer1 from "@/assets/images/singer/singer-detail-1.png";
-import singer2 from "@/assets/images/singer/singer-detail-2.png";
-import singer3 from "@/assets/images/singer/singer-detail-3.png";
-import { Swiper, SwiperSlide } from "swiper/react";
-import type { Swiper as SwiperType } from "swiper/types";
-import "swiper/css";
+import React, { useState } from "react";
+import { Image as ImageIcon } from "lucide-react";
+import MediaModal from "@/components/pageComponents/SingerDetails/MediaModal";
+import MessageModal from "@/components/pageComponents/SingerDetails/MessageModal";
+import ReviewsModal from "@/components/pageComponents/SingerDetails/ReviewsModal";
+import ProfileSidebar from "@/components/pageComponents/SingerDetails/ProfileSidebar";
+import MediaGrid from "@/components/pageComponents/SingerDetails/MediaGrid";
+import IconBubble from "@/components/pageComponents/SingerDetails/IconBubble";
+import ReviewsPreview from "@/components/pageComponents/SingerDetails/ReviewsPreview";
+import FAQSection from "@/components/pageComponents/SingerDetails/FAQSection";
 
 const paragraph =
   "We are committed to supporting singers by providing them with greater visibility, valuable opportunities, and direct connections with clients who truly appreciate their art. From solo acts to bands, classical to contemporary, we give singers the tools to showcase their talent, grow their audience, and build lasting relationships with customers.";
@@ -47,26 +38,9 @@ const faqs = [
 
 const SingerDetails: React.FC = () => {
   const name = "John Doberman";
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [reviewsOpen, setReviewsOpen] = useState(false);
+  const [messageOpen, setMessageOpen] = useState(false);
   const [mediaOpen, setMediaOpen] = useState(false);
-  const [mediaTab, setMediaTab] = useState<"videos" | "photos">("videos");
-  const [activeSlide, setActiveSlide] = useState(0);
-  const swiperRef = useRef<SwiperType | null>(null);
-
-  const mediaData = useMemo(() => {
-    const base = [
-      { id: 1, src: singer1, title: "portfolio title show here" },
-      { id: 2, src: singer2, title: "portfolio title show here" },
-      { id: 3, src: singer3, title: "portfolio title show here" },
-      { id: 4, src: singer2, title: "portfolio title show here" },
-      { id: 5, src: singer1, title: "portfolio title show here" },
-    ];
-    return {
-      videos: base,
-      photos: [...base].reverse(),
-    } as const;
-  }, []);
 
   const allReviews = [
     {
@@ -115,51 +89,7 @@ const SingerDetails: React.FC = () => {
     <div className="custom-container pb-16">
       <div className="grid gap-8 lg:grid-cols-[0.4fr_1fr] ">
         {/* Left fixed column */}
-        <aside className="self-start lg:sticky top-28 space-y-5">
-          {/* Main card */}
-          <div className="rounded-3xl bg-white p-2 sm:p-4">
-            <div className="relative">
-              <img
-                src={singer2}
-                alt="cover"
-                className="w-full rounded-2xl h-52 object-cover overflow-hidden"
-              />
-              {/* small avatar */}
-              <img
-                src={singer1}
-                alt="avatar"
-                className="h-14 z-50 rounded-full object-cover absolute -bottom-7 left-4 border-4 border-white"
-              />
-            </div>
-            <div className="pt-10 z-10">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-2xl font-bold text-[#1C1C1C]">{name}</h2>
-                  <p className="text-sm text-[#6F5D9E]">Responds within 1/hr</p>
-                </div>
-              </div>
-
-              <div className="mt-4 flex gap-2">
-                <button className="h-10 w-10 rounded-full border border-[#E7DEFF] bg-white flex items-center justify-center">
-                  <Share2 size={18} className="text-[#6F5D9E]" />
-                </button>
-                <button className="h-10 w-10 rounded-full border border-[#E7DEFF] bg-white flex items-center justify-center">
-                  <Heart size={18} className="text-[#6F5D9E]" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Booking card */}
-          <div className="relative rounded-2xl bg-white px-2.5 sm:px-5 py-10 shadow border border-[#EBE4FF]">
-            <span className="absolute -top-3 right-6 text-xs bg-white shadow px-3 py-1 rounded-full border border-[#EBE4FF]">
-              Free cancellation
-            </span>
-            <button className="w-full h-12 rounded-full bg-gradient-to-b from-secondary to-secondary-dark text-[#1C1C1C] font-semibold shadow">
-              Book Singer
-            </button>
-          </div>
-        </aside>
+        <ProfileSidebar name={name} />
 
         {/* Right content */}
         <section className="space-y-8">
@@ -168,59 +98,13 @@ const SingerDetails: React.FC = () => {
             <h1 className="heading-6 sm:heading-4 text-[#2E1B4D]">
               Signer Service title here
             </h1>
-            <button
-              onClick={() => {
-                setActiveSlide(0);
-                setMediaTab("videos");
-                setMediaOpen(true);
-              }}
-              className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2 shadow border border-[#E7DEFF] text-sm font-semibold text-[#2E1B4D]"
-            >
+            <button onClick={() => setMediaOpen(true)} className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2 shadow border border-[#E7DEFF] text-sm font-semibold text-[#2E1B4D]">
               <ImageIcon size={16} /> Show all media
             </button>
           </div>
 
           {/* Media gallery - matches layout: big left (2x2), four small on right */}
-          <div
-            className="grid grid-cols-2 md:grid-cols-4 gap-4"
-            style={{ gridAutoRows: "160px" }}
-          >
-            <div className="col-span-2 row-span-2 rounded-2xl overflow-hidden">
-              <img
-                src={singer1}
-                alt="main"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="rounded-2xl overflow-hidden">
-              <img
-                src={singer1}
-                alt="m2"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="rounded-2xl overflow-hidden">
-              <img
-                src={singer1}
-                alt="m3"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="rounded-2xl overflow-hidden">
-              <img
-                src={singer2}
-                alt="m4"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="rounded-2xl overflow-hidden">
-              <img
-                src={singer3}
-                alt="m5"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
+          <MediaGrid />
 
           {/* My Experience header aligned with social icons */}
           <div className="flex items-center justify-between pt-2">
@@ -261,334 +145,56 @@ const SingerDetails: React.FC = () => {
           </div>
           {/* Message button */}
           <div className="pt-4">
-            <button className="w-full h-12 rounded-xl border border-[#E7DEFF] bg-white text-[#2E1B4D] font-semibold">
+            <button
+              onClick={() => setMessageOpen(true)}
+              className="w-full h-12 rounded-xl border border-[#E7DEFF] bg-white text-[#2E1B4D] font-semibold"
+            >
               Message {name.split(" ")[0]}
             </button>
           </div>
 
           {/* Reviews preview */}
-          <div className="pt-2">
-            <div className="h-px bg-[#E7DEFF] my-4" />
-            <div className="flex items-center gap-2 text-[#2E1B4D] font-medium">
-              <Star size={18} className="text-yellow-500 fill-yellow-500" />
-              <span className="text-base">4.97</span>
-              <span className="inline-block w-1 h-1 rounded-full bg-gray-300"></span>
-              <span className="text-base">29 reviews</span>
-            </div>
-
-            <div className="mt-3 divide-y divide-[#E7DEFF]">
-              {[
-                {
-                  id: 1,
-                  name: "Liam",
-                  location: "Yellowknife, Canada",
-                  avatar:
-                    "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=96&q=60",
-                  rating: 5.0,
-                  timeAgo: "1 week ago",
-                },
-                {
-                  id: 2,
-                  name: "Liam",
-                  location: "Yellowknife, Canada",
-                  avatar:
-                    "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=96&q=60",
-                  rating: 5.0,
-                  timeAgo: "1 week ago",
-                },
-                {
-                  id: 3,
-                  name: "Liam",
-                  location: "Yellowknife, Canada",
-                  avatar:
-                    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=96&q=60",
-                  rating: 5.0,
-                  timeAgo: "1 week ago",
-                },
-              ].map((r) => (
-                <div key={r.id} className="py-5">
-                  <div className="flex items-start gap-3">
-                    {/* Image */}
-                    <img
-                      src={r.avatar}
-                      alt={r.name}
-                      className="h-10 w-10 rounded-full object-cover"
-                    />
-
-                    {/* Name and Location Column */}
-                    <div className="flex flex-col">
-                      <p className="text-sm font-semibold text-[#1C1C1C]">
-                        {r.name}
-                      </p>
-                      <p className="text-xs text-[#6F5D9E]">{r.location}</p>
-                    </div>
-                  </div>
-
-                  {/* Second Row - Rating and Time */}
-                  <div className="flex items-center gap-2 mt-2 text-sm">
-                    <Star
-                      size={16}
-                      className="text-yellow-500 fill-yellow-500"
-                    />
-                    <span className="font-semibold text-[#1C1C1C]">
-                      {r.rating.toFixed(1)}
-                    </span>
-                    <span className="inline-block w-1 h-1 rounded-full bg-gray-300"></span>
-                    <span className="text-[#6F5D9E]">{r.timeAgo}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <button
-              onClick={() => setReviewsOpen(true)}
-              className="mt-2 w-full h-11 rounded-xl border border-[#E7DEFF] bg-white text-[#2E1B4D] font-medium"
-            >
-              Show all reviews
-            </button>
-          </div>
+          <ReviewsPreview
+            items={[
+              {
+                id: 1,
+                name: "Liam",
+                location: "Yellowknife, Canada",
+                avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=96&q=60",
+                rating: 5.0,
+                timeAgo: "1 week ago",
+              },
+              {
+                id: 2,
+                name: "Liam",
+                location: "Yellowknife, Canada",
+                avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=96&q=60",
+                rating: 5.0,
+                timeAgo: "1 week ago",
+              },
+              {
+                id: 3,
+                name: "Liam",
+                location: "Yellowknife, Canada",
+                avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=96&q=60",
+                rating: 5.0,
+                timeAgo: "1 week ago",
+              },
+            ]}
+            onShowAll={() => setReviewsOpen(true)}
+          />
         </section>
         {/* Media Modal */}
-        <Modal
-          open={mediaOpen}
-          onClose={() => setMediaOpen(false)}
-          panelClassName="max-w-[1100px] w-full p-6"
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl sm:text-2xl font-bold text-[#1C1C1C]">
-              My portfolio events videos & photos
-            </h2>
-            <button
-              onClick={() => setMediaOpen(false)}
-              aria-label="Close"
-              className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200"
-            >
-              <X size={16} />
-            </button>
-          </div>
-
-          {/* Tabs */}
-          <div className="mt-5 flex items-center justify-center">
-            <div className="inline-flex items-center rounded-full bg-[#F7F7F7] px-1 py-1">
-              {(["videos", "photos"] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => {
-                    setMediaTab(tab);
-                    setActiveSlide(0);
-                    swiperRef.current?.slideTo(0);
-                  }}
-                  className={`px-12 py-2 rounded-full text-sm font-semibold transition-colors ${
-                    mediaTab === tab
-                      ? "text-white bg-primary"
-                      : "text-[#CDCDCD]"
-                  }`}
-                >
-                  {tab === "videos" ? "Videos" : "Photos"}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Slider with arrows */}
-          <div className="relative mt-6">
-            {/* Left arrow */}
-            <button
-              onClick={() => swiperRef.current?.slidePrev()}
-              className="absolute -left-5 top-1/2 -translate-y-1/2 z-10 h-9 w-9 rounded-full border border-[#E7DEFF] bg-white/90 shadow flex items-center justify-center"
-              aria-label="Previous"
-            >
-              <ChevronLeft size={18} className="text-[#2E1B4D]" />
-            </button>
-            {/* Right arrow */}
-            <button
-              onClick={() => swiperRef.current?.slideNext()}
-              className="absolute -right-5 top-1/2 -translate-y-1/2 z-10 h-9 w-9 rounded-full border border-[#E7DEFF] bg-white/90 shadow flex items-center justify-center"
-              aria-label="Next"
-            >
-              <ChevronRight size={18} className="text-[#2E1B4D]" />
-            </button>
-
-            <Swiper
-              onSwiper={(s) => (swiperRef.current = s)}
-              onSlideChange={(s) => setActiveSlide(s.realIndex)}
-              loop={true}
-              centeredSlides={true}
-              slidesPerView={3}
-              breakpoints={{
-                640: { slidesPerView: 1.4 },
-                768: { slidesPerView: 2.1 },
-                1024: { slidesPerView: 3 },
-              }}
-              spaceBetween={0}
-              className="px-4 h-[31rem]"
-            >
-              {mediaData[mediaTab].map((item, i) => (
-                <SwiperSlide key={`${mediaTab}-${item.id}`} className="!flex !items-center !justify-center">
-                  <div
-                    className={`relative flex items-center justify-center mx-auto rounded-3xl overflow-hidden p-1 transition-all duration-300 ${
-                      i === activeSlide
-                        ? "opacity-100 max-w-[23rem] w-full"
-                        : "opacity-50 max-w-[14rem]"
-                    }`}
-                  >
-                    <img
-                      src={item.src}
-                      alt={item.title}
-                      className={`w-full ${
-                        i === activeSlide ? "h-[29rem]" : "h-[18rem]"
-                      } object-cover`}
-                    />
-                    {mediaTab === "videos" && (
-                      <button
-                        className="absolute inset-0 m-auto h-14 w-14 rounded-full bg-[#FFCD00] flex items-center justify-center shadow"
-                        aria-label="Play video"
-                      >
-                        <Play className="text-[#1C1C1C]" />
-                      </button>
-                    )}
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
-
-          {/* Meta under slide */}
-          <div className="mt-5 text-center">
-            <p className="text-2xl font-extrabold text-[#1C1C1C]">
-              portfolio title show here
-            </p>
-            <p className="mt-1 text-sm text-[#6F5D9E] max-w-xl mx-auto">
-              Learn How to Quickly Generate Placeholder Text Using a Lorem Ipsum
-              Tool. Explore How Lorem Ipsum Generators Can Liven up Your...
-            </p>
-          </div>
-
-          {/* Counter */}
-          <div className="mt-2 flex justify-end text-xs text-[#6F5D9E]">
-            {String((activeSlide % mediaData[mediaTab].length) + 1).padStart(
-              2,
-              "0"
-            )}
-            of{String(mediaData[mediaTab].length).padStart(2, "0")}
-          </div>
-        </Modal>
+        <MediaModal open={mediaOpen} onClose={() => setMediaOpen(false)} />
+        {/* Message Modal */}
+        <MessageModal open={messageOpen} onClose={() => setMessageOpen(false)} name={name} />
         {/* Reviews Modal */}
-        <Modal
-          open={reviewsOpen}
-          onClose={() => setReviewsOpen(false)}
-          panelClassName="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col"
-        >
-          <div className="flex items-center justify-between px-5 py-4 border-b">
-            <div className="flex items-center gap-2 text-[#1C1C1C] font-semibold">
-              <span className="text-xl">4.97</span>
-              <span className="inline-block w-1 h-1 rounded-full bg-gray-300"></span>
-              <span className="text-xl">29 reviews</span>
-            </div>
-            <button
-              onClick={() => setReviewsOpen(false)}
-              aria-label="Close"
-              className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200"
-            >
-              <X size={16} />
-            </button>
-          </div>
-          <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-2 divide-y">
-            {[...allReviews, ...allReviews, ...allReviews].map((r, idx) => (
-              <ReviewCard
-                key={idx}
-                avatar={r.avatar}
-                name={r.name}
-                location={r.location}
-                rating={r.rating}
-                timeAgo={r.timeAgo}
-                text={r.text}
-              />
-            ))}
-          </div>
-        </Modal>
+        <ReviewsModal open={reviewsOpen} onClose={() => setReviewsOpen(false)} reviews={allReviews} />
       </div>
       {/* FAQ Section */}
-      <div className="my-[8rem] rounded-3xl bg-[#F7F7F7] p-6 sm:p-8">
-        <div className="text-center">
-          <h3 className="text-2xl sm:text-4xl font-bold text-[#000]">
-            Frequently asked questions
-          </h3>
-          <p className="mt-1 texl-lg sm:text-2xl font-semibold text-[#121212]">
-            About This Singer
-          </p>
-        </div>
-
-        <div className="mt-6 space-y-4 flex flex-col items-center">
-          {faqs.map((faq, i) => {
-            const active = openIndex === i;
-            const highlighted = i === 1;
-            return (
-              <div
-                key={i}
-                className={
-                  "w-full group hover:bg-[#2E1B4D] hover:border-transparent max-w-4xl rounded-xl shadow border overflow-hidden " +
-                  (active
-                    ? "bg-[#2E1B4D] border-transparent"
-                    : "bg-white border-[#EBE4FF]")
-                }
-              >
-                <button
-                  onClick={() => setOpenIndex(active ? null : i)}
-                  className="w-full flex items-center justify-between px-5 py-8"
-                >
-                  <span
-                    className={
-                      "text-lg font-medium group-hover:text-white text-left " +
-                      (active ? "text-white" : "text-[#1C1C1C]")
-                    }
-                  >
-                    {faq.question}
-                  </span>
-                  <ChevronRight
-                    size={18}
-                    className={`group-hover:text-white   ${
-                      active ? "text-white" : " text-[#2E1B4D] "
-                    }
-                    `}
-                  />
-                </button>
-                {active && (
-                  <div
-                    className={
-                      "px-5 pb-5 text-sm " +
-                      (active ? "text-white/90" : "text-[#6F5D9E]")
-                    }
-                  >
-                    {faq.answer}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      <FAQSection faqs={faqs} />
     </div>
   );
 };
 
 export default SingerDetails;
-
-// Local small icon bubble component using lucide icons to mirror the screenshot look
-import { Instagram, Music2, Youtube, Disc3, Linkedin } from "lucide-react";
-
-type BubbleType = "instagram" | "music" | "youtube" | "disc" | "linkedin";
-
-const IconBubble: React.FC<{ type: BubbleType }> = ({ type }) => {
-  const base =
-    "h-9 w-9 rounded-full border border-[#E7DEFF] bg-white flex items-center justify-center text-[#2E1B4D]";
-  const map: Record<BubbleType, React.ReactNode> = {
-    instagram: <Instagram size={16} />,
-    music: <Music2 size={16} />,
-    youtube: <Youtube size={16} />,
-    disc: <Disc3 size={16} />,
-    linkedin: <Linkedin size={16} />,
-  };
-  return <button className={base}>{map[type]}</button>;
-};
