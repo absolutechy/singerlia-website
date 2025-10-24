@@ -97,7 +97,7 @@ const reviews: Review[] = [
   },
 ];
 
-const filters: ReviewCategory[] = ["All", "Customers", "Singer's"];
+// const filters: ReviewCategory[] = ["All", "Customers", "Singer's"];
 
 const sliderSettings = {
   modules: [Autoplay, FreeMode],
@@ -134,7 +134,7 @@ const createMarqueeSlides = (items: Review[]) => {
 };
 
 const Reviews: React.FC = () => {
-  const [activeFilter, setActiveFilter] = useState<ReviewCategory>("All");
+  const [activeFilter] = useState<ReviewCategory>("All");
 
   const filteredReviews = useMemo(() => {
     if (activeFilter === "All") return reviews;
