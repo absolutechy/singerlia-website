@@ -112,7 +112,7 @@ const SearchResults: React.FC = () => {
       {/* Offcanvas Overlay */}
       {isFilterOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-40 transition-opacity"
+          className="fixed inset-0 bg-black/50 z-40 transition-opacity no-doc-scroll"
           onClick={() => setIsFilterOpen(false)}
         />
       )}
@@ -123,7 +123,7 @@ const SearchResults: React.FC = () => {
           isFilterOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 ">
           {/* Header */}
           <div className="flex items-center justify-between pb-4 border-b border-gray-200">
             <h3 className="text-2xl font-bold text-[#1C1C1C]">Filters</h3>

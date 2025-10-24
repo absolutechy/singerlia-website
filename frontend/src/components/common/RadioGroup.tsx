@@ -42,7 +42,7 @@ const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
               />
               <label
                 htmlFor={option.value}
-                className="text-sm text-[#2F1C4E] cursor-pointer"
+                className="text-base text-[#2F1C4E] cursor-pointer"
               >
                 {option.label}
               </label>

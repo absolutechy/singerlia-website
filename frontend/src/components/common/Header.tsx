@@ -31,14 +31,12 @@ const Header: React.FC = () => {
     navigate(href);
   };
 
-  // Sync activeNav with current location and scroll to top
+  // Sync activeNav with current location
   useEffect(() => {
     const currentItem = navItems.find(item => item.href === location.pathname);
     if (currentItem) {
       setActiveNav(currentItem.id);
     }
-    // Scroll to top on route change
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [location.pathname]);
 
   // Toggle compact header on scroll

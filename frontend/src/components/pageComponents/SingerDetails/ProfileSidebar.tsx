@@ -3,11 +3,19 @@ import { Heart, Share2 } from "lucide-react";
 import singer1 from "@/assets/images/singer/singer-detail-1.png";
 import singer2 from "@/assets/images/singer/singer-detail-2.png";
 import ShareModal from "@/components/pageComponents/SingerDetails/ShareModal";
+import { Button } from "@/components/common";
+import { useNavigate } from "react-router";
 
-type Props = { name: string };
+type Props = { name: string, id: number };
 
-const ProfileSidebar: React.FC<Props> = ({ name }) => {
+const ProfileSidebar: React.FC<Props> = ({ name, id }) => {
   const [shareOpen, setShareOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const nav = () => {
+    navigate(`/booking/singer/${id}`);
+  }
+
   return (
     <aside className="self-start lg:sticky top-28 space-y-5">
       {/* Main card */}
@@ -18,7 +26,7 @@ const ProfileSidebar: React.FC<Props> = ({ name }) => {
           <img
             src={singer1}
             alt="avatar"
-            className="h-14 z-50 rounded-full object-cover absolute -bottom-7 left-4 border-4 border-white"
+            className="h-14 w-14 z-10 rounded-full object-cover absolute -bottom-7 left-4 border-4 border-white"
           />
         </div>
         <div className="pt-10 z-10">
@@ -42,12 +50,16 @@ const ProfileSidebar: React.FC<Props> = ({ name }) => {
 
       {/* Booking card */}
       <div className="relative rounded-2xl bg-white px-2.5 sm:px-5 py-10 shadow border border-[#EBE4FF]">
-        <span className="absolute -top-3 right-6 text-xs bg-white shadow px-3 py-1 rounded-full border border-[#EBE4FF]">
+        <p className="absolute -top-3 right-6 text-xs bg-white shadow px-3 py-1 rounded-full border border-[#EBE4FF]">
           Free cancellation
-        </span>
-        <button className="w-full h-12 rounded-full bg-gradient-to-b from-secondary to-secondary-dark text-[#1C1C1C] font-semibold shadow">
+        </p>
+        <Button 
+          variant="primary"
+          size="large"
+          onClick={nav}
+          className="w-full h-12 rounded-full bg-gradient-to-b from-secondary to-secondary-dark text-[#1C1C1C] !font-semibold shadow">
           Book Singer
-        </button>
+        </Button>
       </div>
       <ShareModal open={shareOpen} onClose={() => setShareOpen(false)} name={name} />
     </aside>

@@ -2,10 +2,12 @@ import { Header } from "@/components/common";
 import AppRouter from "@/router/AppRouter";
 import landingBgImage from "@/assets/images/common/landingtopbg.png";
 import Footer from "./components/layout/Footer";
+import ScrollToTop from "./components/common/ScrollToTop";
 
 const App = () => {
   return (
     <>
+      <ScrollToTop />
       <div
         className="w-full pt-40 lg:pt-48 space-y-8 bg-cover bg-center h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50"
         style={{

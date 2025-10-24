@@ -90,14 +90,6 @@ const BookingSinger: React.FC = () => {
     { value: "other", label: "Other" },
   ];
 
-  const countryOptions = [
-    { value: "uk", label: "United Kingdom" },
-    { value: "us", label: "United States" },
-    { value: "ca", label: "Canada" },
-    { value: "au", label: "Australia" },
-    { value: "other", label: "Other" },
-  ];
-
   const guestOptions = [
     { value: "0-50", label: "0-50 guests" },
     { value: "51-100", label: "51-100 guests" },
@@ -127,7 +119,7 @@ const BookingSinger: React.FC = () => {
       <div className="custom-container py-16">
         <div className="max-w-3xl mx-auto">
           {/* Header */}
-          <div className="mb-8">
+          <div className="mb-8 flex flex-col lg:flex-row">
             <button
               onClick={() => setShowSummary(false)}
               className="inline-flex items-center gap-2 text-sm text-[#6F5D9E] hover:text-primary mb-4"
@@ -137,8 +129,10 @@ const BookingSinger: React.FC = () => {
               </span>
               Back to Form
             </button>
+            <div className="w-full text-center">
             <h1 className="heading-2 text-[#2E1B4D]">Booking Summary</h1>
             <p className="text-[#6F5D9E] mt-2">Review your booking details before proceeding to payment</p>
+            </div>
           </div>
 
           {/* Summary Card */}
@@ -286,7 +280,7 @@ const BookingSinger: React.FC = () => {
     <div className="custom-container pb-16">
       <div className="">
         {/* Header */}
-        <div className="mb-8 flex">
+        <div className="mb-8 flex flex-col lg:flex-row">
           <button
             onClick={() => navigate(-1)}
             className="inline-flex items-center gap-2 text-sm text-[#6F5D9E] hover:text-primary mb-4"
@@ -294,10 +288,9 @@ const BookingSinger: React.FC = () => {
             <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[#E7DEFF] text-primary bg-white">
               <ArrowLeft className="h-4 w-4" />
             </span>
-            Back to Singer Details
           </button>
           <div className="text-center w-full">
-          <h1 className="heading-2 text-[#2E1B4D]">Book Your Singer</h1>
+          <h1 className="text-3xl lg:text-5xl font-bold text-[#2E1B4D]">Book Your Singer</h1>
           <p className="text-[#6F5D9E] mt-2">Fill in the details to complete your booking</p>
           </div>
         </div>
@@ -305,7 +298,7 @@ const BookingSinger: React.FC = () => {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           {/* Section 1: Event Date & Time */}
           <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-lg border border-[#E7DEFF]">
-            <h2 className="heading-4 text-[#2E1B4D] mb-6 flex items-center gap-2">
+            <h2 className="text-2xl lg:text-4xl font-bold text-[#2E1B4D] mb-6 flex items-center gap-2">
               <CalendarDays className="h-6 w-6 text-primary" />
               Event Date & Time
             </h2>
@@ -343,7 +336,7 @@ const BookingSinger: React.FC = () => {
 
           {/* Section 2: Event Details */}
           <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-lg border border-[#E7DEFF]">
-            <h2 className="heading-4 text-[#2E1B4D] mb-6 flex items-center gap-2">
+            <h2 className="text-2xl lg:text-4xl font-bold text-[#2E1B4D] mb-6 flex items-center gap-2">
               <MapPin className="h-6 w-6 text-primary" />
               Event Details
             </h2>
@@ -353,6 +346,7 @@ const BookingSinger: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <Select
+                    className="!bg-[#F9F7FF] !px-4 py-6 shadow-none"
                     label="Event Type"
                     options={eventTypeOptions}
                     placeholder="Select event type"
@@ -363,87 +357,6 @@ const BookingSinger: React.FC = () => {
                 )}
               />
               <Controller
-                name="numberOfGuests"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    label="Number of Guests (Approximate)"
-                    options={guestOptions}
-                    placeholder="Select guest count"
-                    value={field.value}
-                    onChange={field.onChange}
-                    error={errors.numberOfGuests?.message}
-                  />
-                )}
-              />
-              <div className="md:col-span-2">
-                <Controller
-                  name="venueName"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      label="Venue Name"
-                      placeholder="Enter venue name"
-                      {...field}
-                      error={errors.venueName?.message}
-                    />
-                  )}
-                />
-              </div>
-              <div className="md:col-span-2">
-                <Controller
-                  name="venueAddress"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      label="Venue Address"
-                      placeholder="Street address"
-                      {...field}
-                      error={errors.venueAddress?.message}
-                    />
-                  )}
-                />
-              </div>
-              <Controller
-                name="city"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    label="City"
-                    placeholder="Enter city"
-                    {...field}
-                    error={errors.city?.message}
-                  />
-                )}
-              />
-              <Controller
-                name="postalCode"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    label="Postal Code"
-                    placeholder="Enter postal code"
-                    {...field}
-                    error={errors.postalCode?.message}
-                  />
-                )}
-              />
-              <Controller
-                name="country"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    label="Country"
-                    options={countryOptions}
-                    placeholder="Select country"
-                    value={field.value}
-                    onChange={field.onChange}
-                    error={errors.country?.message}
-                  />
-                )}
-              />
-              <div className="md:col-span-2">
-                <Controller
                   name="venueType"
                   control={control}
                   render={({ field }) => (
@@ -457,13 +370,81 @@ const BookingSinger: React.FC = () => {
                     />
                   )}
                 />
+              <Controller
+                name="numberOfGuests"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    className="!bg-[#F9F7FF] !px-4 py-6 shadow-none !border-none"
+                    label="Number of Guests (Approximate)"
+                    options={guestOptions}
+                    placeholder="Select guest count"
+                    value={field.value}
+                    onChange={field.onChange}
+                    error={errors.numberOfGuests?.message}
+                  />
+                )}
+              />
+              <Controller
+                name="city"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    className="!bg-[#F9F7FF] !px-4 py-6"
+                    label="City"
+                    placeholder="Enter city"
+                    {...field}
+                    error={errors.city?.message}
+                  />
+                )}
+              />
+              <Controller
+                name="postalCode"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    className="!bg-[#F9F7FF] !px-4 py-6"
+                    label="Postal Code"
+                    placeholder="Enter postal code"
+                    {...field}
+                    error={errors.postalCode?.message}
+                  />
+                )}
+              />
+                <Controller
+                  name="venueName"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                        className="!bg-[#F9F7FF] !px-4 py-6"
+                      label="Venue Name"
+                      placeholder="Enter venue name"
+                      {...field}
+                      error={errors.venueName?.message}
+                    />
+                  )}
+                />
+              <div className="md:col-span-2">
+                <Controller
+                  name="venueAddress"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                        className="!bg-[#F9F7FF] !px-4 py-6"
+                      label="Venue Address"
+                      placeholder="Street address"
+                      {...field}
+                      error={errors.venueAddress?.message}
+                    />
+                  )}
+                />
               </div>
             </div>
           </div>
 
           {/* Section 3: Your Information */}
           <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-lg border border-[#E7DEFF]">
-            <h2 className="heading-4 text-[#2E1B4D] mb-6 flex items-center gap-2">
+            <h2 className="text-2xl lg:text-4xl font-bold text-[#2E1B4D] mb-6 flex items-center gap-2">
               <User className="h-6 w-6 text-primary" />
               Your Information
             </h2>
@@ -474,6 +455,7 @@ const BookingSinger: React.FC = () => {
                   control={control}
                   render={({ field }) => (
                     <Input
+                        className="!bg-[#F9F7FF] !px-4 py-6"
                       label="Full Name"
                       placeholder="Enter your full name"
                       {...field}
@@ -487,6 +469,7 @@ const BookingSinger: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <Input
+                    className="!bg-[#F9F7FF] !px-4 py-6"
                     label="Email Address"
                     type="email"
                     placeholder="your.email@example.com"
@@ -500,6 +483,7 @@ const BookingSinger: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <Input
+                    className="!bg-[#F9F7FF] !px-4 py-6"
                     label="Phone Number"
                     type="tel"
                     placeholder="+1 (555) 000-0000"
@@ -513,7 +497,7 @@ const BookingSinger: React.FC = () => {
 
           {/* Section 4: Special Requirements & Message */}
           <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-lg border border-[#E7DEFF]">
-            <h2 className="heading-4 text-[#2E1B4D] mb-6 flex items-center gap-2">
+            <h2 className="text-2xl lg:text-4xl font-bold text-[#2E1B4D] mb-6 flex items-start sm:items-center gap-2">
               <MessageSquare className="h-6 w-6 text-primary" />
               Special Requirements & Message
             </h2>
@@ -562,7 +546,7 @@ const BookingSinger: React.FC = () => {
 
           {/* Section 5: Payment Details */}
           <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-lg border border-[#E7DEFF]">
-            <h2 className="heading-4 text-[#2E1B4D] mb-6 flex items-center gap-2">
+            <h2 className="text-2xl lg:text-4xl font-bold text-[#2E1B4D] mb-6 flex items-center gap-2">
               <CreditCard className="h-6 w-6 text-primary" />
               Payment Details
             </h2>
@@ -626,7 +610,8 @@ const BookingSinger: React.FC = () => {
             <Button
               type="submit"
               variant="primary"
-              className="flex-1"
+            //   className="flex-1"
+              size="large"
             >
               Review Booking
             </Button>

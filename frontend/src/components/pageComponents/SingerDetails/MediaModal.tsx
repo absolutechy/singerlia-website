@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Modal from "@/components/common/Modal";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper/types";
@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, Play, X } from "lucide-react";
 import singer1 from "@/assets/images/singer/singer-detail-1.png";
 import singer2 from "@/assets/images/singer/singer-detail-2.png";
 import singer3 from "@/assets/images/singer/singer-detail-3.png";
+import { Button } from "@/components/common";
 
 type Props = {
   open: boolean;
@@ -32,8 +33,23 @@ const MediaModal: React.FC<Props> = ({ open, onClose }) => {
     } as const;
   }, []);
 
+  // Ensure Swiper recalculates when modal opens and on resize
+  useEffect(() => {
+    if (!open) return;
+    // slight delay to allow modal layout to settle
+    const id = window.setTimeout(() => {
+      swiperRef.current?.update?.();
+    }, 60);
+    const onResize = () => swiperRef.current?.update?.();
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.clearTimeout(id);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [open]);
+
   return (
-    <Modal open={open} onClose={onClose} panelClassName="max-w-[1100px] w-full p-6">
+    <Modal open={open} onClose={onClose} panelClassName="max-w-[1100px] h-[90vh] overflow-y-scroll w-full p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl sm:text-2xl font-bold text-[#1C1C1C]">
@@ -52,19 +68,20 @@ const MediaModal: React.FC<Props> = ({ open, onClose }) => {
       <div className="mt-5 flex items-center justify-center">
         <div className="inline-flex items-center rounded-full bg-[#F7F7F7] px-1 py-1">
           {(["videos", "photos"] as const).map((tab) => (
-            <button
+            <Button
+              variant="default"
               key={tab}
               onClick={() => {
                 setMediaTab(tab);
                 setActiveSlide(0);
                 swiperRef.current?.slideTo(0);
               }}
-              className={`px-12 py-2 rounded-full text-sm font-semibold transition-colors ${
-                mediaTab === tab ? "text-white bg-primary" : "text-[#CDCDCD]"
+              className={`px-12 py-2 !rounded-full text-sm font-semibold transition-colors ${
+                mediaTab === tab ? "!text-white !bg-primary" : "!text-black"
               }`}
             >
               {tab === "videos" ? "Videos" : "Photos"}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -93,26 +110,30 @@ const MediaModal: React.FC<Props> = ({ open, onClose }) => {
           onSlideChange={(s) => setActiveSlide(s.realIndex)}
           loop={true}
           centeredSlides={true}
-          slidesPerView={3}
+          // rely on breakpoints only for clarity
           breakpoints={{
-            640: { slidesPerView: 1.4 },
-            768: { slidesPerView: 2.1 },
+            0: { slidesPerView: 1 },
+            640: { slidesPerView: 1 },
+            768: { slidesPerView: 3 },
             1024: { slidesPerView: 3 },
           }}
           spaceBetween={0}
-          className="px-4 h-[31rem]"
+          observer={true}
+          observeParents={true}
+          observeSlideChildren={true}
+          className="px-4 lg:h-[31rem]"
         >
           {mediaData[mediaTab].map((item, i) => (
             <SwiperSlide key={`${mediaTab}-${item.id}`} className="!flex !items-center !justify-center">
               <div
                 className={`relative flex items-center justify-center mx-auto rounded-3xl overflow-hidden p-1 transition-all duration-300 ${
-                  i === activeSlide ? "opacity-100 max-w-[23rem] w-full" : "opacity-50 max-w-[14rem]"
+                  i === activeSlide ? "opacity-100 sm:max-w-[23rem] w-full" : "opacity-50 max-w-[14rem]"
                 }`}
               >
                 <img
                   src={item.src}
                   alt={item.title}
-                  className={`w-full rounded-3xl ${i === activeSlide ? "h-[29rem]" : "h-[18rem]"} object-cover`}
+                  className={`w-full rounded-3xl ${i === activeSlide ? "sm:h-[29rem]" : "sm:h-[18rem]"} object-cover`}
                 />
                 {mediaTab === "videos" && (
                   <button
