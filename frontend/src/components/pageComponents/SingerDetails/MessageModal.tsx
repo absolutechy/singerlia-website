@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Modal from "@/components/common/Modal";
 import { X } from "lucide-react";
+import { Button } from "@/components/common";
 
 type Props = {
   open: boolean;
@@ -30,7 +31,8 @@ const MessageModal: React.FC<Props> = ({ open, onClose, name }) => {
         <div className="mt-2 rounded-2xl border border-[#E7DEFF] bg-white p-1 shadow-sm">
           <textarea
             value={messageText}
-            onChange={(e) => setMessageText(e.target.value.slice(0, 100))}
+            onChange={(e) => setMessageText(e.target.value)}
+            // onChange={(e) => setMessageText(e.target.value.slice(0, 100))}
             placeholder={
               'Example" Hi! I\'m planning a my birthday and was wondering if you\'re available the weekend of January 01 for 200 people ready to experience your singing.'
             }
@@ -43,9 +45,9 @@ const MessageModal: React.FC<Props> = ({ open, onClose, name }) => {
       </div>
 
       <div className="mt-6">
-        <button disabled={messageText.length < 100} className="w-full h-12 rounded-xl text-[#1C1C1C] font-semibold bg-gradient-to-b from-[#FFCD00] to-[#E6B800] disabled:opacity-60">
+        <Button variant="primary" className="w-full" disabled={messageText.length < 100}>
           Send message
-        </button>
+        </Button>
       </div>
     </Modal>
   );
