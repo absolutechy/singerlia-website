@@ -15,8 +15,10 @@ app.use(
 app.use(morgan("dev"));
 
 const authRouter = require("./routers/authRouter");
+const singerRouter = require("./routers/singerRouter");
 
 app.use("/auth", authRouter);
+app.use("/singer", singerRouter);
 
 app.get("/health", (req, res) => {
   const healthInfo = {

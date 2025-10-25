@@ -26,7 +26,7 @@ const registerUser = async (req, res) => {
       last_name,
       phonenumber,
       email,
-      gender,
+      genre,
       intro_vid_link,
       city,
       address,
@@ -51,7 +51,7 @@ const registerUser = async (req, res) => {
       name: `${first_name} ${last_name}`,
       phonenumber,
       email: email || null,
-      gender: gender || null,
+      genre: genre || null,
       intro_vid_link: intro_vid_link || null,
       city: city || null,
       address: address || null,
@@ -228,6 +228,7 @@ const getUserProfile = async (req, res) => {
     res.status(200).json({
       userId: user.userId,
       name: user.name,
+      phonenumber: user.phonenumber,
       role: user.role,
     });
   } catch (error) {
@@ -243,6 +244,12 @@ const resetPassword = async (req, res) => {
 
     if (!previousPassword || !newPassword) {
       return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    if (previousPassword === newPassword) {
+      return res
+        .status(400)
+        .json({ message: "New password cannot be the same as the old one" });
     }
 
     const isPasswordValid = await verifyPassword(
@@ -318,6 +325,17 @@ const resetForgottenPassword = async (req, res) => {
         .status(400)
         .json({ message: "Reset password code has expired" });
     }
+    const isPasswordSame = await verifyPassword(
+      user.userId,
+      newPassword,
+      user.password
+    );
+    if (isPasswordSame) {
+      return res
+        .status(400)
+        .json({ message: "New password cannot be the same as the old one" });
+    }
+
     const hashedNewPassword = await hashPassword(user.userId, newPassword);
     user.password = hashedNewPassword;
     user.resetPasswordCode = null;

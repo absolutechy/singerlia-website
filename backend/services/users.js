@@ -8,13 +8,13 @@ const getAllUsers = async () => {
   try {
     const users = await s3Service.getS3JsonObject(BUCKET, USERS);
     if (!users) {
-      return [];
+      return {};
     } else {
       return users;
     }
   } catch (error) {
     if (error.name === "NoSuchKey") {
-      return [];
+      return {};
     }
     throw error;
   }
@@ -22,15 +22,25 @@ const getAllUsers = async () => {
 
 const userIfAlreadyExists = async (phonenumber, userId) => {
   const users = await getAllUsers();
-  return users.find(
-    (user) => user.phonenumber === phonenumber || user.userId === userId
+  if (Object.keys(users).length === 0) {
+    return null;
+  }
+  return (
+    users[userId] ||
+    Object.values(users).find((user) => user.phonenumber === phonenumber) ||
+    null
   );
 };
 
 const saveUser = async (newUser) => {
   try {
-    const users = await getAllUsers();
-    users.push(newUser);
+    let users = await getAllUsers();
+    if (Object.keys(users).length === 0) {
+      users = { [newUser.userId]: newUser };
+      await s3Service.putS3JsonObject(BUCKET, USERS, users);
+      return newUser;
+    }
+    users[newUser.userId] = newUser;
     await s3Service.putS3JsonObject(BUCKET, USERS, users);
     return newUser;
   } catch (error) {
@@ -41,11 +51,10 @@ const saveUser = async (newUser) => {
 const updateUser = async (updatedUser) => {
   try {
     const users = await getAllUsers();
-    const index = users.findIndex((user) => user.userId === updatedUser.userId);
-    if (index === -1) {
+    if (Object.keys(users).length === 0 || !users[updatedUser.userId]) {
       throw new Error("User not found");
     }
-    users[index] = updatedUser;
+    users[updatedUser.userId] = updatedUser;
     await s3Service.putS3JsonObject(BUCKET, USERS, users);
     return updatedUser;
   } catch (error) {
