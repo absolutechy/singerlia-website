@@ -39,7 +39,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   };
 
   return (
-    <div className="bg-white w-full max-w-5xl mx-3 lg:mx-auto rounded-2xl p-4 md:p-6 shadow-lg">
+    <div className="bg-white w-full max-w-5xl lg:mx-auto rounded-2xl p-4 md:p-6 shadow-lg">
       <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-end">
         {/* Search Favorite Singer */}
         <div className="flex-1 md:border-r-2 md:border-[#CDCDCD] md:pr-4">

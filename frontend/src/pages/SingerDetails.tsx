@@ -1,91 +1,190 @@
-import React from "react";
-import { Share2, Heart, Image as ImageIcon } from "lucide-react";
-import singer1 from "@/assets/images/singer/singer-detail-1.png";
-import singer2 from "@/assets/images/singer/singer-detail-2.png";
-import singer3 from "@/assets/images/singer/singer-detail-3.png";
+import React, { useEffect, useRef, useState } from "react";
+import { ArrowUp } from "lucide-react";
+import MediaModal from "@/components/pageComponents/SingerDetails/MediaModal";
+import MessageModal from "@/components/pageComponents/SingerDetails/MessageModal";
+import ReviewsModal from "@/components/pageComponents/SingerDetails/ReviewsModal";
+import ProfileSidebar from "@/components/pageComponents/SingerDetails/ProfileSidebar";
+import MediaGrid from "@/components/pageComponents/SingerDetails/MediaGrid";
+import IconBubble from "@/components/pageComponents/SingerDetails/IconBubble";
+import ReviewsPreview from "@/components/pageComponents/SingerDetails/ReviewsPreview";
+import FAQSection from "@/components/pageComponents/SingerDetails/FAQSection";
 
 const paragraph =
   "We are committed to supporting singers by providing them with greater visibility, valuable opportunities, and direct connections with clients who truly appreciate their art. From solo acts to bands, classical to contemporary, we give singers the tools to showcase their talent, grow their audience, and build lasting relationships with customers.";
 
+// FAQ data with dummy answers (UI shows questions only to match design)
+const faqs = [
+  {
+    question: "add singer faq's about event safety and terms policy.",
+    answer:
+      "Dummy answer explaining safety protocols, performance timings, and cancellation terms for events.",
+  },
+  {
+    question: "add singer faq's about event safety and terms policy.",
+    answer:
+      "Dummy answer covering on-site precautions, equipment handling, and client responsibilities.",
+  },
+  {
+    question: "add singer faq's about event safety and terms policy.",
+    answer:
+      "Dummy answer with details on deposits, refunds, and weather considerations.",
+  },
+  {
+    question: "add singer faq's about event safety and terms policy.",
+    answer:
+      "Dummy answer about performance length, breaks, and communication guidelines.",
+  },
+];
+
 const SingerDetails: React.FC = () => {
   const name = "John Doberman";
+  const [reviewsOpen, setReviewsOpen] = useState(false);
+  const [messageOpen, setMessageOpen] = useState(false);
+  const [mediaOpen, setMediaOpen] = useState(false);
+
+  const allReviews = [
+    {
+      id: 1,
+      name: "Liam",
+      location: "Yellowknife, Canada",
+      avatar:
+        "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=96&q=60",
+      rating: 5.0,
+      timeAgo: "1 week ago",
+      text: "Jhon was awesome singer, knew exactly where to go for the best singer experience !",
+    },
+    {
+      id: 2,
+      name: "Liam",
+      location: "Yellowknife, Canada",
+      avatar:
+        "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=96&q=60",
+      rating: 5.0,
+      timeAgo: "1 week ago",
+      text: "Jhon was awesome singer, knew exactly where to go for the best singer experience !",
+    },
+    {
+      id: 3,
+      name: "Liam",
+      location: "Yellowknife, Canada",
+      avatar:
+        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=96&q=60",
+      rating: 5.0,
+      timeAgo: "1 week ago",
+      text: "Jhon was awesome singer, knew exactly where to go for the best singer experience !",
+    },
+    {
+      id: 4,
+      name: "Liam",
+      location: "Yellowknife, Canada",
+      avatar:
+        "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?auto=format&fit=crop&w=96&q=60",
+      rating: 5.0,
+      timeAgo: "1 week ago",
+      text: "Jhon was awesome singer, knew exactly where to go for the best singer experience !",
+    },
+  ];
+
+  // Floating "View all" cursor setup
+  const cursorRef = useRef<HTMLDivElement | null>(null);
+  const targetPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const currentPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const rafRef = useRef<number | null>(null);
+  const [cursorVisible, setCursorVisible] = useState(false);
+
+  // Smooth follow animation
+  useEffect(() => {
+    if (!cursorVisible) return;
+    const animate = () => {
+      const lerp = 0.18; // smoothing factor
+      currentPosRef.current.x += (targetPosRef.current.x - currentPosRef.current.x) * lerp;
+      currentPosRef.current.y += (targetPosRef.current.y - currentPosRef.current.y) * lerp;
+      if (cursorRef.current) {
+        cursorRef.current.style.transform = `translate3d(${currentPosRef.current.x}px, ${currentPosRef.current.y}px, 0)`;
+      }
+      rafRef.current = requestAnimationFrame(animate);
+    };
+    rafRef.current = requestAnimationFrame(animate);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    };
+  }, [cursorVisible]);
+
+  const handleGridMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Position cursor centered on pointer
+    const size = 80; // approximate visual size of the circle
+    targetPosRef.current = { x: e.clientX - size / 2, y: e.clientY - size / 2 };
+    if (!cursorVisible) setCursorVisible(true);
+    // Initialize current position if first move
+    if (currentPosRef.current.x === 0 && currentPosRef.current.y === 0) {
+      currentPosRef.current = { ...targetPosRef.current };
+      if (cursorRef.current) {
+        cursorRef.current.style.transform = `translate3d(${currentPosRef.current.x}px, ${currentPosRef.current.y}px, 0)`;
+      }
+    }
+  };
+
+  const handleGridMouseEnter = () => setCursorVisible(true);
+  const handleGridMouseLeave = () => {
+    setCursorVisible(false);
+  };
 
   return (
     <div className="custom-container pb-16">
+      {/* Floating cursor element (hidden until hovering media grid) */}
+      {cursorVisible && (
+        <div
+          ref={cursorRef}
+          className="fixed z-50 pointer-events-none"
+          style={{ left: 0, top: 0 }}
+          aria-hidden
+        >
+          <div className="relative inline-flex h-20 w-20 items-center justify-center rounded-full text-sm font-medium text-gray-900 select-none">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="120"
+              height="120"
+              viewBox="0 0 120 120"
+              fill="none"
+              className="absolute -inset-[20px]"
+            >
+              <circle cx="60" cy="60" r="59.5" fill="white" stroke="url(#paint0_linear_46_486)" />
+              <defs>
+                <linearGradient id="paint0_linear_46_486" x1="-52.8" y1="120" x2="145.2" y2="20.4" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="white" stopOpacity="0" />
+                  <stop offset="1" stopColor="#4D4D4D" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <ArrowUp className="absolute bottom-8 left-8 rotate-45" size={30} />
+            <span className="absolute rotate-45 bottom-4 right-6 outfit">View all</span>
+          </div>
+        </div>
+      )}
       <div className="grid gap-8 lg:grid-cols-[0.4fr_1fr] ">
         {/* Left fixed column */}
-        <aside className="self-start sticky top-28 space-y-5">
-          {/* Main card */}
-          <div className="rounded-3xl bg-white p-4">
-            <div className="relative">
-              <img src={singer2} alt="cover" className="w-full rounded-2xl h-52 object-cover overflow-hidden" />
-              {/* small avatar */}
-              <img
-                src={singer1}
-                alt="avatar"
-                className="w-14 h-14 z-50 rounded-full object-cover absolute -bottom-7 left-4 border-4 border-white"
-              />
-            </div>
-            <div className="pt-10 z-10">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-2xl font-bold text-[#1C1C1C]">{name}</h2>
-                  <p className="text-sm text-[#6F5D9E]">Responds within 1/hr</p>
-                </div>
-              </div>
-
-
-              <div className="mt-4 flex gap-2">
-                <button className="h-10 w-10 rounded-full border border-[#E7DEFF] bg-white flex items-center justify-center"><Share2 size={18} className="text-[#6F5D9E]"/></button>
-                <button className="h-10 w-10 rounded-full border border-[#E7DEFF] bg-white flex items-center justify-center"><Heart size={18} className="text-[#6F5D9E]"/></button>
-              </div>
-            </div>
-          </div>
-
-          {/* Booking card */}
-          <div className="relative rounded-2xl bg-white px-5 py-10 shadow border border-[#EBE4FF]">
-            <span className="absolute -top-3 right-6 text-xs bg-white shadow px-3 py-1 rounded-full border border-[#EBE4FF]">Free cancellation</span>
-            <button className="w-full h-12 rounded-full bg-gradient-to-b from-secondary to-secondary-dark text-[#1C1C1C] font-semibold shadow">
-              Book Singer
-            </button>
-          </div>
-        </aside>
+        <ProfileSidebar id={1} name={name} />
 
         {/* Right content */}
         <section className="space-y-8">
-          {/* Title + show all media */}
-          <div className="flex items-center justify-between">
-            <h1 className="heading-4 text-[#2E1B4D]">Signer Service title here</h1>
-            <button className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2 shadow border border-[#E7DEFF] text-sm font-semibold text-[#2E1B4D]">
-              <ImageIcon size={16} /> Show all media
-            </button>
-          </div>
 
           {/* Media gallery - matches layout: big left (2x2), four small on right */}
           <div
-            className="grid grid-cols-4 gap-4"
-            style={{ gridAutoRows: "160px" }}
+            onMouseEnter={handleGridMouseEnter}
+            onMouseMove={handleGridMouseMove}
+            onMouseLeave={handleGridMouseLeave}
+            onClick={() => setMediaOpen(true)}
+            className="cursor-none"
           >
-            <div className="col-span-2 row-span-2 rounded-2xl overflow-hidden">
-              <img src={singer1} alt="main" className="w-full h-full object-cover" />
-            </div>
-            <div className="rounded-2xl overflow-hidden">
-              <img src={singer1} alt="m2" className="w-full h-full object-cover" />
-            </div>
-            <div className="rounded-2xl overflow-hidden">
-              <img src={singer1} alt="m3" className="w-full h-full object-cover" />
-            </div>
-            <div className="rounded-2xl overflow-hidden">
-              <img src={singer2} alt="m4" className="w-full h-full object-cover" />
-            </div>
-            <div className="rounded-2xl overflow-hidden">
-              <img src={singer3} alt="m5" className="w-full h-full object-cover" />
-            </div>
+            <MediaGrid />
           </div>
 
           {/* My Experience header aligned with social icons */}
           <div className="flex items-center justify-between pt-2">
-            <h3 className="text-2xl font-bold text-[#1C1C1C]">My Experience</h3>
+            <h3 className="text-lg lg:text-2xl font-bold text-[#1C1C1C]">
+              My Experience
+            </h3>
             <div className="flex gap-3">
               <IconBubble type="instagram" />
               <IconBubble type="music" />
@@ -105,42 +204,82 @@ const SingerDetails: React.FC = () => {
               </li>
               <li>
                 <p className="font-semibold">Career highlight</p>
-                <p className="text-[#6F5D9E]">Over 10 years singing customers around UK and Europe!</p>
+                <p className="text-[#6F5D9E]">
+                  Over 10 years singing customers around UK and Europe!
+                </p>
               </li>
               <li>
                 <p className="font-semibold">Education and training</p>
-                <p className="text-[#6F5D9E]">Singing Diploma of ETIC and earned an MBA in Marketing at University of Sunderland.</p>
+                <p className="text-[#6F5D9E]">
+                  Singing Diploma of ETIC and earned an MBA in Marketing at
+                  University of Sunderland.
+                </p>
               </li>
             </ul>
           </div>
-
           {/* Message button */}
           <div className="pt-4">
-            <button className="w-full h-12 rounded-xl border border-[#E7DEFF] bg-white text-[#2E1B4D] font-semibold">
+            <button
+              onClick={() => setMessageOpen(true)}
+              className="w-full h-12 rounded-xl border border-[#E7DEFF] bg-white text-[#2E1B4D] font-semibold"
+            >
               Message {name.split(" ")[0]}
             </button>
           </div>
+
+          {/* Reviews preview */}
+          <ReviewsPreview
+            items={[
+              {
+                id: 1,
+                name: "Liam",
+                location: "Yellowknife, Canada",
+                avatar:
+                  "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=96&q=60",
+                rating: 5.0,
+                timeAgo: "1 week ago",
+              },
+              {
+                id: 2,
+                name: "Liam",
+                location: "Yellowknife, Canada",
+                avatar:
+                  "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=96&q=60",
+                rating: 5.0,
+                timeAgo: "1 week ago",
+              },
+              {
+                id: 3,
+                name: "Liam",
+                location: "Yellowknife, Canada",
+                avatar:
+                  "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=96&q=60",
+                rating: 5.0,
+                timeAgo: "1 week ago",
+              },
+            ]}
+            onShowAll={() => setReviewsOpen(true)}
+          />
         </section>
+        {/* Media Modal */}
+        <MediaModal open={mediaOpen} onClose={() => setMediaOpen(false)} />
+        {/* Message Modal */}
+        <MessageModal
+          open={messageOpen}
+          onClose={() => setMessageOpen(false)}
+          name={name}
+        />
+        {/* Reviews Modal */}
+        <ReviewsModal
+          open={reviewsOpen}
+          onClose={() => setReviewsOpen(false)}
+          reviews={allReviews}
+        />
       </div>
+      {/* FAQ Section */}
+      <FAQSection faqs={faqs} />
     </div>
   );
 };
 
 export default SingerDetails;
-
-// Local small icon bubble component using lucide icons to mirror the screenshot look
-import { Instagram, Music2, Youtube, Disc3, Linkedin } from "lucide-react";
-
-type BubbleType = "instagram" | "music" | "youtube" | "disc" | "linkedin";
-
-const IconBubble: React.FC<{ type: BubbleType }> = ({ type }) => {
-  const base = "h-9 w-9 rounded-full border border-[#E7DEFF] bg-white flex items-center justify-center text-[#2E1B4D]";
-  const map: Record<BubbleType, React.ReactNode> = {
-    instagram: <Instagram size={16} />,
-    music: <Music2 size={16} />,
-    youtube: <Youtube size={16} />,
-    disc: <Disc3 size={16} />,
-    linkedin: <Linkedin size={16} />,
-  };
-  return <button className={base}>{map[type]}</button>;
-};

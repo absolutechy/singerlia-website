@@ -15,7 +15,11 @@ const singerImages = [
   singerperson, // Replace with different images
 ];
 
-const SingerCard: React.FC = () => {
+interface SingerCardProps {
+  onViewDetails?: () => void;
+}
+
+const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails } ) => {
   const uniqueId = useId();
   const uniqueBase = useMemo(() => uniqueId.replace(/:/g, ""), [uniqueId]);
   const paginationClass = `swiper-pagination-${uniqueBase}`;
@@ -30,7 +34,7 @@ const SingerCard: React.FC = () => {
   };
 
   return (
-    <div className=" hover:bg-[#F7F7F7] w-full rounded-2xl shadow-xl p-4 border border-[#CDCDCD] group transition-all duration-500">
+    <div className="w-full hover:bg-[#F7F7F7] rounded-2xl shadow-xl p-4 border border-[#CDCDCD] group transition-all duration-500">
       <div className="w-full relative rounded-xl overflow-hidden">
         <img
           src={logo}
@@ -95,6 +99,7 @@ const SingerCard: React.FC = () => {
         Signer Service title here
       </p>
       <Button
+        onClick={onViewDetails}
         size="large"
         className="text-lg !text-primary font-medium !border !border-[#CDCDCD] !group-hover:border-primary group-hover:!bg-primary group-hover:!text-white w-full rounded-lg p-2 cursor-pointer transition-all duration-500">
         View details

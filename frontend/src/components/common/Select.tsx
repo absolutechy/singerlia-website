@@ -35,7 +35,7 @@ const Select: React.FC<SelectProps> = ({
   disabled,
 }) => {
   return (
-    <div className="flex flex-col gap-1 w-full">
+    <div className="flex flex-col gap-1 w-full z-0">
       {label && (
         <label className="heading-6 text-sm !font-normal text-start">
           {label}
@@ -54,7 +54,11 @@ const Select: React.FC<SelectProps> = ({
         </SelectTrigger>
         <SelectContent className="z-50 bg-white">
           {options.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
+            <SelectItem
+              key={option.value}
+              value={option.value}
+              className="cursor-pointer hover:bg-gray-100 focus:bg-gray-100"
+            >
               {option.label}
             </SelectItem>
           ))}

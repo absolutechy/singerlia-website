@@ -7,6 +7,7 @@ import Button from "@/components/common/Button";
 import PriceRange from "@/components/common/PriceRange";
 import SingerCard from "@/components/common/SingerCard";
 import { SearchBar } from "@/components/common";
+import { useNavigate } from "react-router";
 
 const SearchResults: React.FC = () => {
   const [priceRange, setPriceRange] = useState({ min: 0, max: 75000 });
@@ -14,6 +15,7 @@ const SearchResults: React.FC = () => {
   const [tags, setTags] = useState<string[]>([]);
   const [active, setActive] = useState("Today");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const navigate = useNavigate();
 
   const buttons = ["Today", "Tomorrow", "This Week", "Custom Dates"];
 
@@ -110,7 +112,7 @@ const SearchResults: React.FC = () => {
       {/* Offcanvas Overlay */}
       {isFilterOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-40 transition-opacity"
+          className="fixed inset-0 bg-black/50 z-40 transition-opacity no-doc-scroll"
           onClick={() => setIsFilterOpen(false)}
         />
       )}
@@ -121,7 +123,7 @@ const SearchResults: React.FC = () => {
           isFilterOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 ">
           {/* Header */}
           <div className="flex items-center justify-between pb-4 border-b border-gray-200">
             <h3 className="text-2xl font-bold text-[#1C1C1C]">Filters</h3>
@@ -298,7 +300,7 @@ const SearchResults: React.FC = () => {
               // image={it.image}
               // name={it.name}
               // serviceTitle={it.service}
-              // onViewDetails={() => navigate(`/singers/${it.id}`)}
+              onViewDetails={() => navigate(`/singers/${it.id}`)}
             />
           ))}
           <div className="col-span-full flex justify-center mt-6">

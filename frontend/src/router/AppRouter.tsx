@@ -10,6 +10,7 @@ import { Route, Routes } from "react-router"
 import SingerProfile from "@/pages/SingerProfile"
 import SearchResults from "@/pages/SearchResults"
 import SingerDetails from "@/pages/SingerDetails"
+import BookingSinger from "@/pages/BookingSinger"
 
 const AppRouter = () => {
   return (
@@ -25,6 +26,7 @@ const AppRouter = () => {
         <Route path="/singer-profile" element={<SingerProfile />} />
         <Route path="/search" element={<SearchResults />} />
         <Route path="/singers/:id" element={<SingerDetails />} />
+        <Route path="/booking/singer/:id" element={<BookingSinger />} />
       </Routes>
   )
 }
