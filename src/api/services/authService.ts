@@ -73,6 +73,7 @@ export interface ResetPasswordResponse {
 
 export interface ResendOtpData {
   userId: string;
+  newphonenumber?: string;
 }
 
 export interface ResendOtpResponse {
@@ -211,7 +212,7 @@ const authService = {
 
   /**
    * Resend OTP for user verification
-   * @param data - userId
+   * @param data - userId and optional newphonenumber
    */
   resendOtp: async (data: ResendOtpData): Promise<ResendOtpResponse> => {
     const response = await axiosInstance.post<ResendOtpResponse>(

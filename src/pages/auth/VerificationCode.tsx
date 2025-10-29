@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import AuthModalLayout from "@/components/auth/AuthModalLayout";
 import LogoBadge from "@/components/auth/LogoBadge";
 import OtpInput from "@/components/auth/OtpInput";
-import { Button } from "@/components/common";
+import { Button, Input } from "@/components/common";
 import authService from "@/api/services/authService";
 
 const VerificationCode: React.FC = () => {
@@ -16,6 +16,8 @@ const VerificationCode: React.FC = () => {
   const [userPhone, setUserPhone] = useState("");
   const [timer, setTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
+  const [isEditingPhone, setIsEditingPhone] = useState(false);
+  const [newPhone, setNewPhone] = useState("");
 
   // Get userId from sessionStorage
   useEffect(() => {
@@ -86,8 +88,16 @@ const VerificationCode: React.FC = () => {
     }
   };
 
-  const handleResendCode = async () => {
-    if (!canResend) return;
+  const handleResendCode = async (useNewPhone: boolean = false) => {
+    if (!canResend && !useNewPhone) return;
+
+    // Validate new phone number if changing
+    if (useNewPhone) {
+      if (!newPhone.trim()) {
+        setError("Please enter a valid phone number");
+        return;
+      }
+    }
 
     setError("");
     setSuccess("");
@@ -96,11 +106,22 @@ const VerificationCode: React.FC = () => {
     try {
       const response = await authService.resendOtp({
         userId,
+        ...(useNewPhone && newPhone.trim() && { newphonenumber: newPhone.trim() }),
       });
 
       console.log("OTP resent:", response);
       
-      setSuccess("Verification code resent successfully!");
+      // Update the displayed phone number if changed
+      if (useNewPhone && newPhone.trim()) {
+        setUserPhone(newPhone.trim());
+        sessionStorage.setItem("userPhone", newPhone.trim());
+        setIsEditingPhone(false);
+        setNewPhone("");
+        setSuccess(`Verification code sent to ${newPhone.trim()}!`);
+      } else {
+        setSuccess("Verification code resent successfully!");
+      }
+      
       setTimer(60);
       setCanResend(false);
       
@@ -112,6 +133,19 @@ const VerificationCode: React.FC = () => {
     }
   };
 
+  const handleChangePhone = () => {
+    setIsEditingPhone(true);
+    setNewPhone("");
+    setError("");
+    setSuccess("");
+  };
+
+  const handleCancelChangePhone = () => {
+    setIsEditingPhone(false);
+    setNewPhone("");
+    setError("");
+  };
+
   return (
     <AuthModalLayout title="Identify Verification">
       <div className="space-y-5 text-center">
@@ -120,9 +154,50 @@ const VerificationCode: React.FC = () => {
           <h3 className="text-xl font-semibold text-[#2F1C4E]">
             Text Confirmation
           </h3>
-          <p className="text-sm text-[#6F5D9E]">
-            A code was sent to {userPhone}
-          </p>
+          {!isEditingPhone ? (
+            <div className="flex items-center justify-center gap-2">
+              <p className="text-sm text-[#6F5D9E]">
+                A code was sent to {userPhone}
+              </p>
+              <button
+                type="button"
+                onClick={handleChangePhone}
+                className="text-xs text-primary font-semibold hover:underline"
+              >
+                Change
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-3 px-4">
+              <p className="text-sm text-[#6F5D9E]">Enter new phone number</p>
+              <Input
+                id="newPhone"
+                type="tel"
+                placeholder="New Phone Number"
+                className="bg-[#F7FBFF] border border-[#D4D7E3] !pl-2 !py-3 text-sm"
+                value={newPhone}
+                onChange={(e) => setNewPhone(e.target.value)}
+              />
+              <div className="flex gap-2 justify-center">
+                <Button
+                  variant="secondary"
+                  className="rounded-full hover:bg-[#4A1F6B]"
+                  onClick={() => handleResendCode(true)}
+                  disabled={loading || !newPhone.trim()}
+                >
+                  Send Code
+                </Button>
+                <Button
+                  variant="default"
+                  className="text-xs px-4 py-2 border border-primary !text-primary rounded-full hover:bg-gray-50"
+                  onClick={handleCancelChangePhone}
+                  disabled={loading}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
         {error && (
           <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
@@ -136,19 +211,23 @@ const VerificationCode: React.FC = () => {
         )}
         <OtpInput onChange={setCode} />
         <div className="flex flex-col">
-          {timer > 0 ? (
-            <p className="text-sm text-[#6F5D9E] mb-5">
-              Resend code in {timer} seconds
-            </p>
-          ) : (
-            <Button
-              type="button"
-              className="text-sm font-semibold mb-5 !text-primary underline-offset-4 hover:underline"
-              onClick={handleResendCode}
-              disabled={loading || !canResend}
-            >
-              Resend code
-            </Button>
+          {!isEditingPhone && (
+            <>
+              {timer > 0 ? (
+                <p className="text-sm text-[#6F5D9E] mb-5">
+                  Resend code in {timer} seconds
+                </p>
+              ) : (
+                <Button
+                  type="button"
+                  className="text-sm font-semibold mb-5 !text-primary underline-offset-4 hover:underline"
+                  onClick={() => handleResendCode(false)}
+                  disabled={loading || !canResend}
+                >
+                  Resend code
+                </Button>
+              )}
+            </>
           )}
           <Button
             variant="secondary"
