@@ -52,8 +52,20 @@ export interface UserProfileResponse {
   role: string;
 }
 
+// Custom event for auth state changes
+const AUTH_EVENT = 'auth-state-changed';
+
+export const dispatchAuthEvent = () => {
+  window.dispatchEvent(new CustomEvent(AUTH_EVENT));
+};
+
+export const subscribeToAuthChanges = (callback: () => void) => {
+  window.addEventListener(AUTH_EVENT, callback);
+  return () => window.removeEventListener(AUTH_EVENT, callback);
+};
+
 // Auth Service Functions
-const authService = {
+const authService = { 
   /**
    * Register a new user
    * @param role - 'user' or 'singer'
@@ -93,6 +105,9 @@ const authService = {
     if (response.data.token) {
       localStorage.setItem('authToken', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user_metadata));
+      
+      // Notify other components of auth state change
+      dispatchAuthEvent();
     }
     
     return response.data;
@@ -114,6 +129,9 @@ const authService = {
   logout: () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
+    
+    // Notify other components of auth state change
+    dispatchAuthEvent();
   },
 
   /**

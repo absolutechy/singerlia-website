@@ -11,7 +11,6 @@ import Welcome from "@/components/pageComponents/Home/Welcome";
 import Why from "@/components/pageComponents/Home/Why";
 
 const Home = () => {
-
   return (
     <div>
       <Hero />

@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { Globe, Menu, X } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { Globe, Menu, X, User, LogOut, LayoutDashboard, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "./Button";
 import LogoFull from "../../assets/images/common/logofull.png";
 import { Link, useNavigate, useLocation } from "react-router";
+import authService, { type UserMetadata, subscribeToAuthChanges } from "@/api/services/authService";
 
 interface NavItem {
   id: string;
@@ -17,6 +18,9 @@ const Header: React.FC = () => {
   const [activeNav, setActiveNav] = useState<string>("home");
   const [compact, setCompact] = useState<boolean>(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+  const [user, setUser] = useState<UserMetadata | null>(null);
+  const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const navItems: NavItem[] = [
     { id: "home", label: "Home", href: "/" },
@@ -70,6 +74,58 @@ const Header: React.FC = () => {
       setMobileMenuOpen(false);
     }
   }, [windowWidth, mobileMenuOpen]);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      if (authService.isAuthenticated()) {
+        try {
+          const result = await authService.checkAuth();
+          setUser({
+            userId: result.userId,
+            name: result.name,
+            role: result.role,
+          });
+        } catch (err) {
+          // Token invalid, clear auth
+          authService.logout();
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+    };
+    
+    // Check auth on mount
+    checkAuth();
+    
+    // Subscribe to auth changes (login/logout from other components)
+    const unsubscribe = subscribeToAuthChanges(() => {
+      checkAuth();
+    });
+    
+    return unsubscribe;
+  }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    
+    if (dropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [dropdownOpen]);
+
+  const handleLogout = () => {
+    authService.logout();
+    setUser(null);
+    setDropdownOpen(false);
+    navigate('/');
+  };
 
   return (
     <motion.header
@@ -187,40 +243,97 @@ const Header: React.FC = () => {
           </motion.div>
         </button>
 
-        {/* Log In Button - Desktop Only */}
-        <motion.div
-          className="hidden md:block"
-          animate={{
-            scale: compact ? 0.9 : 1,
-          }}
-          transition={{ type: "spring", stiffness: 300, damping: 28 }}
-        >
-          <Button
-            variant="default"
-            size={compact ? "small" : "medium"}
-            onClick={() => navigate("/auth/login")}
-          >
-            Log In
-          </Button>
-        </motion.div>
+        {/* Authenticated User Avatar & Dropdown - Desktop Only */}
+        {user ? (
+          <div className="hidden md:block relative" ref={dropdownRef}>
+            <motion.button
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              animate={{
+                scale: compact ? 0.9 : 1,
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 28 }}
+            >
+              <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center">
+                <User size={18} className="text-primary" />
+              </div>
+              <span className="text-white text-sm font-medium">{user.name}</span>
+              <ChevronDown 
+                size={16} 
+                className={`text-white transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} 
+              />
+            </motion.button>
 
-        {/* Sign Up Button - Desktop Only */}
-        <motion.div
-          className="hidden md:block"
-          animate={{
-            scale: compact ? 0.9 : 1,
-          }}
-          transition={{ type: "spring", stiffness: 300, damping: 28 }}
-        >
-          <Button
-            variant="primary"
-            className="!px-6 sm:!px-10"
-            size={compact ? "small" : "medium"}
-            onClick={() => navigate("/auth/create-account")}
-          >
-            Sign Up
-          </Button>
-        </motion.div>
+            {/* Dropdown Menu */}
+            <AnimatePresence>
+              {dropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg overflow-hidden z-50"
+                >
+                  <button
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      navigate('/dashboard');
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-100 transition-colors"
+                  >
+                    <LayoutDashboard size={18} />
+                    <span className="font-medium">Dashboard</span>
+                  </button>
+                  <div className="border-t border-gray-200"></div>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    <LogOut size={18} />
+                    <span className="font-medium">Logout</span>
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        ) : (
+          <>
+            {/* Log In Button - Desktop Only */}
+            <motion.div
+              className="hidden md:block"
+              animate={{
+                scale: compact ? 0.9 : 1,
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 28 }}
+            >
+              <Button
+                variant="default"
+                size={compact ? "small" : "medium"}
+                onClick={() => navigate("/auth/login")}
+              >
+                Log In
+              </Button>
+            </motion.div>
+
+            {/* Sign Up Button - Desktop Only */}
+            <motion.div
+              className="hidden md:block"
+              animate={{
+                scale: compact ? 0.9 : 1,
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 28 }}
+            >
+              <Button
+                variant="primary"
+                className="!px-6 sm:!px-10"
+                size={compact ? "small" : "medium"}
+                onClick={() => navigate("/auth/create-account")}
+              >
+                Sign Up
+              </Button>
+            </motion.div>
+          </>
+        )}
       </div>
 
       {/* Mobile Dropdown Menu */}
@@ -267,31 +380,72 @@ const Header: React.FC = () => {
               {/* Divider */}
               <div className="border-t border-white/20"></div>
 
-              {/* Mobile Buttons */}
-              <div className="flex flex-col space-y-3">
-                <Button
-                  variant="default"
-                  size="medium"
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    navigate("/auth/login");
-                  }}
-                  className="w-full"
-                >
-                  Log In
-                </Button>
-                <Button
-                  variant="primary"
-                  size="medium"
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    navigate("/auth/create-account");
-                  }}
-                  className="w-full"
-                >
-                  Sign Up
-                </Button>
-              </div>
+              {/* Mobile Auth Section */}
+              {user ? (
+                <div className="flex flex-col space-y-3">
+                  {/* User Info */}
+                  <div className="flex items-center gap-3 py-2">
+                    <div className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center">
+                      <User size={20} className="text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-white font-semibold text-sm">{user.name}</p>
+                      <p className="text-white/70 text-xs capitalize">{user.role}</p>
+                    </div>
+                  </div>
+                  
+                  <Button
+                    variant="default"
+                    size="medium"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      navigate("/dashboard");
+                    }}
+                    className="w-full flex items-center justify-center gap-2"
+                  >
+                    <LayoutDashboard size={18} />
+                    Dashboard
+                  </Button>
+                  
+                  <Button
+                    variant="primary"
+                    size="medium"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleLogout();
+                    }}
+                    className="w-full flex items-center justify-center gap-2 !bg-red-600 hover:!bg-red-700"
+                  >
+                    <LogOut size={18} />
+                    Logout
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex flex-col space-y-3">
+                  <Button
+                    variant="default"
+                    size="medium"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      navigate("/auth/login");
+                    }}
+                    className="w-full"
+                  >
+                    Log In
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="medium"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      navigate("/auth/create-account");
+                    }}
+                    className="w-full"
+                  >
+                    Sign Up
+                  </Button>
+                </div>
+              )}
 
               {/* Language Selector in Mobile Menu */}
               <button

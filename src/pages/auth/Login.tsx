@@ -60,7 +60,8 @@ const Login: React.FC = () => {
       
       // Navigate based on user role
       if (response.user_metadata.role === "singer") {
-        navigate("/dashboard/singer");
+        navigate("/")
+        // navigate("/dashboard/singer");
       } else {
         navigate("/");
       }
