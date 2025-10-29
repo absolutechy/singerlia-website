@@ -8,25 +8,30 @@ import logo from "@/assets/images/common/artise-card.png";
 import singerperson from "@/assets/images/singer/singerperson.png";
 import Button from "./Button";
 
-// Sample images array - you can pass this as props later
-const singerImages = [
+// Default images used when none are provided
+const defaultSingerImages = [
   singerperson,
-  singerperson, // Replace with different images
-  singerperson, // Replace with different images
+  singerperson,
+  singerperson,
 ];
 
 interface SingerCardProps {
   onViewDetails?: () => void;
+  name?: string;
+  serviceTitle?: string;
+  images?: string[];
+  responseTime?: string;
 }
 
-const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails } ) => {
+const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Signer Name here", serviceTitle = "Signer Service title here", images, responseTime = "Responds within 1/hr" } ) => {
   const uniqueId = useId();
   const uniqueBase = useMemo(() => uniqueId.replace(/:/g, ""), [uniqueId]);
   const paginationClass = `swiper-pagination-${uniqueBase}`;
   const prevButtonClass = `swiper-button-prev-${uniqueBase}`;
   const nextButtonClass = `swiper-button-next-${uniqueBase}`;
+  const imgs = images && images.length > 0 ? images : defaultSingerImages;
   const [isAtStart, setIsAtStart] = useState(true);
-  const [isAtEnd, setIsAtEnd] = useState(singerImages.length <= 1);
+  const [isAtEnd, setIsAtEnd] = useState(imgs.length <= 1);
 
   const updateNavState = (swiper: SwiperInstance) => {
     setIsAtStart(swiper.isBeginning);
@@ -47,8 +52,8 @@ const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails } ) => {
         <div className="w-full blur-effect text-white absolute bottom-0 left-0 px-5 py-2 z-10">
           <div className="grid grid-cols-2 items-center justify-between gap-4">
             <div>
-              <p className="text-base font-medium">Signer Name here</p>
-              <p className="text-xs">Responds within 1/hr</p>
+              <p className="text-base font-medium">{name}</p>
+              <p className="text-xs">{responseTime}</p>
             </div>
             <div className={`${paginationClass} flex items-center justify-end gap-1.5`}></div>
           </div>
@@ -68,10 +73,10 @@ const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails } ) => {
           onSlideChange={updateNavState}
           className="w-full h-64 rounded-xl"
         >
-          {singerImages.map((image, index) => (
+          {imgs.map((_image, index) => (
             <SwiperSlide key={`singer-slide-${index}`}>
               <img 
-                src={image}
+                src={singerperson}
                 alt={`Singer ${index + 1}`}
                 className="w-full h-64 object-cover rounded-xl"
               />
@@ -95,9 +100,7 @@ const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails } ) => {
           <ArrowRight className="h-5 w-5" />
         </button>
       </div>
-      <p className="text-lg font-medium text-primary py-3">
-        Signer Service title here
-      </p>
+      <p className="text-lg font-medium text-primary py-3">{serviceTitle}</p>
       <Button
         onClick={onViewDetails}
         size="large"

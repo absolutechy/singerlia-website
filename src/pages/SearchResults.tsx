@@ -5,13 +5,13 @@ import singer2 from "@/assets/images/common/Singer2.png";
 import singer3 from "@/assets/images/common/Singer3.png";
 import Button from "@/components/common/Button";
 import PriceRange from "@/components/common/PriceRange";
-import SearchResultCard from "@/components/common/SearchResultCard";
+import SingerCard from "@/components/common/SingerCard";
 import { SearchBar } from "@/components/common";
 import { useNavigate } from "react-router";
 import type { SearchData } from "@/components/common/SearchBar";
 
 const SearchResults: React.FC = () => {
-  // Applied filters (affect results)
+  // Applied filters
   const [priceRange, setPriceRange] = useState({ min: 0, max: 75000 });
   const [zone, setZone] = useState<string>("");
   const [tags, setTags] = useState<string[]>([]);
@@ -19,7 +19,7 @@ const SearchResults: React.FC = () => {
   const [active, setActive] = useState("Custom Dates");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  // Draft filters (sidebar selections before apply)
+  // Draft filters (sidebar-only until Apply)
   const [tPriceRange, setTPriceRange] = useState({ min: 0, max: 75000 });
   const [tZone, setTZone] = useState<string>("");
   const [tTags, setTTags] = useState<string[]>([]);
@@ -205,7 +205,7 @@ const SearchResults: React.FC = () => {
 
   const [visibleCount, setVisibleCount] = useState(6);
 
-  // Sync draft filters when opening sidebar
+  // Sync draft filters when opening
   useEffect(() => {
     if (isFilterOpen) {
       setTPriceRange(priceRange);
@@ -296,15 +296,15 @@ const SearchResults: React.FC = () => {
                 key={c}
                 className="flex items-center gap-2 text-sm text-[#2F1C4E]"
               >
-                 <input
-                   type="radio"
-                   name="category"
+                <input
+                  type="radio"
+                  name="category"
                   checked={tCategory === c}
                   onChange={() => setTCategory(c)}
-                 />{" "}
-                 {c}
-               </label>
-             ))}
+                />{" "}
+                {c}
+              </label>
+            ))}
           </div>
 
           {/* Zone */}
@@ -423,12 +423,12 @@ const SearchResults: React.FC = () => {
       </div>
 
       <div className="mt-6">
-        {/* Results grid - Full width now */}
+        {/* Results grid */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredItems.slice(0, visibleCount).map((it) => (
-            <SearchResultCard
+            <SingerCard
               key={it.id}
-              image={it.image}
+              images={[it.image, it.image, it.image]}
               name={it.name}
               serviceTitle={it.service}
               onViewDetails={() => navigate(`/singers/${it.id}`)}
