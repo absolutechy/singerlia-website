@@ -7,7 +7,7 @@ import Button from "@/components/common/Button";
 import PriceRange from "@/components/common/PriceRange";
 import SingerCard from "@/components/common/SingerCard";
 import { SearchBar } from "@/components/common";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import type { SearchData } from "@/components/common/SearchBar";
 
 const SearchResults: React.FC = () => {
@@ -30,6 +30,7 @@ const SearchResults: React.FC = () => {
     date: "",
   });
   const navigate = useNavigate();
+  const location = useLocation();
 
   const buttons = ["Today", "Tomorrow", "This Week", "Custom Dates"];
 
@@ -220,6 +221,18 @@ const SearchResults: React.FC = () => {
   useEffect(() => {
     setVisibleCount(6);
   }, [priceRange, zone, tags, category, active, query]);
+
+  // Apply initial query from URL params (e.g., coming from Home search)
+  useEffect(() => {
+    const sp = new URLSearchParams(location.search);
+    const s = sp.get("s") || "";
+    const date = sp.get("date") || "";
+    if (s || date) {
+      setQuery({ singerName: s, date });
+      if (date) setActive("Custom Dates");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search]);
 
   return (
     <div className="custom-container pb-16">

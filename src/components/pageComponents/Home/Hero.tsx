@@ -5,6 +5,7 @@ import UserTwoAvatar from "@/assets/images/common/user2.png";
 import UserThreeAvatar from "@/assets/images/common/user3.png";
 import UserFourAvatar from "@/assets/images/common/user4.png";
 import { Dot } from "lucide-react";
+import { useNavigate } from "react-router";
 import SocialIcons from "./SocialIcons";
 import VerifiedArtistsLogo from "./VerifiedArtist";
 
@@ -16,9 +17,18 @@ const users = [
 ];
 
 const Hero = () => {
+  const navigate = useNavigate();
   return (
     <div className="px-5">
-      <SearchBar />
+      <SearchBar
+        onSearch={(data) => {
+          const params = new URLSearchParams();
+          if (data.singerName) params.set("s", data.singerName);
+          if (data.date) params.set("date", data.date);
+          // You can expand to pass city/duration/pricing if needed
+          navigate(`/search?${params.toString()}`);
+        }}
+      />
       <div className="flex flex-col lg:flex-row gap-y-3 items-center justify-center mt-5 lg:mt-10 gap-x-5 outfit">
         <Button
           variant="default"
