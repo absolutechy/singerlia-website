@@ -65,12 +65,15 @@ const Signup: React.FC = () => {
         password: formData.password,
       });
 
-      // Store userId and OTP for verification page
+      console.log("Registration successful:", response);
+
+      // Store userId and phone for verification page
       sessionStorage.setItem("userId", response.userId);
       sessionStorage.setItem("userPhone", formData.phone);
+      sessionStorage.setItem("userRole", "user");
       
-      // Navigate to verification method selection
-      navigate("/auth/verification-method");
+      // Navigate directly to verification code page
+      navigate("/auth/verification-code");
     } catch (err: any) {
       setError(err.response?.data?.message || "Registration failed. Please try again.");
     } finally {

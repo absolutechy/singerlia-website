@@ -108,9 +108,10 @@ const SingerSignup: React.FC = () => {
       // Store userId and phone for verification page
       sessionStorage.setItem("userId", response.userId);
       sessionStorage.setItem("userPhone", formData.phone);
+      sessionStorage.setItem("userRole", "singer");
       
-      // Navigate to verification method selection
-      navigate("/auth/verification-method");
+      // Navigate directly to verification code page
+      navigate("/auth/verification-code");
     } catch (err: any) {
       setError(err.response?.data?.message || "Registration failed. Please try again.");
     } finally {

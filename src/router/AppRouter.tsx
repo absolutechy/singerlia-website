@@ -6,6 +6,8 @@ import Signup from "@/pages/auth/Signup"
 import SelectVerification from "@/pages/auth/SelectVerification"
 import SingerSignup from "@/pages/auth/SingerSignup"
 import VerificationCode from "@/pages/auth/VerificationCode"
+import ForgotPassword from "@/pages/auth/ForgotPassword"
+import ResetPassword from "@/pages/auth/ResetPassword"
 import { Route, Routes } from "react-router"
 import SingerProfile from "@/pages/SingerProfile"
 import SearchResults from "@/pages/SearchResults"
@@ -23,6 +25,8 @@ const AppRouter = () => {
         <Route path="/auth/singer-signup" element={<SingerSignup />} />
         <Route path="/auth/verification-method" element={<SelectVerification />} />
         <Route path="/auth/verification-code" element={<VerificationCode />} />
+        <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+        <Route path="/auth/reset-password" element={<ResetPassword />} />
         <Route path="/singer-profile" element={<SingerProfile />} />
         <Route path="/search" element={<SearchResults />} />
         <Route path="/singers/:id" element={<SingerDetails />} />

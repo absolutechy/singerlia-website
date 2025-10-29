@@ -14,6 +14,8 @@ const VerificationCode: React.FC = () => {
   const [success, setSuccess] = useState("");
   const [userId, setUserId] = useState("");
   const [userPhone, setUserPhone] = useState("");
+  const [timer, setTimer] = useState(60);
+  const [canResend, setCanResend] = useState(false);
 
   // Get userId from sessionStorage
   useEffect(() => {
@@ -29,6 +31,27 @@ const VerificationCode: React.FC = () => {
     setUserId(storedUserId);
     setUserPhone(storedPhone || "XXX-XXX-XXXX");
   }, [navigate]);
+
+  // Timer countdown
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval> | null = null;
+    
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => {
+          if (prev <= 1) {
+            setCanResend(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [timer]);
 
   const handleVerify = async () => {
     if (code.length < 6) {
@@ -50,26 +73,43 @@ const VerificationCode: React.FC = () => {
       // Clear session storage
       sessionStorage.removeItem("userId");
       sessionStorage.removeItem("userPhone");
+      sessionStorage.removeItem("userRole");
       
       // Redirect to login after 2 seconds
       setTimeout(() => {
         navigate("/auth/login");
       }, 2000);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Verification failed. Please try again.");
+      setError(err.response?.data?.message || "Verification failed. Please check your code and try again.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleResendCode = async () => {
+    if (!canResend) return;
+
     setError("");
     setSuccess("");
+    setLoading(true);
     
-    // In a real application, you would call an API to resend the OTP
-    // For now, we'll just show a success message
-    setSuccess("Code resent successfully!");
-    setTimeout(() => setSuccess(""), 3000);
+    try {
+      const response = await authService.resendOtp({
+        userId,
+      });
+
+      console.log("OTP resent:", response);
+      
+      setSuccess("Verification code resent successfully!");
+      setTimer(60);
+      setCanResend(false);
+      
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Failed to resend code. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -96,13 +136,20 @@ const VerificationCode: React.FC = () => {
         )}
         <OtpInput onChange={setCode} />
         <div className="flex flex-col">
-          <Button
-            type="button"
-            className="text-sm font-semibold mb-5 !text-primary underline-offset-4 hover:underline"
-            onClick={handleResendCode}
-          >
-            Resend code
-          </Button>
+          {timer > 0 ? (
+            <p className="text-sm text-[#6F5D9E] mb-5">
+              Resend code in {timer} seconds
+            </p>
+          ) : (
+            <Button
+              type="button"
+              className="text-sm font-semibold mb-5 !text-primary underline-offset-4 hover:underline"
+              onClick={handleResendCode}
+              disabled={loading || !canResend}
+            >
+              Resend code
+            </Button>
+          )}
           <Button
             variant="secondary"
             size="large"

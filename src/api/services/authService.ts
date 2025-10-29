@@ -52,6 +52,34 @@ export interface UserProfileResponse {
   role: string;
 }
 
+export interface SendResetCodeData {
+  phonenumber: string;
+}
+
+export interface SendResetCodeResponse {
+  message: string;
+  userId: string;
+}
+
+export interface ResetPasswordData {
+  userId: string;
+  resetPasswordCode: string;
+  newPassword: string;
+}
+
+export interface ResetPasswordResponse {
+  message: string;
+}
+
+export interface ResendOtpData {
+  userId: string;
+}
+
+export interface ResendOtpResponse {
+  message: string;
+  otp?: string;
+}
+
 // Custom event for auth state changes
 const AUTH_EVENT = 'auth-state-changed';
 
@@ -155,6 +183,42 @@ const authService = {
   isAuthenticated: (): boolean => {
     const token = localStorage.getItem('authToken');
     return !!token;
+  },
+
+  /**
+   * Send reset password code to phone number
+   * @param data - Phone number
+   */
+  sendResetPasswordCode: async (data: SendResetCodeData): Promise<SendResetCodeResponse> => {
+    const response = await axiosInstance.post<SendResetCodeResponse>(
+      '/auth/send-reset-password-code',
+      data
+    );
+    return response.data;
+  },
+
+  /**
+   * Reset forgotten password with code
+   * @param data - userId, resetPasswordCode, and newPassword
+   */
+  resetForgottenPassword: async (data: ResetPasswordData): Promise<ResetPasswordResponse> => {
+    const response = await axiosInstance.post<ResetPasswordResponse>(
+      '/auth/reset-forgotten-password',
+      data
+    );
+    return response.data;
+  },
+
+  /**
+   * Resend OTP for user verification
+   * @param data - userId
+   */
+  resendOtp: async (data: ResendOtpData): Promise<ResendOtpResponse> => {
+    const response = await axiosInstance.post<ResendOtpResponse>(
+      '/auth/resend-otp',
+      data
+    );
+    return response.data;
   },
 };
 

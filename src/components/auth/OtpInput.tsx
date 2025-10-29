@@ -11,12 +11,13 @@ const OtpInput: React.FC<OtpInputProps> = ({ length = 6, onChange }) => {
   const refs = useRef<Array<HTMLInputElement | null>>([]);
 
   const handleChange = (index: number, value: string) => {
-    const normalized = value.replace(/\D/g, "");
+    // accept any single character (letters or digits)
+    const char = value.slice(-1);
     if (!refs.current[index]) return;
-    refs.current[index]!.value = normalized.slice(-1);
+    refs.current[index]!.value = char;
     const currentValue = refs.current.map((input) => input?.value ?? "").join("");
     onChange?.(currentValue);
-    if (normalized && index < length - 1) {
+    if (char && index < length - 1) {
       refs.current[index + 1]?.focus();
     }
   };
@@ -33,7 +34,7 @@ const OtpInput: React.FC<OtpInputProps> = ({ length = 6, onChange }) => {
         <Input
           key={`otp-${index}`}
           type="text"
-          inputMode="numeric"
+          inputMode="text"
           maxLength={1}
           ref={(input) => {
             refs.current[index] = input;

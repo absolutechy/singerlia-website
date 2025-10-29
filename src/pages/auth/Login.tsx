@@ -146,6 +146,7 @@ const Login: React.FC = () => {
         <Button
           // variant="primary"
           className="!text-primary btn-text !text-base border border-primary underline-offset-4 hover:underline"
+          onClick={() => navigate("/auth/forgot-password")}
         >
           Forgot Password
         </Button>
