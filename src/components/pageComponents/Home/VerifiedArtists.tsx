@@ -1,7 +1,7 @@
 import ArtistBgText from "@/assets/images/common/Artistshd.png";
-import SingerOne from "@/assets/images/common/singer1.png";
-import SingerTwo from "@/assets/images/common/singer2.png";
-import SingerThree from "@/assets/images/common/singer3.png";
+import SingerOne from "@/assets/images/common/Singer1.png";
+import SingerTwo from "@/assets/images/common/Singer2.png";
+import SingerThree from "@/assets/images/common/Singer3.png";
 import Marquee from "react-fast-marquee";
 import SingerCircle from "./SingerCircle";
 
