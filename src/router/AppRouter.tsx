@@ -15,7 +15,9 @@ import {
   VerificationCode,
   ForgotPassword,
   ResetPassword,
+  SelectVerification,
 } from "@/pages/auth";
+import Contact from "@/pages/Contact";
 
 const AppRouter = () => {
   return (
@@ -26,6 +28,7 @@ const AppRouter = () => {
       <Route path="/auth/login" element={<Login />} />
       <Route path="/auth/signup" element={<Signup />} />
       <Route path="/auth/singer-signup" element={<SingerSignup />} />
+      <Route path="/auth/verification-method" element={<SelectVerification />} />
       <Route path="/auth/verification-code" element={<VerificationCode />} />
       <Route path="/auth/forgot-password" element={<ForgotPassword />} />
       <Route path="/auth/reset-password" element={<ResetPassword />} />
@@ -33,6 +36,7 @@ const AppRouter = () => {
       <Route path="/search" element={<SearchResults />} />
       <Route path="/singers/:id" element={<SingerDetails />} />
       <Route path="/booking/singer/:id" element={<BookingSinger />} />
+      <Route path="/contact" element={<Contact />} />
     </Routes>
   );
 };

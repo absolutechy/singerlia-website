@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import AuthModalLayout from "@/components/auth/AuthModalLayout";
-import SocialButton from "@/components/auth/SocialButton";
 import { Button, Input } from "@/components/common";
-import GoogleIcon from "@/assets/images/common/Google.png";
-import FacebookIcon from "@/assets/images/common/Facebook.png";
 import authService from "@/api/services/authService";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    phonenumber: "",
+    identifier: "", // Can be phone or email
     password: "",
   });
   const [rememberPassword, setRememberPassword] = useState(false);
@@ -19,10 +16,12 @@ const Login: React.FC = () => {
 
   // Check if user is already authenticated
   useEffect(() => {
+    console.log("Checking auth in Login page");
     const checkAuth = async () => {
       if (authService.isAuthenticated()) {
         try {
           await authService.checkAuth();
+          console.log("Hello");
           navigate("/"); // Redirect to home if already logged in
         } catch (err) {
           // Token invalid, continue with login
@@ -41,7 +40,7 @@ const Login: React.FC = () => {
 
   const handleLogin = async () => {
     // Validation
-    if (!formData.phonenumber || !formData.password) {
+    if (!formData.identifier || !formData.password) {
       setError("Please fill in all fields");
       return;
     }
@@ -50,10 +49,20 @@ const Login: React.FC = () => {
     setError("");
 
     try {
-      const response = await authService.login({
-        phonenumber: formData.phonenumber,
+      // Determine if identifier is email or phone
+      const isEmail = formData.identifier.includes('@');
+      
+      const loginData: any = {
         password: formData.password,
-      });
+      };
+
+      if (isEmail) {
+        loginData.email = formData.identifier;
+      } else {
+        loginData.phonenumber = formData.identifier;
+      }
+
+      const response = await authService.login(loginData);
 
       // Success! Token is already stored by authService
       console.log("Login successful:", response.user_metadata);
@@ -90,8 +99,8 @@ const Login: React.FC = () => {
     >
       <div className="flex flex-col items-center gap-8">
         {/* <LogoBadge size="md" /> */}
-        <div className="grid w-full items-start gap-8 md:grid-cols-2 md:gap-12">
-          <div className="space-y-9 order-2 ">
+        <div className="grid w-full items-center gap-8 md:grid-cols-1 md:gap-12">
+          {/* <div className="space-y-9 order-2 ">
             <h3 className="text-lg font-semibold text-black">
               Login With Accounts
             </h3>
@@ -107,22 +116,22 @@ const Login: React.FC = () => {
               }
             />
             </div>
-          </div>
-          <div className="md:border-l-2 border-gray-300 md:pl-10 md:order-3">
+          </div> */}
+          <div className="md:w-[500px] w-full mx-auto">
             <div className="space-y-5 md:space-y-9">
-              <h3 className="text-xl text-start font-semibold pt-28 md:pt-0">Login</h3>
+              <h3 className="text-xl text-start font-semibold">Login</h3>
               {error && (
                 <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
                   {error}
                 </div>
               )}
               <Input
-                id="phonenumber"
-                // label="Phone Number"
-                type="tel"
-                placeholder="Phone Number"
+                id="identifier"
+                // label="Phone Number or Email"
+                type="text"
+                placeholder="Phone Number or Email"
                 className="bg-[#F7FBFF] border border-[#D4D7E3] !pl-2 !py-6"
-                value={formData.phonenumber}
+                value={formData.identifier}
                 onChange={handleInputChange}
               />
               <Input

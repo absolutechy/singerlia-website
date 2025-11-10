@@ -1,19 +1,18 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import AuthModalLayout from "@/components/auth/AuthModalLayout";
-import SocialButton from "@/components/auth/SocialButton";
 import { Button, Input } from "@/components/common";
-import GoogleIcon from "@/assets/images/common/Google.png";
-import FacebookIcon from "@/assets/images/common/Facebook.png";
 import authService from "@/api/services/authService";
 
 const fields = [
-  { id: "firstName", label: "First Name", type: "text" },
-  { id: "lastName", label: "Last Name", type: "text" },
-  { id: "phone", label: "Phone Number", type: "tel" },
-  { id: "email", label: "Email", type: "email" },
-  { id: "password", label: "Password", type: "password" },
-  { id: "confirmPassword", label: "Re-Enter Password", type: "password" },
+  { id: "firstName", label: "First Name", type: "text", required: true },
+  { id: "lastName", label: "Last Name", type: "text", required: true },
+  { id: "phone", label: "Phone Number", type: "tel", required: true },
+  { id: "email", label: "Email", type: "email", required: true },
+  { id: "dateOfBirth", label: "Date of Birth", type: "date", required: true },
+  { id: "iqamaNumber", label: "Iqama Number", type: "text", required: true },
+  { id: "password", label: "Password", type: "password", required: true },
+  { id: "confirmPassword", label: "Re-Enter Password", type: "password", required: true },
 ];
 
 const Signup: React.FC = () => {
@@ -23,6 +22,8 @@ const Signup: React.FC = () => {
     lastName: "",
     phone: "",
     email: "",
+    dateOfBirth: "",
+    iqamaNumber: "",
     password: "",
     confirmPassword: "",
   });
@@ -32,14 +33,48 @@ const Signup: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-    setFormData((prev) => ({ ...prev, [id]: value }));
+    
+    // Special handling for Iqama number - only allow numbers and max 10 digits
+    if (id === "iqamaNumber") {
+      const numericValue = value.replace(/\D/g, ""); // Remove non-digits
+      if (numericValue.length <= 10) {
+        setFormData((prev) => ({ ...prev, [id]: numericValue }));
+      }
+    } else {
+      setFormData((prev) => ({ ...prev, [id]: value }));
+    }
+    
     setError("");
   };
 
   const handleSignup = async () => {
-    // Validation
-    if (!formData.firstName || !formData.lastName || !formData.phone || !formData.password) {
+    // Validation for required fields
+    if (!formData.firstName || !formData.lastName || !formData.phone || 
+        !formData.email || !formData.dateOfBirth || !formData.iqamaNumber || 
+        !formData.password || !formData.confirmPassword) {
+      console.log("Missing fields:", formData);
       setError("Please fill in all required fields");
+      return;
+    }
+
+
+    // Validate date of birth (must be 18 years or older)
+    const birthDate = new Date(formData.dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    if (age < 18) {
+      setError("You must be at least 18 years old to sign up");
+      return;
+    }
+
+    // Validate Iqama number (must be exactly 10 digits)
+    const iqamaRegex = /^\d{10}$/;
+    if (!iqamaRegex.test(formData.iqamaNumber)) {
+      setError("Iqama number must be exactly 10 digits");
       return;
     }
 
@@ -63,6 +98,8 @@ const Signup: React.FC = () => {
         phonenumber: formData.phone,
         email: formData.email,
         password: formData.password,
+        iqama_number: formData.iqamaNumber,
+        DOB: formData.dateOfBirth,
       });
 
       console.log("Registration successful:", response);
@@ -70,10 +107,12 @@ const Signup: React.FC = () => {
       // Store userId and phone for verification page
       sessionStorage.setItem("userId", response.userId);
       sessionStorage.setItem("userPhone", formData.phone);
+      sessionStorage.setItem("userEmail", formData.email);
       sessionStorage.setItem("userRole", "user");
       
       // Navigate directly to verification code page
-      navigate("/auth/verification-code");
+      // navigate("/auth/verification-code");
+      navigate("/auth/verification-method");
     } catch (err: any) {
       setError(err.response?.data?.message || "Registration failed. Please try again.");
     } finally {
@@ -98,7 +137,7 @@ const Signup: React.FC = () => {
       title="Welcome to Sign up"
       size="lg"
     >
-      <div className="space-y-4 pt-96 lg:pt-0">
+      <div className="space-y-4 pt-[430px] lg:pt-0">
         {/* <LogoBadge size="lg" /> */}
         {error && (
           <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
@@ -116,6 +155,10 @@ const Signup: React.FC = () => {
               className="bg-[#F7FBFF] border border-[#D4D7E3] !pl-2 !py-6"
               value={formData[field.id as keyof typeof formData]}
               onChange={handleInputChange}
+              required={field.required}
+              maxLength={field.id === "iqamaNumber" ? 10 : undefined}
+              pattern={field.id === "iqamaNumber" ? "[0-9]*" : undefined}
+              inputMode={field.id === "iqamaNumber" ? "numeric" : undefined}
             />
           ))}
         </div>
@@ -141,7 +184,7 @@ const Signup: React.FC = () => {
         >
           <span className="font-semibold">{loading ? "Signing Up..." : "Sign Up"}</span>
         </Button>
-        <div className="grid gap-3 md:grid-cols-2">
+        {/* <div className="grid gap-3 md:grid-cols-2">
           <SocialButton
             label="Sign in with Google" 
             icon={
@@ -152,7 +195,7 @@ const Signup: React.FC = () => {
             label="Sign in with Facebook"
             icon={<img src={FacebookIcon} alt="Facebook" className="h-7 w-7" />}
           />
-        </div>
+        </div> */}
       </div>
     </AuthModalLayout>
   );

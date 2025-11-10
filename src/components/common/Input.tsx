@@ -36,7 +36,7 @@ const Input: React.FC<InputProps> = ({
     return (
       <div className="flex flex-col gap-1 w-full">
         {label && (
-          <label className="heading-6 text-gray-900">
+          <label className="heading-6 text-gray-900 text-start !font-normal">
             {label}
           </label>
         )}
@@ -48,7 +48,7 @@ const Input: React.FC<InputProps> = ({
                 'w-full h-full rounded-lg pr-10 bg-white text-gray-900 placeholder:text-gray-400 border-0 outline-none focus:outline-none focus:border-0 focus:ring-0 transition-all flex items-center justify-start text-left',
                 !date && 'text-gray-400',
                 error && 'border-red-500',
-                className
+                'bg-[#F7FBFF] border border-[#D4D7E3] !pl-2 py-3 md:py-0'
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
@@ -59,22 +59,26 @@ const Input: React.FC<InputProps> = ({
               )}
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
+          <PopoverContent className="w-auto p-0 bg-white" align="start">
             <Calendar
               mode="single"
               selected={date}
               onSelect={(selectedDate) => {
                 setDate(selectedDate);
                 if (selectedDate && onChange) {
-                  // Create a synthetic event
+                  // Create a synthetic event with id
                   const syntheticEvent = {
                     target: {
+                      id: props.id,
                       value: format(selectedDate, 'yyyy-MM-dd'),
                     },
                   } as React.ChangeEvent<HTMLInputElement>;
                   onChange(syntheticEvent);
                 }
               }}
+              captionLayout="dropdown"
+              fromYear={1940}
+              toYear={new Date().getFullYear()}
               initialFocus
             />
           </PopoverContent>
@@ -99,7 +103,7 @@ const Input: React.FC<InputProps> = ({
         value={value}
         onChange={onChange}
         className={cn(
-          'rounded-lg pr-10 !pl-0 font-chocolates !text-base !font-normal bg-white text-gray-900 placeholder:text-gray-400 border-0 outline-none focus:outline-none focus:border-0 focus:ring-0 focus-visible:ring-0 focus-visible:border-0 focus-visible:outline-none transition-all',
+          'rounded-lg pr-10 !pl-0 font-chocolates !text-base !font-normal bg-white text-gray-900 placeholder:text-gray-400 border-0 outline-none  focus:border-0 focus:ring-0 focus-visible:ring-0 focus-visible:border-0 focus-visible:outline-none transition-all',
           error && 'border-red-500',
           className
         )}

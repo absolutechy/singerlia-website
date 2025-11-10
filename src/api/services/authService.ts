@@ -11,6 +11,8 @@ export interface RegisterUserData {
   city?: string;
   address?: string;
   password: string;
+  DOB?: string;
+  iqama_number?: string;
 }
 
 export interface RegisterResponse {
@@ -30,7 +32,8 @@ export interface VerifyResponse {
 }
 
 export interface LoginUserData {
-  phonenumber: string;
+  phonenumber?: string;
+  email?: string;
   password: string;
 }
 
@@ -42,7 +45,6 @@ export interface UserMetadata {
 
 export interface LoginResponse {
   message: string;
-  token: string;
   user_metadata: UserMetadata;
 }
 
@@ -53,7 +55,9 @@ export interface UserProfileResponse {
 }
 
 export interface SendResetCodeData {
-  phonenumber: string;
+  phonenumber?: string;
+  email?: string;
+  fromphonenumber: boolean;
 }
 
 export interface SendResetCodeResponse {
@@ -74,9 +78,21 @@ export interface ResetPasswordResponse {
 export interface ResendOtpData {
   userId: string;
   newphonenumber?: string;
+  newemail?: string;
+  fromphonenumber: boolean;
 }
 
 export interface ResendOtpResponse {
+  message: string;
+  otp?: string;
+}
+
+export interface SendOtpData {
+  userId: string;
+  fromphonenumber: boolean;
+}
+
+export interface SendOtpResponse {
   message: string;
   otp?: string;
 }
@@ -85,12 +101,17 @@ export interface ResendOtpResponse {
 const AUTH_EVENT = 'auth-state-changed';
 
 export const dispatchAuthEvent = () => {
+  console.log('🔔 Dispatching auth-state-changed event');
   window.dispatchEvent(new CustomEvent(AUTH_EVENT));
 };
 
 export const subscribeToAuthChanges = (callback: () => void) => {
+  console.log('📡 Component subscribed to auth-state-changed events');
   window.addEventListener(AUTH_EVENT, callback);
-  return () => window.removeEventListener(AUTH_EVENT, callback);
+  return () => {
+    console.log('📡 Component unsubscribed from auth-state-changed events');
+    window.removeEventListener(AUTH_EVENT, callback);
+  };
 };
 
 // Auth Service Functions
@@ -122,7 +143,7 @@ const authService = {
 
   /**
    * Login user
-   * @param loginData - Phone number and password
+   * @param loginData - Phone number or email and password
    */
   login: async (loginData: LoginUserData): Promise<LoginResponse> => {
     const response = await axiosInstance.post<LoginResponse>(
@@ -130,13 +151,37 @@ const authService = {
       loginData
     );
     
+    console.log('Login Response:', response);
+    console.log('Response Headers:', response.headers);
+    console.log('Response Data:', response.data);
+    console.log('All header keys:', Object.keys(response.headers));
+    
+    // Get token from response headers (backend sends as 'Authorization')
+    let token = response.headers['Authorization'] || response.headers['authorization'];
+    console.log('Token from headers:', token);
+    
+    // If not in headers, check response data (fallback)
+    if (!token && (response.data as any).token) {
+      token = (response.data as any).token;
+      console.log('Token found in response data instead:', token);
+    }
+    
     // Store token and user data in localStorage
-    if (response.data.token) {
-      localStorage.setItem('authToken', response.data.token);
+    if (token) {
+      // Remove 'Bearer ' prefix if present
+      const cleanToken = token.startsWith('Bearer ') ? token.substring(7) : token;
+      console.log('Clean token to store:', cleanToken);
+      localStorage.setItem('authToken', cleanToken);
       localStorage.setItem('user', JSON.stringify(response.data.user_metadata));
+      console.log('Token stored in localStorage:', localStorage.getItem('authToken'));
+      console.log('User stored in localStorage:', localStorage.getItem('user'));
       
       // Notify other components of auth state change
+      console.log('Dispatching auth event...');
       dispatchAuthEvent();
+    } else {
+      console.error('No token found in response headers OR response data!');
+      console.error('Please check backend CORS configuration to expose Authorization header');
     }
     
     return response.data;
@@ -153,14 +198,27 @@ const authService = {
 
   /**
    * Logout user
-   * Clears local storage and removes auth token
+   * Calls backend API to clear token and clears local storage
    */
-  logout: () => {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
-    
-    // Notify other components of auth state change
-    dispatchAuthEvent();
+  logout: async (): Promise<void> => {
+    try {
+      // Call logout API (DELETE request)
+      await axiosInstance.delete('/auth/logout');
+      
+      // Clear local storage
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+      
+      // Notify other components of auth state change
+      dispatchAuthEvent();
+    } catch (error) {
+      console.error('Logout API failed:', error);
+      // Even if API fails, clear local storage
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+      dispatchAuthEvent();
+      throw error;
+    }
   },
 
   /**
@@ -168,10 +226,13 @@ const authService = {
    */
   getCurrentUser: (): UserMetadata | null => {
     const userStr = localStorage.getItem('user');
+    console.log('getCurrentUser - userStr from localStorage:', userStr);
     if (!userStr) return null;
     
     try {
-      return JSON.parse(userStr) as UserMetadata;
+      const user = JSON.parse(userStr) as UserMetadata;
+      console.log('getCurrentUser - parsed user:', user);
+      return user;
     } catch (error) {
       console.error('Error parsing user data:', error);
       return null;
@@ -183,6 +244,8 @@ const authService = {
    */
   isAuthenticated: (): boolean => {
     const token = localStorage.getItem('authToken');
+    console.log('isAuthenticated - token:', token);
+    console.log('isAuthenticated - result:', !!token);
     return !!token;
   },
 
@@ -212,11 +275,23 @@ const authService = {
 
   /**
    * Resend OTP for user verification
-   * @param data - userId and optional newphonenumber
+   * @param data - userId, fromphonenumber, and optional newphonenumber or newemail
    */
   resendOtp: async (data: ResendOtpData): Promise<ResendOtpResponse> => {
     const response = await axiosInstance.post<ResendOtpResponse>(
       '/auth/resend-otp',
+      data
+    );
+    return response.data;
+  },
+
+  /**
+   * Send OTP to user via email or phone
+   * @param data - userId and fromphonenumber (false for email, true for phone)
+   */
+  sendOtp: async (data: SendOtpData): Promise<SendOtpResponse> => {
+    const response = await axiosInstance.post<SendOtpResponse>(
+      '/auth/send-otp',
       data
     );
     return response.data;

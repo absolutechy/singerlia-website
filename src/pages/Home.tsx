@@ -7,7 +7,6 @@ import {
   WhySingerlia,
   MissionGrowth,
   PartyExperience,
-  ContactSection,
   Reviews,
   PostReviewCTA,
 } from "@/components/pageComponents/Home";
@@ -23,7 +22,6 @@ const Home = () => {
       <WhySingerlia />
       <MissionGrowth />
       <PartyExperience />
-      <ContactSection />
       <Reviews />
       <PostReviewCTA />
     </div>

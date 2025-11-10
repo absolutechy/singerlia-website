@@ -3,8 +3,10 @@ import { Globe, Menu, X, User, LogOut, LayoutDashboard, ChevronDown } from "luci
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "./Button";
 import LogoFull from "../../assets/images/common/logofull.png";
+import LogoIcon from "@/assets/images/common/logolia.png"
 import { Link, useNavigate, useLocation } from "react-router";
 import authService, { type UserMetadata, subscribeToAuthChanges } from "@/api/services/authService";
+import { toast } from "sonner";
 
 interface NavItem {
   id: string;
@@ -20,13 +22,13 @@ const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [user, setUser] = useState<UserMetadata | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
+  const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const navItems: NavItem[] = [
     { id: "home", label: "Home", href: "/" },
     { id: "singers", label: "Singers listing", href: "/search" },
-    { id: "about", label: "About Us", href: "/about" },
-    { id: "testimonials", label: "Testimonials", href: "/testimonials" },
+    { id: "contact", label: "Contact", href: "/contact" }
   ];
 
   const handleNavClick = (id: string, href: string) => {
@@ -77,29 +79,40 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      if (authService.isAuthenticated()) {
+      console.log('Header - Checking authentication...');
+      const isAuth = authService.isAuthenticated();
+      console.log('Header - isAuthenticated:', isAuth);
+      
+      if (isAuth) {
+        console.log("Header - User is authenticated, fetching user data");
         try {
           const result = await authService.checkAuth();
+          console.log("Header - checkAuth result:", result);
           setUser({
             userId: result.userId,
             name: result.name,
             role: result.role,
           });
+          console.log("Header - User state updated:", { userId: result.userId, name: result.name, role: result.role });
         } catch (err) {
+          console.error("Header - checkAuth failed:", err);
           // Token invalid, clear auth
           authService.logout();
           setUser(null);
         }
       } else {
+        console.log("Header - User is NOT authenticated");
         setUser(null);
       }
     };
     
     // Check auth on mount
+    console.log('Header - Component mounted, checking auth...');
     checkAuth();
     
     // Subscribe to auth changes (login/logout from other components)
     const unsubscribe = subscribeToAuthChanges(() => {
+      console.log('Header - Auth state changed event received!');
       checkAuth();
     });
     
@@ -120,11 +133,25 @@ const Header: React.FC = () => {
     }
   }, [dropdownOpen]);
 
-  const handleLogout = () => {
-    authService.logout();
-    setUser(null);
-    setDropdownOpen(false);
-    navigate('/');
+  const handleLogout = async () => {
+    if (isLoggingOut) return; // Prevent multiple clicks
+    
+    setIsLoggingOut(true);
+    // Don't close dropdown immediately - keep it open while logging out
+    
+    try {
+      await authService.logout();
+      setUser(null);
+      toast.success("Logged out successfully!");
+      setDropdownOpen(false); // Close dropdown after successful logout
+      navigate('/');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      toast.error("Logout failed. Please try again.");
+      setDropdownOpen(false); // Close dropdown even on error
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   return (
@@ -165,16 +192,16 @@ const Header: React.FC = () => {
     >
       {/* Logo */}
       <div className="flex items-center min-w-0">
-        <Link to="/">
+        <Link to="/" className="mr-6">
         <motion.img
-          src={LogoFull}
+          src={compact ? LogoIcon : LogoFull}
           alt="Singerlia Logo"
           className="object-cover"
           animate={{
               scale: compact ? 0.75 : 1,
               marginRight: compact ? 4 : 24,
-            width: compact ? 100 : 140,
-            height: compact ? 50 : 70,
+            width: compact ? 40 : 140,
+            height: compact ? 40 : 70,
         }}
         transition={{ type: "spring", stiffness: 300, damping: 28 }}
         />
@@ -279,7 +306,7 @@ const Header: React.FC = () => {
                       setDropdownOpen(false);
                       navigate('/dashboard');
                     }}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-100 transition-colors"
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
                   >
                     <LayoutDashboard size={18} />
                     <span className="font-medium">Dashboard</span>
@@ -287,10 +314,15 @@ const Header: React.FC = () => {
                   <div className="border-t border-gray-200"></div>
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-left text-red-600 hover:bg-red-50 transition-colors"
+                    disabled={isLoggingOut}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors cursor-pointer ${
+                      isLoggingOut 
+                        ? 'text-red-400 bg-red-50/50 cursor-not-allowed' 
+                        : 'text-red-600 hover:bg-red-50'
+                    }`}
                   >
                     <LogOut size={18} />
-                    <span className="font-medium">Logout</span>
+                    <span className="font-medium">{isLoggingOut ? 'Logging out...' : 'Logout'}</span>
                   </button>
                 </motion.div>
               )}
@@ -402,7 +434,7 @@ const Header: React.FC = () => {
                       setMobileMenuOpen(false);
                       navigate("/dashboard");
                     }}
-                    className="w-full flex items-center justify-center gap-2"
+                    className="w-full flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <LayoutDashboard size={18} />
                     Dashboard
@@ -415,10 +447,15 @@ const Header: React.FC = () => {
                       setMobileMenuOpen(false);
                       handleLogout();
                     }}
-                    className="w-full flex items-center justify-center gap-2 !bg-red-600 hover:!bg-red-700"
+                    disabled={isLoggingOut}
+                    className={`w-full flex items-center justify-center gap-2 cursor-pointer ${
+                      isLoggingOut
+                        ? '!bg-red-400 !opacity-70 !cursor-not-allowed'
+                        : '!bg-red-600 hover:!bg-red-700'
+                    }`}
                   >
                     <LogOut size={18} />
-                    Logout
+                    {isLoggingOut ? 'Logging out...' : 'Logout'}
                   </Button>
                 </div>
               ) : (
@@ -432,7 +469,7 @@ const Header: React.FC = () => {
                     }}
                     className="w-full"
                   >
-                    Log In
+                    Book Now
                   </Button>
                   <Button
                     variant="primary"

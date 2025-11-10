@@ -14,15 +14,19 @@ const VerificationCode: React.FC = () => {
   const [success, setSuccess] = useState("");
   const [userId, setUserId] = useState("");
   const [userPhone, setUserPhone] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [verificationType, setVerificationType] = useState<"phone" | "email">("phone");
   const [timer, setTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
-  const [isEditingPhone, setIsEditingPhone] = useState(false);
-  const [newPhone, setNewPhone] = useState("");
+  const [isEditingContact, setIsEditingContact] = useState(false);
+  const [newContact, setNewContact] = useState("");
 
-  // Get userId from sessionStorage
+  // Get userId and verification type from sessionStorage
   useEffect(() => {
     const storedUserId = sessionStorage.getItem("userId");
     const storedPhone = sessionStorage.getItem("userPhone");
+    const storedEmail = sessionStorage.getItem("userEmail");
+    const storedVerificationType = sessionStorage.getItem("verificationType") as "phone" | "email" | null;
     
     if (!storedUserId) {
       // Redirect to signup if no userId found
@@ -31,7 +35,9 @@ const VerificationCode: React.FC = () => {
     }
     
     setUserId(storedUserId);
-    setUserPhone(storedPhone || "XXX-XXX-XXXX");
+    setUserPhone(storedPhone || "");
+    setUserEmail(storedEmail || "");
+    setVerificationType(storedVerificationType || "phone");
   }, [navigate]);
 
   // Timer countdown
@@ -75,7 +81,9 @@ const VerificationCode: React.FC = () => {
       // Clear session storage
       sessionStorage.removeItem("userId");
       sessionStorage.removeItem("userPhone");
+      sessionStorage.removeItem("userEmail");
       sessionStorage.removeItem("userRole");
+      sessionStorage.removeItem("verificationType");
       
       // Redirect to login after 2 seconds
       setTimeout(() => {
@@ -88,13 +96,13 @@ const VerificationCode: React.FC = () => {
     }
   };
 
-  const handleResendCode = async (useNewPhone: boolean = false) => {
-    if (!canResend && !useNewPhone) return;
+  const handleResendCode = async (useNewContact: boolean = false) => {
+    if (!canResend && !useNewContact) return;
 
-    // Validate new phone number if changing
-    if (useNewPhone) {
-      if (!newPhone.trim()) {
-        setError("Please enter a valid phone number");
+    // Validate new contact if changing
+    if (useNewContact) {
+      if (!newContact.trim()) {
+        setError(`Please enter a valid ${verificationType === "phone" ? "phone number" : "email address"}`);
         return;
       }
     }
@@ -104,20 +112,36 @@ const VerificationCode: React.FC = () => {
     setLoading(true);
     
     try {
-      const response = await authService.resendOtp({
+      const requestData: any = {
         userId,
-        ...(useNewPhone && newPhone.trim() && { newphonenumber: newPhone.trim() }),
-      });
+        fromphonenumber: verificationType === "phone",
+      };
+
+      // Add new contact if user is changing it
+      if (useNewContact && newContact.trim()) {
+        if (verificationType === "phone") {
+          requestData.newphonenumber = newContact.trim();
+        } else {
+          requestData.newemail = newContact.trim();
+        }
+      }
+
+      const response = await authService.resendOtp(requestData);
 
       console.log("OTP resent:", response);
       
-      // Update the displayed phone number if changed
-      if (useNewPhone && newPhone.trim()) {
-        setUserPhone(newPhone.trim());
-        sessionStorage.setItem("userPhone", newPhone.trim());
-        setIsEditingPhone(false);
-        setNewPhone("");
-        setSuccess(`Verification code sent to ${newPhone.trim()}!`);
+      // Update the displayed contact if changed
+      if (useNewContact && newContact.trim()) {
+        if (verificationType === "phone") {
+          setUserPhone(newContact.trim());
+          sessionStorage.setItem("userPhone", newContact.trim());
+        } else {
+          setUserEmail(newContact.trim());
+          sessionStorage.setItem("userEmail", newContact.trim());
+        }
+        setIsEditingContact(false);
+        setNewContact("");
+        setSuccess(`Verification code sent to ${newContact.trim()}!`);
       } else {
         setSuccess("Verification code resent successfully!");
       }
@@ -133,18 +157,22 @@ const VerificationCode: React.FC = () => {
     }
   };
 
-  const handleChangePhone = () => {
-    setIsEditingPhone(true);
-    setNewPhone("");
+  const handleChangeContact = () => {
+    setIsEditingContact(true);
+    setNewContact("");
     setError("");
     setSuccess("");
   };
 
-  const handleCancelChangePhone = () => {
-    setIsEditingPhone(false);
-    setNewPhone("");
+  const handleCancelChangeContact = () => {
+    setIsEditingContact(false);
+    setNewContact("");
     setError("");
   };
+
+  const displayContact = verificationType === "phone" ? userPhone : userEmail;
+  const contactLabel = verificationType === "phone" ? "Phone Number" : "Email";
+  const contactType = verificationType === "phone" ? "tel" : "email";
 
   return (
     <AuthModalLayout title="Identify Verification">
@@ -152,16 +180,16 @@ const VerificationCode: React.FC = () => {
         <LogoBadge size="md" />
         <div className="space-y-2">
           <h3 className="text-xl font-semibold text-[#2F1C4E]">
-            Text Confirmation
+            {verificationType === "phone" ? "Text Confirmation" : "Email Confirmation"}
           </h3>
-          {!isEditingPhone ? (
+          {!isEditingContact ? (
             <div className="flex items-center justify-center gap-2">
               <p className="text-sm text-[#6F5D9E]">
-                A code was sent to {userPhone}
+                A code was sent to {displayContact || "your " + contactLabel.toLowerCase()}
               </p>
               <button
                 type="button"
-                onClick={handleChangePhone}
+                onClick={handleChangeContact}
                 className="text-xs text-primary font-semibold hover:underline"
               >
                 Change
@@ -169,28 +197,28 @@ const VerificationCode: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-3 px-4">
-              <p className="text-sm text-[#6F5D9E]">Enter new phone number</p>
+              <p className="text-sm text-[#6F5D9E]">Enter new {contactLabel.toLowerCase()}</p>
               <Input
-                id="newPhone"
-                type="tel"
-                placeholder="New Phone Number"
+                id="newContact"
+                type={contactType}
+                placeholder={`New ${contactLabel}`}
                 className="bg-[#F7FBFF] border border-[#D4D7E3] !pl-2 !py-3 text-sm"
-                value={newPhone}
-                onChange={(e) => setNewPhone(e.target.value)}
+                value={newContact}
+                onChange={(e) => setNewContact(e.target.value)}
               />
               <div className="flex gap-2 justify-center">
                 <Button
                   variant="secondary"
                   className="rounded-full hover:bg-[#4A1F6B]"
                   onClick={() => handleResendCode(true)}
-                  disabled={loading || !newPhone.trim()}
+                  disabled={loading || !newContact.trim()}
                 >
                   Send Code
                 </Button>
                 <Button
                   variant="default"
                   className="text-xs px-4 py-2 border border-primary !text-primary rounded-full hover:bg-gray-50"
-                  onClick={handleCancelChangePhone}
+                  onClick={handleCancelChangeContact}
                   disabled={loading}
                 >
                   Cancel
@@ -211,7 +239,7 @@ const VerificationCode: React.FC = () => {
         )}
         <OtpInput onChange={setCode} />
         <div className="flex flex-col">
-          {!isEditingPhone && (
+          {!isEditingContact && (
             <>
               {timer > 0 ? (
                 <p className="text-sm text-[#6F5D9E] mb-5">

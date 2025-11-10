@@ -34,8 +34,7 @@ const fields = [
 
 const ContactSection: React.FC = () => {
   return (
-    <div className="w-full bg-white">
-      <div className="custom-container px-6 py-10 lg:py-24 lg:px-24">
+      <div className="custom-container px-6 ">
         <div className="mb-12 text-center">
           <h2 className="font-bold text-4xl lg:text-6xl text-primary">
             Contact Us
@@ -126,7 +125,6 @@ const ContactSection: React.FC = () => {
           </form>
         </div>
       </div>
-    </div>
   );
 };
 

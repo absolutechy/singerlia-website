@@ -7,7 +7,8 @@ import { toast } from "sonner";
 
 interface LocationState {
   userId: string;
-  phoneNumber: string;
+  contact: string;
+  verificationType: "phone" | "email";
 }
 
 const ResetPassword: React.FC = () => {
@@ -27,7 +28,7 @@ const ResetPassword: React.FC = () => {
 
   // Redirect if no state
   useEffect(() => {
-    if (!state?.userId || !state?.phoneNumber) {
+    if (!state?.userId || !state?.contact) {
       navigate("/auth/forgot-password");
     }
   }, [state, navigate]);
@@ -65,9 +66,17 @@ const ResetPassword: React.FC = () => {
     setError("");
 
     try {
-      const response = await authService.sendResetPasswordCode({
-        phonenumber: state.phoneNumber,
-      });
+      const requestData: any = {
+        fromphonenumber: state.verificationType === "phone",
+      };
+
+      if (state.verificationType === "phone") {
+        requestData.phonenumber = state.contact;
+      } else {
+        requestData.email = state.contact;
+      }
+
+      const response = await authService.sendResetPasswordCode(requestData);
 
       console.log("Reset code resent", response);
 
@@ -139,7 +148,7 @@ const ResetPassword: React.FC = () => {
               Enter Verification Code
             </h3>
             <p className="text-sm text-gray-600">
-              We've sent a verification code to {state.phoneNumber}
+              We've sent a verification code to {state.contact}
             </p>
           </div>
 

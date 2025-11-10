@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import AuthModalLayout from "@/components/auth/AuthModalLayout";
 import LogoBadge from "@/components/auth/LogoBadge";
 import { Button } from "@/components/common";
 import { Mail, Phone } from "lucide-react";
+import authService from "@/api/services/authService";
 
 type VerificationType = "email" | "phone";
 
@@ -24,12 +25,62 @@ const options = [
 
 const SelectVerification: React.FC = () => {
   const [selected, setSelected] = useState<VerificationType>("email");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [userId, setUserId] = useState("");
   const navigate = useNavigate();
+
+  // Get userId from sessionStorage
+  useEffect(() => {
+    const storedUserId = sessionStorage.getItem("userId");
+    
+    if (!storedUserId) {
+      // Redirect to signup if no userId found
+      navigate("/auth/signup");
+      return;
+    }
+    
+    setUserId(storedUserId);
+  }, [navigate]);
+
+  const handleContinue = async () => {
+    if (!userId) {
+      setError("User ID not found. Please sign up again.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await authService.sendOtp({
+        userId,
+        fromphonenumber: selected === "phone",
+      });
+
+      console.log("OTP sent:", response);
+
+      // Store verification method in sessionStorage
+      sessionStorage.setItem("verificationType", selected);
+      
+      // Navigate to verification code page
+      navigate("/auth/verification-code");
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Failed to send OTP. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <AuthModalLayout title="Select Verification">
       <div className="space-y-8">
         <LogoBadge size="md" />
+        {error && (
+          <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
+            {error}
+          </div>
+        )}
         <div className="space-y-4">
           {options.map((option) => {
             const isSelected = option.id === selected;
@@ -78,9 +129,10 @@ const SelectVerification: React.FC = () => {
           variant="secondary"
           size="large"
           className="mx-auto w-full max-w-sm rounded-full bg-primary text-white hover:bg-[#4A1F6B]"
-          onClick={() => navigate("/auth/verification-code")}
+          onClick={handleContinue}
+          disabled={loading}
         >
-          <span className="font-semibold">Continue</span>
+          <span className="font-semibold">{loading ? "Sending..." : "Continue"}</span>
         </Button>
       </div>
     </AuthModalLayout>

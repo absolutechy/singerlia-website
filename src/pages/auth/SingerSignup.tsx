@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import AuthModalLayout from "@/components/auth/AuthModalLayout";
-import SocialButton from "@/components/auth/SocialButton";
 import { Button, Input, Select } from "@/components/common";
-import GoogleIcon from "@/assets/images/common/Google.png";
-import FacebookIcon from "@/assets/images/common/Facebook.png";
 import authService from "@/api/services/authService";
 
 const genderOptions = [
@@ -13,33 +10,44 @@ const genderOptions = [
   { value: "other", label: "Other" },
 ];
 
-const countryOptions = [
-  { value: "us", label: "United States" },
-  { value: "uk", label: "United Kingdom" },
-  { value: "uae", label: "United Arab Emirates" },
-];
-
 const cityOptions = [
-  { value: "nyc", label: "New York" },
-  { value: "ldn", label: "London" },
-  { value: "dxb", label: "Dubai" },
+  { value: "riyadh", label: "Riyadh" },
+  { value: "jeddah", label: "Jeddah" },
+  { value: "mecca", label: "Mecca" },
+  { value: "medina", label: "Medina" },
+  { value: "dammam", label: "Dammam" },
+  { value: "khobar", label: "Khobar" },
+  { value: "dhahran", label: "Dhahran" },
+  { value: "taif", label: "Taif" },
+  { value: "buraidah", label: "Buraidah" },
+  { value: "tabuk", label: "Tabuk" },
+  { value: "khamis-mushait", label: "Khamis Mushait" },
+  { value: "hail", label: "Hail" },
+  { value: "najran", label: "Najran" },
+  { value: "jubail", label: "Jubail" },
+  { value: "abha", label: "Abha" },
+  { value: "yanbu", label: "Yanbu" },
+  { value: "al-qatif", label: "Al Qatif" },
+  { value: "al-mubarraz", label: "Al Mubarraz" },
+  { value: "al-ahsa", label: "Al Ahsa" },
 ];
 
 const selects = [
     { id: "gender", label: "Select Gender", options: genderOptions },
-    { id: "country", label: "Select Country", options: countryOptions },
     { id: "city", label: "Select City", options: cityOptions },
   ];
 
 const fields = [
-    { id: "firstName", label: "First Name", placeholder: "Type here" },
-    { id: "lastName", label: "Last Name", placeholder: "Type here" },
-    { id: "phone", label: "Phone Number", type: "tel", placeholder: "Type here" },
-    { id: "email", label: "Email", type: "email", placeholder: "Type here" },
+    { id: "firstName", label: "First Name", placeholder: "Type here", required: true },
+    { id: "lastName", label: "Last Name", placeholder: "Type here", required: true },
+    { id: "phone", label: "Phone Number", type: "tel", placeholder: "Type here", required: true },
+    { id: "email", label: "Email", type: "email", placeholder: "Type here", required: true },
+    { id: "dateOfBirth", label: "Date of Birth", type: "date", placeholder: "Type here", required: true },
+    { id: "iqamaNumber", label: "Iqama Number", type: "text", placeholder: "Type here", required: true },
     { id: "introVideo", label: "Introduction Video Link", type: "url", placeholder: "Add YouTube video link" },
     { id: "location", label: "Add Location", placeholder: "Type here" },
-    { id: "password", label: "Password", type: "password", placeholder: "Type here" },
-    { id: "confirmPassword", label: "Re-Enter Password", type: "password", placeholder: "Type here" },
+    { id: "password", label: "Password", type: "password", placeholder: "Type here", required: true },
+    { id: "confirmPassword", label: "Re-Enter Password", type: "password", placeholder: "Type here", required: true },
   ];
 
 const SingerSignup: React.FC = () => {
@@ -49,12 +57,13 @@ const SingerSignup: React.FC = () => {
     lastName: "",
     phone: "",
     email: "",
+    dateOfBirth: "",
+    iqamaNumber: "",
     introVideo: "",
     location: "",
     password: "",
     confirmPassword: "",
     gender: "",
-    country: "",
     city: "",
   });
   const [agreedToTerms, setAgreedToTerms] = useState(false);
@@ -63,7 +72,17 @@ const SingerSignup: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-    setFormData((prev) => ({ ...prev, [id]: value }));
+    
+    // Special handling for Iqama number - only allow numbers and max 10 digits
+    if (id === "iqamaNumber") {
+      const numericValue = value.replace(/\D/g, ""); // Remove non-digits
+      if (numericValue.length <= 10) {
+        setFormData((prev) => ({ ...prev, [id]: numericValue }));
+      }
+    } else {
+      setFormData((prev) => ({ ...prev, [id]: value }));
+    }
+    
     setError("");
   };
 
@@ -73,9 +92,31 @@ const SingerSignup: React.FC = () => {
   };
 
   const handleSignup = async () => {
-    // Validation
-    if (!formData.firstName || !formData.lastName || !formData.phone || !formData.password) {
+    // Validation for required fields
+    if (!formData.firstName || !formData.lastName || !formData.phone || 
+        !formData.email || !formData.dateOfBirth || !formData.iqamaNumber || 
+        !formData.password || !formData.confirmPassword) {
       setError("Please fill in all required fields");
+      return;
+    }
+
+    // Validate date of birth (must be 18 years or older)
+    const birthDate = new Date(formData.dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    if (age < 18) {
+      setError("You must be at least 18 years old to sign up");
+      return;
+    }
+
+    // Validate Iqama number (must be exactly 10 digits)
+    const iqamaRegex = /^\d{10}$/;
+    if (!iqamaRegex.test(formData.iqamaNumber)) {
+      setError("Iqama number must be exactly 10 digits");
       return;
     }
 
@@ -103,15 +144,19 @@ const SingerSignup: React.FC = () => {
         intro_vid_link: formData.introVideo,
         city: formData.city,
         address: formData.location,
+        DOB: formData.dateOfBirth,
+        iqama_number: formData.iqamaNumber,
       });
 
       // Store userId and phone for verification page
       sessionStorage.setItem("userId", response.userId);
       sessionStorage.setItem("userPhone", formData.phone);
+      sessionStorage.setItem("userEmail", formData.email);
       sessionStorage.setItem("userRole", "singer");
       
       // Navigate directly to verification code page
-      navigate("/auth/verification-code");
+      // navigate("/auth/verification-code");
+      navigate("/auth/verification-method");
     } catch (err: any) {
       setError(err.response?.data?.message || "Registration failed. Please try again.");
     } finally {
@@ -136,7 +181,7 @@ const SingerSignup: React.FC = () => {
       }
       size="xl"
     >
-      <div className="space-y-2 pt-[850px] lg:pt-0">
+      <div className="space-y-2 pt-[800px] lg:pt-0">
         {/* <LogoBadge size="md" /> */}
         {error && (
           <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
@@ -155,6 +200,10 @@ const SingerSignup: React.FC = () => {
               className="bg-[#F7FBFF] border border-[#D4D7E3] !pl-2 !py-6"
               value={formData[field.id as keyof typeof formData]}
               onChange={handleInputChange}
+              required={field.required}
+              maxLength={field.id === "iqamaNumber" ? 10 : undefined}
+              pattern={field.id === "iqamaNumber" ? "[0-9]*" : undefined}
+              inputMode={field.id === "iqamaNumber" ? "numeric" : undefined}
             />
           ))}
           {selects.map((select) => (
@@ -193,7 +242,7 @@ const SingerSignup: React.FC = () => {
           <span className="font-semibold">{loading ? "Signing Up..." : "Sign Up"}</span>
         </Button>
 
-        <div className="grid gap-3 md:grid-cols-2">
+        {/* <div className="grid gap-3 md:grid-cols-2">
           <SocialButton
             label="Sign in with Google" 
             icon={
@@ -204,7 +253,7 @@ const SingerSignup: React.FC = () => {
             label="Sign in with Facebook"
             icon={<img src={FacebookIcon} alt="Facebook" className="h-7 w-7" />}
           />
-        </div>
+        </div> */}
       </div>
     </AuthModalLayout>
   );
