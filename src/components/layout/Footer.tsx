@@ -11,7 +11,13 @@ import {
 } from "lucide-react";
 import logo from "@/assets/images/common/logolia.png";
 
-const quickLinks = ["Home", "Singers listing", "About Us", "Contact Us", "Testimonials"];
+const quickLinks = [
+  "Home",
+  "Singers listing",
+  "About Us",
+  "Contact Us",
+  "Testimonials",
+];
 const artistLinks = ["Join Platform", "Success Stories"];
 const supportLinks = ["Help Center", "Contact Support", "Terms", "Policy"];
 
@@ -65,12 +71,10 @@ const Footer: React.FC = () => {
                 placeholder="Enter your email"
                 aria-label="Enter your email"
               />
-              <Button
-                variant="primary"
-                size="large"
-                type="button"
-              >
-                <p className="font-normal text-base normal-case">Subscribe News Letter</p>
+              <Button variant="primary" size="large" type="button">
+                <p className="font-normal text-base normal-case">
+                  Subscribe News Letter
+                </p>
               </Button>
             </div>
           </div>
@@ -89,22 +93,43 @@ const Footer: React.FC = () => {
               </p>
             </div>
             <p className="max-w-sm text-sm text-white/70">
-              Professional live music booking made simple, secure, and memorable.
+              Professional live music booking made simple, secure, and
+              memorable.
             </p>
             <div className="flex flex-wrap items-center gap-3 text-white/70">
-              <a href="#" aria-label="Facebook" className="transition hover:text-[#FFD700] border rounded-full border-white p-1">
+              <a
+                href="#"
+                aria-label="Facebook"
+                className="transition hover:text-[#FFD700] border rounded-full border-white p-1"
+              >
                 <Facebook className="h-5 w-5" strokeWidth={1.5} />
               </a>
-              <a href="#" aria-label="Instagram" className="transition hover:text-[#FFD700] border rounded-full border-white p-1">
+              <a
+                href="#"
+                aria-label="Instagram"
+                className="transition hover:text-[#FFD700] border rounded-full border-white p-1"
+              >
                 <Instagram className="h-5 w-5" strokeWidth={1.5} />
               </a>
-              <a href="#" aria-label="YouTube" className="transition hover:text-[#FFD700] border rounded-full border-white p-1">
+              <a
+                href="#"
+                aria-label="YouTube"
+                className="transition hover:text-[#FFD700] border rounded-full border-white p-1"
+              >
                 <Youtube className="h-5 w-5" strokeWidth={1.5} />
               </a>
-              <a href="#" aria-label="Pinterest" className="transition hover:text-[#FFD700] border rounded-full border-white p-1">
+              <a
+                href="#"
+                aria-label="Pinterest"
+                className="transition hover:text-[#FFD700] border rounded-full border-white p-1"
+              >
                 <Pin className="h-5 w-5" strokeWidth={1.5} />
               </a>
-              <a href="#" aria-label="LinkedIn" className="transition hover:text-[#FFD700] border rounded-full border-white p-1">
+              <a
+                href="#"
+                aria-label="LinkedIn"
+                className="transition hover:text-[#FFD700] border rounded-full border-white p-1"
+              >
                 <Linkedin className="h-5 w-5" strokeWidth={1.5} />
               </a>
             </div>
@@ -148,7 +173,7 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="mt-12 border-t border-white/15 pt-6 text-center text-xs text-white/60">
-          © 2024 Singerlia. All rights reserved.
+          © {new Date().getFullYear()} Singerlia. All rights reserved.
         </div>
       </div>
     </footer>
