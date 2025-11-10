@@ -1,14 +1,16 @@
-import Artists from "@/components/pageComponents/Home/Artists";
-import ContactSection from "@/components/pageComponents/Home/ContactSection";
-import Genre from "@/components/pageComponents/Home/Genre";
-import Hero from "@/components/pageComponents/Home/Hero";
-import HowItWorks from "@/components/pageComponents/Home/HowItWorks";
-import MissionGrowth from "@/components/pageComponents/Home/MissionGrowth";
-import PartyExperience from "@/components/pageComponents/Home/PartyExperience";
-import PostReviewCTA from "@/components/pageComponents/Home/PostReviewCTA";
-import Reviews from "@/components/pageComponents/Home/Reviews";
-import Welcome from "@/components/pageComponents/Home/Welcome";
-import Why from "@/components/pageComponents/Home/Why";
+import {
+  Hero,
+  Artists,
+  HowItWorks,
+  Genre,
+  Welcome,
+  WhySingerlia,
+  MissionGrowth,
+  PartyExperience,
+  ContactSection,
+  Reviews,
+  PostReviewCTA,
+} from "@/components/pageComponents/Home";
 
 const Home = () => {
   return (
@@ -18,7 +20,7 @@ const Home = () => {
       <HowItWorks />
       <Genre />
       <Welcome />
-      <Why />
+      <WhySingerlia />
       <MissionGrowth />
       <PartyExperience />
       <ContactSection />

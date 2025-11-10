@@ -124,13 +124,13 @@ const SingerSignup: React.FC = () => {
       title="Welcome to Sign up"
       footerNote={
         <p className="text-center text-sm text-[#6F5D9E]">
-          Don’t you have an account?{" "}
+          Already have an account?{" "}
           <button
             type="button"
-            className="font-semibold text-primary underline-offset-4 hover:underline"
+            className="font-semibold cursor-pointer text-primary underline-offset-4 hover:underline"
             onClick={() => navigate("/auth/login")}
           >
-            Sign Up
+            Log In
           </button>
         </p>
       }

@@ -35,7 +35,7 @@ const SingerCircle: React.FC<SingerCircleProps> = ({
   const strokeRadius = radius - 1;
 
   return (
-    <div className="relative inline-block mx-2">
+    <div className="relative inline-block mx-2 !h-40">
       {/* SVG Border */}
       <div className={`${sizeClasses[size].container} relative`}>
         <svg
@@ -88,7 +88,7 @@ const SingerCircle: React.FC<SingerCircleProps> = ({
 
       {/* Singerlia Badge - Top Right */}
       <div
-        className={`${badgeSizes[size]} absolute -top-1 -right-1 rounded-full bg-gray-700 flex items-center justify-center shadow-md border-2 border-white`}
+        className={`${badgeSizes[size]} absolute top-0 -right-1 rounded-full bg-gray-700 flex items-center justify-center shadow-md border-2 border-white`}
       >
         <img
           src={LogoLia}

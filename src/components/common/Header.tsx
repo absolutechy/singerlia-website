@@ -230,7 +230,7 @@ const Header: React.FC = () => {
         </button>
 
         {/* Language/Globe Icon - Desktop Only */}
-        <button
+        {/* <button
           className="hidden md:block text-white hover:text-secondary transition-colors p-2"
           aria-label="Change language"
         >
@@ -241,7 +241,7 @@ const Header: React.FC = () => {
           >
             <Globe size={compact ? 20 : 24} />
           </motion.div>
-        </button>
+        </button> */}
 
         {/* Authenticated User Avatar & Dropdown - Desktop Only */}
         {user ? (
@@ -308,10 +308,11 @@ const Header: React.FC = () => {
             >
               <Button
                 variant="default"
-                size={compact ? "small" : "medium"}
+                className="!text-base"
+                size={compact ? "large" : "medium"}
                 onClick={() => navigate("/auth/login")}
               >
-                Log In
+                Book Now
               </Button>
             </motion.div>
 
@@ -325,8 +326,8 @@ const Header: React.FC = () => {
             >
               <Button
                 variant="primary"
-                className="!px-6 sm:!px-10"
-                size={compact ? "small" : "medium"}
+                className="!px-6 sm:!px-10 !text-base"
+                size={compact ? "large" : "medium"}
                 onClick={() => navigate("/auth/create-account")}
               >
                 Sign Up

@@ -36,13 +36,7 @@ const faqs = [
   },
 ];
 
-const SingerDetails: React.FC = () => {
-  const name = "John Doberman";
-  const [reviewsOpen, setReviewsOpen] = useState(false);
-  const [messageOpen, setMessageOpen] = useState(false);
-  const [mediaOpen, setMediaOpen] = useState(false);
-
-  const allReviews = [
+const allReviews = [
     {
       id: 1,
       name: "Liam",
@@ -84,6 +78,12 @@ const SingerDetails: React.FC = () => {
       text: "Jhon was awesome singer, knew exactly where to go for the best singer experience !",
     },
   ];
+
+const SingerDetails: React.FC = () => {
+  const name = "John Doberman";
+  const [reviewsOpen, setReviewsOpen] = useState(false);
+  const [messageOpen, setMessageOpen] = useState(false);
+  const [mediaOpen, setMediaOpen] = useState(false);
 
   // Floating "View all" cursor setup
   const cursorRef = useRef<HTMLDivElement | null>(null);

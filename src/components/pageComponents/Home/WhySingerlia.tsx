@@ -2,7 +2,7 @@ import { Button } from "@/components/common";
 import React from "react";
 import logo from "@/assets/images/common/grid.png";
 
-const Why: React.FC = () => {
+const WhySingerlia: React.FC = () => {
   return (
     <div className="w-full">
       <div className="custom-container pt-14 lg:pt-28 px-24 flex flex-col lg:flex-row justify-between">
@@ -34,4 +34,4 @@ const Why: React.FC = () => {
   );
 };
 
-export default Why;
+export default WhySingerlia;

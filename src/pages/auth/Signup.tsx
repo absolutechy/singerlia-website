@@ -85,10 +85,10 @@ const Signup: React.FC = () => {
     <AuthModalLayout
       footerNote={
         <p className="text-center text-sm text-[#6F5D9E]">
-          Already have an account?{" "}
+          Don't have an account?{" "}
           <button
             type="button"
-            className="font-semibold text-primary underline-offset-4 hover:underline"
+            className="font-semibold cursor-pointer text-primary underline-offset-4 hover:underline"
             onClick={() => navigate("/auth/login")}
           >
             Log In

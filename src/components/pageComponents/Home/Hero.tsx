@@ -7,7 +7,7 @@ import UserFourAvatar from "@/assets/images/common/user4.png";
 import { Dot } from "lucide-react";
 import { useNavigate } from "react-router";
 import SocialIcons from "./SocialIcons";
-import VerifiedArtistsLogo from "./VerifiedArtist";
+import VerifiedArtistsLogo from "./VerifiedArtists";
 
 const users = [
   { id: 1, src: UserOneAvatar, alt: "@user1", fallback: "U1" },

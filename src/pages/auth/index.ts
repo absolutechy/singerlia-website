@@ -1,0 +1,8 @@
+export { default as Login } from "@/pages/auth/Login"
+export { default as Signup } from "@/pages/auth/Signup"
+export { default as SingerSignup } from "@/pages/auth/SingerSignup"
+export { default as CreateAccountWelcome } from "@/pages/auth/CreateAccountWelcome"
+export { default as ChooseRole } from "@/pages/auth/ChooseRole"
+export { default as VerificationCode } from "@/pages/auth/VerificationCode"
+export { default as ForgotPassword } from "@/pages/auth/ForgotPassword"
+export { default as ResetPassword } from "@/pages/auth/ResetPassword"

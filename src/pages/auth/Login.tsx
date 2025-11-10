@@ -73,7 +73,21 @@ const Login: React.FC = () => {
   };
 
   return (
-    <AuthModalLayout title="Welcome to Log In" size="lg">
+    <AuthModalLayout 
+      title="Welcome to Log In" size="lg"
+      footerNote={
+        <p className="text-center text-sm text-[#6F5D9E]">
+          Don't have an account?{" "}
+          <button
+            type="button"
+            className="font-semibold cursor-pointer text-primary underline-offset-4 hover:underline"
+            onClick={() => navigate("/auth/choose-role")}
+          >
+            Sign Up
+          </button>
+        </p>
+      }
+    >
       <div className="flex flex-col items-center gap-8">
         {/* <LogoBadge size="md" /> */}
         <div className="grid w-full items-start gap-8 md:grid-cols-2 md:gap-12">
@@ -116,7 +130,7 @@ const Login: React.FC = () => {
                 // label="Password"
                 type="password"
                 placeholder="Password"
-                className="bg-[#F7FBFF] border border-[#D4D7E3] !pl-2 !py-6"
+                className="bg-[#F7FBFF] !font-sans border border-[#D4D7E3] !pl-2 py-6"
                 value={formData.password}
                 onChange={handleInputChange}
               />

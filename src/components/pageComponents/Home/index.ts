@@ -1,0 +1,14 @@
+export { default as Hero } from "@/components/pageComponents/Home/Hero";
+export { default as HowItWorks } from "@/components/pageComponents/Home/HowItWorks";
+export { default as Artists} from "@/components/pageComponents/Home/Artists";
+export { default as VerifiedArtists } from "@/components/pageComponents/Home/VerifiedArtists";
+export { default as Genre } from "@/components/pageComponents/Home/Genre";
+export { default as ContactSection } from "@/components/pageComponents/Home/ContactSection";
+export { default as MissionGrowth } from "@/components/pageComponents/Home/MissionGrowth";
+export { default as PartyExperience } from "@/components/pageComponents/Home/PartyExperience";
+export { default as PostReviewCTA } from "@/components/pageComponents/Home/PostReviewCTA";
+export { default as WhySingerlia } from "@/components/pageComponents/Home/WhySingerlia";
+export { default as Reviews } from "@/components/pageComponents/Home/Reviews";
+export { default as Welcome } from "@/components/pageComponents/Home/Welcome";
+export { default as SingerCircle } from "@/components/pageComponents/Home/SingerCircle";
+export { default as SocialIcons } from "@/components/pageComponents/Home/SocialIcons";
