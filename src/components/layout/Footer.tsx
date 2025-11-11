@@ -172,9 +172,9 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-12 border-t border-white/15 pt-6 text-center text-xs text-white/60">
-          © {new Date().getFullYear()} Singerlia. All rights reserved.
-        </div>
+        <p className="mt-12 border-t border-white/15 pt-6 text-center text-xs text-white/60">
+          © 2025 Singerlia. All rights reserved.
+        </p>
       </div>
     </footer>
   );
