@@ -24,6 +24,17 @@ jobs:
       - name: Build Vite app
         run: npm run build
 
+      - name: Ensure dist folder exists
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            sudo mkdir -p /var/www/singerlia-website/dist
+            sudo chown -R $USER:www-data /var/www/singerlia-website
+            sudo chmod -R 775 /var/www/singerlia-website
+
       - name: Copy build to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -33,6 +44,7 @@ jobs:
           source: "dist/*"
           target: "/var/www/singerlia-website/dist"
           overwrite: true
+          strip_components: 1
           debug: true
 
       - name: Fix permissions and restart Nginx
@@ -42,11 +54,8 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            set -e
-            echo "Setting permissions..."
             sudo chown -R www-data:www-data /var/www/singerlia-website/dist
-            sudo chmod -R 755 /var/www/singerlia-website/dist
-
-            echo "Restarting Nginx..."
+            sudo find /var/www/singerlia-website/dist -type d -exec chmod 755 {} \;
+            sudo find /var/www/singerlia-website/dist -type f -exec chmod 644 {} \;
             sudo systemctl restart nginx
             echo "✅ Deployment complete!"
