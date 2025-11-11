@@ -173,7 +173,7 @@ const Footer: React.FC = () => {
         </div>
 
         <p className="mt-12 border-t border-white/15 pt-6 text-center text-xs text-white/60">
-          © 2025 Singerlia. All rights reserved.
+          © 2020 Singerlia. All rights reserved.
         </p>
       </div>
     </footer>
