@@ -24,18 +24,7 @@ jobs:
       - name: Build Vite app
         run: npm run build
 
-      - name: Copy build to EC2
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          source: "dist/*"
-          target: "/var/www/singerlia-website/"
-          overwrite: true
-          debug: true
-
-      - name: Post-deploy setup on EC2
+      - name: Deploy build to EC2
         uses: appleboy/ssh-action@v0.1.8
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -43,13 +32,37 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             set -e
-            echo "Cleaning and moving files..."
+            echo "✅ Starting deployment..."
+            
+            # Ensure dist directory exists
+            sudo mkdir -p /var/www/singerlia-website/dist
+
+            # Clean old build
             sudo rm -rf /var/www/singerlia-website/dist/*
-            sudo mv /var/www/singerlia-website/* /var/www/singerlia-website/dist/ 2>/dev/null || true
+
+      - name: Copy build files to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          source: "dist/*"
+          target: "/var/www/singerlia-website/dist"
+          overwrite: true
+          debug: true
+
+      - name: Fix permissions and restart Nginx
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            set -e
+            echo "Setting permissions..."
             sudo chown -R www-data:www-data /var/www/singerlia-website/dist
             sudo chmod -R 755 /var/www/singerlia-website/dist
+
             echo "Restarting Nginx..."
             sudo systemctl restart nginx
             echo "✅ Deployment complete!"
-
-
