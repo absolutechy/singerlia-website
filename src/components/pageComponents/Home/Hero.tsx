@@ -30,13 +30,13 @@ const Hero = () => {
         }}
       />
       <div className="flex flex-col lg:flex-row gap-y-3 items-center justify-center mt-5 lg:mt-10 gap-x-5 outfit">
-        <Button
+        {/* <Button
           variant="default"
           size="large"
           className="!text-primary bg-white border border-primary mt-4 lg:mt-0"
         >
           See How It Works
-        </Button>
+        </Button> */}
         <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 mt-4 lg:mt-0">
           {users.map((user) => (
             <Avatar key={user.id} className="w-10 h-10" >
