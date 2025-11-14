@@ -112,8 +112,8 @@ const Signup: React.FC = () => {
         localStorage.setItem("userRole", "user");
 
         // Dispatch auth event to update header
-        authService.dispatchAuthEvent();
-
+        // Emit a global auth change event for any listeners (header, etc.)
+        window.dispatchEvent(new Event("authChanged"));
         // Navigate to profile/dashboard instead of login
         navigate("/dashboard");
       } else {

@@ -6,7 +6,6 @@ import {
   Youtube,
   Linkedin,
   Star,
-  CircleCheck,
   Pin,
 } from "lucide-react";
 import logo from "@/assets/images/common/logolia.png";
