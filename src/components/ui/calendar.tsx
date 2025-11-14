@@ -12,7 +12,7 @@ import { Button, buttonVariants } from "@/components/ui/button"
 function Calendar({
   className,
   classNames,
-  showOutsideDays = true,
+  showOutsideDays = false,
   captionLayout = "label",
   buttonVariant = "ghost",
   formatters,
@@ -112,7 +112,9 @@ function Calendar({
           defaultClassNames.today
         ),
         outside: cn(
-          "text-muted-foreground aria-selected:text-muted-foreground",
+          // Days from non-current months should be visually muted and non-interactive.
+          // They remain visible but are greyed out and not selectable.
+          "text-muted-foreground opacity-60 pointer-events-none select-none",
           defaultClassNames.outside
         ),
         disabled: cn(
@@ -185,6 +187,7 @@ function CalendarDayButton({
 
   return (
     <Button
+      disabled={!!(modifiers.outside || modifiers.disabled)}
       ref={ref}
       variant="ghost"
       size="icon"

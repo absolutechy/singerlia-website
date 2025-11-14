@@ -56,8 +56,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
         {/* Select Date */}
         <div className="w-full md:w-48">
           <DatePicker
-            label="Event Date"
-            placeholder="Select Date"
+            placeholder="Event Date"
             value={searchData.date}
             onChange={(value) => handleInputChange("date", value)}
             className=""
