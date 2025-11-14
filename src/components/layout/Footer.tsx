@@ -13,7 +13,7 @@ import logo from "@/assets/images/common/logolia.png";
 
 const quickLinks = [
   "Home",
-  "Singers listing",
+  "Artists listing",
   "About Us",
   "Contact Us",
   "Testimonials",
@@ -43,12 +43,6 @@ const Footer: React.FC = () => {
             <h2 className="max-w-2xl text-2xl font-semibold text-[#FFD700] md:text-3xl">
               Getting Started Singerlia in Easy Steps With Osm Experiences
             </h2>
-            <div className="flex items-center gap-3 text-[#FFFFFF]">
-              <CircleCheck className="h-5 w-5 border" strokeWidth={1.5} />
-              <span className="text-xs font-semibold tracking-[0.18em] uppercase">
-                No credit card required
-              </span>
-            </div>
           </div>
           <div className="flex w-full flex-col gap-4 md:max-w-lg">
             <div className="flex md:hidden items-center gap-2 text-[#FFD700]">

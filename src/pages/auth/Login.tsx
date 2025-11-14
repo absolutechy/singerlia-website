@@ -82,8 +82,8 @@ const Login: React.FC = () => {
   };
 
   return (
-    <AuthModalLayout 
-      title="Welcome to Log In" size="lg"
+    <AuthModalLayout
+      title="Welcome to SingerLia Log In" size="lg"
       footerNote={
         <p className="text-center text-sm text-[#6F5D9E]">
           Don't have an account?{" "}

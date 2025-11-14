@@ -40,9 +40,7 @@ const VerifiedArtists = () => {
         </div>
       </div>
       <span className="paragraph text-gray-500 mt-5">
-        All the best Artists are featured on My
-        <br />
-        Singerlia Platform collected in one place.
+        The finest artists – all in one platform.
       </span>
 
       <div className="mt-10 py-2 relative -mx-20 w-full">

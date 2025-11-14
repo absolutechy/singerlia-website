@@ -1,7 +1,6 @@
 import {
   Hero,
   Artists,
-  HowItWorks,
   Genre,
   Welcome,
   WhySingerlia,
@@ -16,7 +15,6 @@ const Home = () => {
     <div>
       <Hero />
       <Artists />
-      <HowItWorks />
       <Genre />
       <Welcome />
       <WhySingerlia />

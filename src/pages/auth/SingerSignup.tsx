@@ -43,7 +43,7 @@ const fields = [
     { id: "phone", label: "Phone Number", type: "tel", placeholder: "Type here", required: true },
     { id: "email", label: "Email", type: "email", placeholder: "Type here", required: true },
     { id: "dateOfBirth", label: "Date of Birth", type: "date", placeholder: "Type here", required: true },
-    { id: "iqamaNumber", label: "Iqama Number", type: "text", placeholder: "Type here", required: true },
+    { id: "iqamaNumber", label: "ID / Iqama Number", type: "text", placeholder: "Type here", required: true },
     { id: "introVideo", label: "Introduction Video Link", type: "url", placeholder: "Add YouTube video link" },
     { id: "location", label: "Add Location", placeholder: "Type here" },
     { id: "password", label: "Password", type: "password", placeholder: "Type here", required: true },
@@ -166,7 +166,7 @@ const SingerSignup: React.FC = () => {
 
   return (
     <AuthModalLayout
-      title="Welcome to Sign up"
+      title="Welcome to SingerLia Sign Up"
       footerNote={
         <p className="text-center text-sm text-[#6F5D9E]">
           Already have an account?{" "}

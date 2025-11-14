@@ -88,7 +88,7 @@ const SingerCircle: React.FC<SingerCircleProps> = ({
 
       {/* Singerlia Badge - Top Right */}
       <div
-        className={`${badgeSizes[size]} absolute top-0 -right-1 rounded-full bg-gray-700 flex items-center justify-center shadow-md border-2 border-white`}
+        className={`${badgeSizes[size]} absolute top-0 -right-1 rounded-full bg-primary flex items-center justify-center shadow-md border-2 border-white`}
       >
         <img
           src={LogoLia}

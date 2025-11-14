@@ -40,7 +40,7 @@ const highlightCards: Highlight[] = [
     ),
   },
   {
-    title: "Signer's",
+    title: "Artists",
     description:
       "Showcase your work, accept bookings, and manage your calendar from your phone.",
     icon: (
@@ -212,10 +212,10 @@ const MissionGrowth: React.FC = () => {
           {/* For Customers Section */}
           <div className="grid items-start gap-8 lg:grid-cols-[1fr_600px]">
             <div className="space-y-3">
-              <h3 className="text-xl font-semibold text-gray-900">
+              <h3 className="text-xl font-semibold text-primary">
                 For Customers
               </h3>
-              <p className="text-base text-[#4169E1] leading-relaxed">
+              <p className="text-base text-gray-700 leading-relaxed">
                 Our mission is to make finding the perfect singer effortless. We connect you with talented performers who match your event&apos;s style, whether it&apos;s a wedding, corporate function, private party, or concert. Customers can explore a wide range of singers, listen to their samples, and book with confidence—all in one convenient platform.
               </p>
             </div>
@@ -232,13 +232,13 @@ const MissionGrowth: React.FC = () => {
             </div>
           </div>
 
-          {/* For Singer's Section */}
+          {/* For Artists Section */}
           <div className="grid items-start gap-8 lg:grid-cols-[1fr_600px]">
             <div className="space-y-3">
-              <h3 className="text-xl font-semibold text-gray-900">
-                For Singer&apos;s
+              <h3 className="text-xl font-semibold text-primary">
+                For Artists
               </h3>
-              <p className="text-base text-[#4169E1] leading-relaxed">
+              <p className="text-base text-gray-700 leading-relaxed">
                 We are committed to supporting singers by providing them with greater visibility, valuable opportunities, and direct connections with clients who truly appreciate their art. From solo acts to bands, classical to contemporary, we give singers the tools to showcase their talent, grow their audience, and build lasting relationships with customers.
               </p>
             </div>

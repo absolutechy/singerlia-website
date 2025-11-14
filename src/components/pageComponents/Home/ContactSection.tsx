@@ -33,6 +33,8 @@ const fields = [
 ];
 
 const ContactSection: React.FC = () => {
+  const [selectedTopic, setSelectedTopic] = React.useState<string>("");
+
   return (
       <div className="custom-container px-6 ">
         <div className="mb-12 text-center">
@@ -40,7 +42,7 @@ const ContactSection: React.FC = () => {
             Contact Us
           </h2>
           <p className="mt-2 text-sm font-medium text-[#7C6AA6]">
-            Need help? Any question? Fill out the form and our team will reach
+            Need help? Any questions? Fill out the form and our team will reach
             out to you soon.
           </p>
         </div>
@@ -58,10 +60,12 @@ const ContactSection: React.FC = () => {
                   options={[
                     { label: "Booking assistance", value: "booking" },
                     { label: "Platform support", value: "support" },
+                    { label: "Sign Up Support", value: "signup" },
                     { label: "Partnership inquiry", value: "partnership" },
                     { label: "Other", value: "other" },
                   ]}
                   placeholder="Select an option"
+                  onChange={(value) => setSelectedTopic(value)}
                   className="w-full rounded-xl border border-gray-200 bg-[#FCFBFF] px-4 py-4 text-base text-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                 />
                 <svg
@@ -82,17 +86,25 @@ const ContactSection: React.FC = () => {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {fields.map((field) => (
-                <div className="space-y-2" key={field.id}>
-                  <Input
-                    id={field.id}
-                    label={field.label}
-                    type={field.type}
-                    placeholder={field.placeholder}
-                    className="w-full !rounded-none border-b border-gray-300 bg-transparent pb-2 text-sm text-gray-800 focus:border-primary focus:outline-none"
-                  />
-                </div>
-              ))}
+              {fields.map((field) => {
+                // Hide Company Name and Office Address unless Partnership inquiry is selected
+                if ((field.id === "company" || field.id === "address") && selectedTopic !== "partnership") {
+                  return null;
+                }
+
+                return (
+                  <div className="space-y-2" key={field.id}>
+                    <Input
+                      id={field.id}
+                      label={field.label}
+                      type={field.type}
+                      placeholder={field.placeholder}
+                      className="w-full !rounded-none border-b border-gray-300 bg-transparent pb-2 text-sm text-gray-800 focus:border-primary focus:outline-none"
+                      disabled={selectedTopic === "" && (field.id === "company" || field.id === "address")}
+                    />
+                  </div>
+                );
+              })}
             </div>
 
             <div className="space-y-2">

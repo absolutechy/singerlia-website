@@ -23,7 +23,7 @@ interface SingerCardProps {
   responseTime?: string;
 }
 
-const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Signer Name here", serviceTitle = "Signer Service title here", images, responseTime = "Responds within 1/hr" } ) => {
+const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Artist Name here", serviceTitle, images, responseTime = "Responds within 1/hr" } ) => {
   const uniqueId = useId();
   const uniqueBase = useMemo(() => uniqueId.replace(/:/g, ""), [uniqueId]);
   const paginationClass = `swiper-pagination-${uniqueBase}`;
@@ -100,7 +100,7 @@ const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Signer N
           <ArrowRight className="h-5 w-5" />
         </button>
       </div>
-      <p className="text-lg font-medium text-primary py-3">{serviceTitle}</p>
+      {serviceTitle && <p className="text-lg font-medium text-primary py-3">{serviceTitle}</p>}
       <Button
         onClick={onViewDetails}
         size="large"

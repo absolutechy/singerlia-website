@@ -10,7 +10,7 @@ const fields = [
   { id: "phone", label: "Phone Number", type: "tel", required: true },
   { id: "email", label: "Email", type: "email", required: true },
   { id: "dateOfBirth", label: "Date of Birth", type: "date", required: true },
-  { id: "iqamaNumber", label: "Iqama Number", type: "text", required: true },
+  { id: "iqamaNumber", label: "ID / Iqama Number", type: "text", required: true },
   { id: "password", label: "Password", type: "password", required: true },
   { id: "confirmPassword", label: "Re-Enter Password", type: "password", required: true },
 ];
@@ -104,15 +104,26 @@ const Signup: React.FC = () => {
 
       console.log("Registration successful:", response);
 
-      // Store userId and phone for verification page
-      sessionStorage.setItem("userId", response.userId);
-      sessionStorage.setItem("userPhone", formData.phone);
-      sessionStorage.setItem("userEmail", formData.email);
-      sessionStorage.setItem("userRole", "user");
-      
-      // Navigate directly to verification code page
-      // navigate("/auth/verification-code");
-      navigate("/auth/verification-method");
+      // Store token and user info for auto-login
+      if (response.token) {
+        localStorage.setItem("authToken", response.token);
+        localStorage.setItem("userId", response.userId || "");
+        localStorage.setItem("userName", `${formData.firstName} ${formData.lastName}`);
+        localStorage.setItem("userRole", "user");
+
+        // Dispatch auth event to update header
+        authService.dispatchAuthEvent();
+
+        // Navigate to profile/dashboard instead of login
+        navigate("/dashboard");
+      } else {
+        // If no token returned, go to verification
+        sessionStorage.setItem("userId", response.userId);
+        sessionStorage.setItem("userPhone", formData.phone);
+        sessionStorage.setItem("userEmail", formData.email);
+        sessionStorage.setItem("userRole", "user");
+        navigate("/auth/verification-method");
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || "Registration failed. Please try again.");
     } finally {
@@ -134,7 +145,7 @@ const Signup: React.FC = () => {
           </button>
         </p>
       }
-      title="Welcome to Sign up"
+      title="Welcome to SingerLia Sign Up"
       size="lg"
     >
       <div className="space-y-4 pt-[430px] lg:pt-0">
@@ -171,8 +182,24 @@ const Signup: React.FC = () => {
           />
           <h6>
             I agree to the{" "}
-            <span className="font-semibold">Terms of Service</span> and{" "}
-            <span className="font-semibold">Privacy Policy</span>.
+            <a
+              href="/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-primary underline hover:text-primary/80"
+            >
+              Terms of Service
+            </a>
+            {" "}and{" "}
+            <a
+              href="/privacy-policy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-primary underline hover:text-primary/80"
+            >
+              Privacy Policy
+            </a>
+            .
           </h6>
         </label>
         <Button

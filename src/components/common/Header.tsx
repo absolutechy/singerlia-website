@@ -27,7 +27,7 @@ const Header: React.FC = () => {
 
   const navItems: NavItem[] = [
     { id: "home", label: "Home", href: "/" },
-    { id: "singers", label: "Singers listing", href: "/search" },
+    { id: "artists", label: "Artists listing", href: "/search" },
     { id: "contact", label: "Contact", href: "/contact" }
   ];
 
@@ -344,7 +344,7 @@ const Header: React.FC = () => {
                 size={compact ? "large" : "medium"}
                 onClick={() => navigate("/auth/login")}
               >
-                Book Now
+                Log In
               </Button>
             </motion.div>
 
@@ -469,7 +469,7 @@ const Header: React.FC = () => {
                     }}
                     className="w-full"
                   >
-                    Book Now
+                    Log In
                   </Button>
                   <Button
                     variant="primary"
