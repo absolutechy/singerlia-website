@@ -1,4 +1,4 @@
-import { Button, SearchBar } from "@/components/common";
+import { SearchBar } from "@/components/common";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import UserOneAvatar from "@/assets/images/common/user1.png";
 import UserTwoAvatar from "@/assets/images/common/user2.png";
