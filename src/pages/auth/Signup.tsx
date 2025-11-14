@@ -105,8 +105,9 @@ const Signup: React.FC = () => {
       console.log("Registration successful:", response);
 
       // Store token and user info for auto-login
-      if (response.token) {
-        localStorage.setItem("authToken", response.token);
+      // Some backend variants return token in different shapes; cast to `any` to safely check.
+      if ((response as any).token) {
+        localStorage.setItem("authToken", (response as any).token);
         localStorage.setItem("userId", response.userId || "");
         localStorage.setItem("userName", `${formData.firstName} ${formData.lastName}`);
         localStorage.setItem("userRole", "user");

@@ -16,6 +16,7 @@ export interface RegisterUserData {
 }
 
 export interface RegisterResponse {
+  token: string;
   message: string;
   userId: string;
   otp: string;
