@@ -179,7 +179,7 @@ const Reviews: React.FC = () => {
         <div className="mb-12 flex flex-col items-center gap-6 text-center lg:flex-row lg:items-end lg:justify-between lg:text-left">
           <div>
             <h2 className="font-bold text-4xl lg:text-6xl text-primary">
-              Trusted by Customers, and Singer&apos;s
+              Trusted by Customers, and Artist&apos;s
             </h2>
             <p className="mt-3 text-sm font-medium text-[#2357C5]">
               Real people sharing their experiences with our platform

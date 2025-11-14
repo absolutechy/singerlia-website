@@ -1,5 +1,5 @@
 import React, { useState, type InputHTMLAttributes } from 'react';
-import { Calendar as CalendarIcon } from 'lucide-react';
+import { Calendar as CalendarIcon, Eye, EyeOff } from 'lucide-react';
 import { format } from 'date-fns';
 import { Input as ShadcnInput } from '@/components/ui/input';
 import { Calendar } from '@/components/ui/calendar';
@@ -30,6 +30,7 @@ const Input: React.FC<InputProps> = ({
   const [date, setDate] = useState<Date | undefined>(
     value && type === 'date' ? new Date(value as string) : undefined
   );
+  const [showPassword, setShowPassword] = useState(false);
 
   // Handle date picker for date and datetime-local types
   if (type === 'date' || type === 'datetime-local') {
@@ -91,6 +92,9 @@ const Input: React.FC<InputProps> = ({
   }
 
   // Regular input for other types
+  const isPasswordType = type === 'password';
+  const inputType = isPasswordType && showPassword ? 'text' : type;
+
   return (
     <div className="flex flex-col gap-1 w-full">
       {label && (
@@ -98,18 +102,35 @@ const Input: React.FC<InputProps> = ({
           {label}
         </label>
       )}
-      <ShadcnInput
-        type={type}
-        value={value}
-        onChange={onChange}
-        className={cn(
-          'rounded-lg pr-10 !pl-0 font-chocolates !text-base !font-normal bg-white text-gray-900 placeholder:text-gray-400 border-0 outline-none  focus:border-0 focus:ring-0 focus-visible:ring-0 focus-visible:border-0 focus-visible:outline-none transition-all',
-          error && 'border-red-500',
-          className
+      <div className="relative w-full">
+        <ShadcnInput
+          type={inputType}
+          value={value}
+          onChange={onChange}
+          className={cn(
+            'rounded-lg pr-10 !pl-0 font-chocolates !text-base !font-normal bg-white text-gray-900 placeholder:text-gray-400 border-0 outline-none  focus:border-0 focus:ring-0 focus-visible:ring-0 focus-visible:border-0 focus-visible:outline-none transition-all',
+            error && 'border-red-500',
+            className
+          )}
+          ref={ref}
+          {...props}
+        />
+        {isPasswordType && (
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+            tabIndex={-1}
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+          >
+            {showPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+          </button>
         )}
-        ref={ref}
-        {...props}
-      />
+      </div>
       {error && (
         <span className="text-xs text-red-500">{error}</span>
       )}

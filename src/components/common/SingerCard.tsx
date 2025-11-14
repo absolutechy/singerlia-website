@@ -39,7 +39,7 @@ const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Artist N
   };
 
   return (
-    <div className="w-full hover:bg-[#F7F7F7] rounded-2xl shadow-xl p-4 border border-[#CDCDCD] group transition-all duration-500">
+    <div className="w-full space-y-2 hover:bg-[#F7F7F7] rounded-2xl shadow-xl p-4 border border-[#CDCDCD] group transition-all duration-500">
       <div className="w-full relative rounded-xl overflow-hidden">
         <img
           src={logo}
