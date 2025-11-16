@@ -85,10 +85,10 @@ const VerificationCode: React.FC = () => {
       sessionStorage.removeItem("userRole");
       sessionStorage.removeItem("verificationType");
       
-      // Redirect to login after 2 seconds
+      // Redirect to home/dashboard after 1 second (user is now logged in)
       setTimeout(() => {
-        navigate("/auth/login");
-      }, 2000);
+        navigate("/");
+      }, 1000);
     } catch (err: any) {
       setError(err.response?.data?.message || "Verification failed. Please check your code and try again.");
     } finally {

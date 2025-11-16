@@ -57,6 +57,12 @@ const Signup: React.FC = () => {
       return;
     }
 
+    // Validate email format
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
 
     // Validate date of birth (must be 18 years or older)
     const birthDate = new Date(formData.dateOfBirth);
