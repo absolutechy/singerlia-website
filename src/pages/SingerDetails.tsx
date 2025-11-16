@@ -10,7 +10,7 @@ import ReviewsPreview from "@/components/pageComponents/SingerDetails/ReviewsPre
 import FAQSection from "@/components/pageComponents/SingerDetails/FAQSection";
 
 const paragraph =
-  "We are committed to supporting singers by providing them with greater visibility, valuable opportunities, and direct connections with clients who truly appreciate their art. From solo acts to bands, classical to contemporary, we give singers the tools to showcase their talent, grow their audience, and build lasting relationships with customers.";
+  "We are committed to supporting artists by providing them with greater visibility, valuable opportunities, and direct connections with clients who truly appreciate their art. From solo acts to bands, classical to contemporary, we give artists the tools to showcase their talent, grow their audience, and build lasting relationships with customers.";
 
 // FAQ data with dummy answers (UI shows questions only to match design)
 const faqs = [
@@ -20,17 +20,17 @@ const faqs = [
       "Dummy answer explaining safety protocols, performance timings, and cancellation terms for events.",
   },
   {
-    question: "add singer faq's about event safety and terms policy.",
+    question: "add artist faq's about event safety and terms policy.",
     answer:
       "Dummy answer covering on-site precautions, equipment handling, and client responsibilities.",
   },
   {
-    question: "add singer faq's about event safety and terms policy.",
+    question: "add artist faq's about event safety and terms policy.",
     answer:
       "Dummy answer with details on deposits, refunds, and weather considerations.",
   },
   {
-    question: "add singer faq's about event safety and terms policy.",
+    question: "add artist faq's about event safety and terms policy.",
     answer:
       "Dummy answer about performance length, breaks, and communication guidelines.",
   },
@@ -45,7 +45,7 @@ const allReviews = [
         "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=96&q=60",
       rating: 5.0,
       timeAgo: "1 week ago",
-      text: "Jhon was awesome singer, knew exactly where to go for the best singer experience !",
+      text: "Jhon was awesome singer, knew exactly where to go for the best artist experience !",
     },
     {
       id: 2,
@@ -55,7 +55,7 @@ const allReviews = [
         "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=96&q=60",
       rating: 5.0,
       timeAgo: "1 week ago",
-      text: "Jhon was awesome singer, knew exactly where to go for the best singer experience !",
+      text: "Jhon was awesome artist, knew exactly where to go for the best artist experience !",
     },
     {
       id: 3,
@@ -65,7 +65,7 @@ const allReviews = [
         "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=96&q=60",
       rating: 5.0,
       timeAgo: "1 week ago",
-      text: "Jhon was awesome singer, knew exactly where to go for the best singer experience !",
+      text: "Jhon was awesome artist, knew exactly where to go for the best artist experience !",
     },
     {
       id: 4,
@@ -75,7 +75,7 @@ const allReviews = [
         "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?auto=format&fit=crop&w=96&q=60",
       rating: 5.0,
       timeAgo: "1 week ago",
-      text: "Jhon was awesome singer, knew exactly where to go for the best singer experience !",
+      text: "Jhon was awesome artist, knew exactly where to go for the best artist experience !",
     },
   ];
 
