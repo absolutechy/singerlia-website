@@ -139,6 +139,41 @@ const authService = {
       '/auth/verify-user',
       verifyData
     );
+    
+    console.log('Verify User Response:', response);
+    console.log('Verify Response Headers:', response.headers);
+    console.log('Verify Response Data:', response.data);
+    
+    // Get token from response headers (backend sends as 'Authorization')
+    let token = response.headers['Authorization'] || response.headers['authorization'];
+    console.log('Token from verify headers:', token);
+    
+    // If not in headers, check response data (fallback)
+    if (!token && (response.data as any).token) {
+      token = (response.data as any).token;
+      console.log('Token found in verify response data instead:', token);
+    }
+    
+    // Store token and user data in localStorage if token is present
+    if (token) {
+      // Remove 'Bearer ' prefix if present
+      const cleanToken = token.startsWith('Bearer ') ? token.substring(7) : token;
+      console.log('Clean token to store from verify:', cleanToken);
+      localStorage.setItem('authToken', cleanToken);
+      
+      // Store user metadata if available
+      if ((response.data as any).user_metadata) {
+        localStorage.setItem('user', JSON.stringify((response.data as any).user_metadata));
+        console.log('User stored in localStorage from verify:', localStorage.getItem('user'));
+      }
+      
+      console.log('Token stored in localStorage from verify:', localStorage.getItem('authToken'));
+      
+      // Notify other components of auth state change
+      console.log('Dispatching auth event from verify...');
+      dispatchAuthEvent();
+    }
+    
     return response.data;
   },
 

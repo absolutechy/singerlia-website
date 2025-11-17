@@ -130,7 +130,7 @@ const growthStats: Stat[] = [
   },
   {
     label: "500+ Locations",
-    subLabel: "Partner Singer's",
+    subLabel: "Partner Artists",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -216,7 +216,7 @@ const MissionGrowth: React.FC = () => {
                 For Customers
               </h3>
               <p className="text-base text-gray-700 leading-relaxed">
-                Our mission is to make finding the perfect singer effortless. We connect you with talented performers who match your event&apos;s style, whether it&apos;s a wedding, corporate function, private party, or concert. Customers can explore a wide range of singers, listen to their samples, and book with confidence—all in one convenient platform.
+                Our mission is to make finding the perfect singer effortless. We connect you with talented performers who match your event&apos;s style, whether it&apos;s a wedding, corporate function, private party, or concert. Customers can explore a wide range of artists, listen to their samples, and book with confidence—all in one convenient platform.
               </p>
             </div>
             
@@ -239,7 +239,7 @@ const MissionGrowth: React.FC = () => {
                 For Artists
               </h3>
               <p className="text-base text-gray-700 leading-relaxed">
-                We are committed to supporting singers by providing them with greater visibility, valuable opportunities, and direct connections with clients who truly appreciate their art. From solo acts to bands, classical to contemporary, we give singers the tools to showcase their talent, grow their audience, and build lasting relationships with customers.
+                We are committed to supporting artists by providing them with greater visibility, valuable opportunities, and direct connections with clients who truly appreciate their art. From solo acts to bands, classical to contemporary, we give artists the tools to showcase their talent, grow their audience, and build lasting relationships with customers.
               </p>
             </div>
             
@@ -279,7 +279,7 @@ const MissionGrowth: React.FC = () => {
 
           <div className="border-t border-dashed border-gray-300 pt-10">
             <p className="mx-auto max-w-3xl text-center text-base text-gray-700">
-              Our mission is to bridge the gap between customers and singers by
+              Our mission is to bridge the gap between customers and artists by
               creating a seamless, trustworthy, and enjoyable experience. We aim
               to celebrate music, uplift artists, and make every event
               unforgettable through the power of live performance.

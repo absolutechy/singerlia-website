@@ -19,7 +19,7 @@ const reviews: Review[] = [
     id: 1,
     name: "Guin W.",
     role: "Singer's",
-    title: "Singers",
+    title: "Artists",
     message:
       "I love how easy it is to showcase my portfolio and connect with clients. My bookings have increased significantly!",
     avatar:
@@ -49,7 +49,7 @@ const reviews: Review[] = [
     id: 4,
     name: "Daniel H.",
     role: "Singer's",
-    title: "Singers",
+    title: "Artists",
     message:
       "Singerlia keeps me booked with the right gigs. I can focus on my performances while everything else stays organized.",
     avatar:
@@ -69,7 +69,7 @@ const reviews: Review[] = [
     id: 6,
     name: "Sophie R.",
     role: "Singer's",
-    title: "Singers",
+    title: "Artists",
     message:
       "The platform helps me present my skills professionally. I love receiving curated opportunities tailored to my style.",
     avatar:
@@ -81,7 +81,7 @@ const reviews: Review[] = [
     role: "Customers",
     title: "Customer",
     message:
-      "Amazing experience! It’s so simple to find and book talented singers with top-rated reviews in my city.",
+      "Amazing experience! It’s so simple to find and book talented artists with top-rated reviews in my city.",
     avatar:
       "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80",
   },
@@ -89,7 +89,7 @@ const reviews: Review[] = [
     id: 8,
     name: "Emily T.",
     role: "Singer's",
-    title: "Singers",
+    title: "Artists",
     message:
       "Singerlia gives me the exposure I need. The booking tools and messaging keep everything in one place.",
     avatar:

@@ -9,10 +9,10 @@ const WhySingerlia: React.FC = () => {
         <div className="w-fit space-y-6">
           <h1 className="font-bold text-4xl lg:text-7xl">Why Singerlia</h1>
           <p className="text-lg text-[#B8860B]">
-            Discover talented singers right at your fingertips:
+            Discover talented artists right at your fingertips:
           </p>
           <p className="text-lg max-w-xl">
-            Get access to professional singers specializing in live
+            Get access to professional artists specializing in live
             performances, weddings, corporate events, parties, and more—all
             conveniently available on a single platform!
           </p>
