@@ -95,7 +95,7 @@ const BookingSinger: React.FC = () => {
     resolver: zodResolver(bookingSchema),
     defaultValues: {
       eventDate: state?.preFilledEventDate || "",
-      timeSlot: state?.preFilledTimeSlot || "",
+      timeSlot: (state?.preFilledTimeSlot as "morning" | "afternoon" | "evening") || undefined,
       agreeToTerms: false,
     },
   });
@@ -107,7 +107,7 @@ const BookingSinger: React.FC = () => {
   const vat = artistFee * 0.15; // 15% VAT
   const totalPrice = artistFee + vat;
 
-  const onSubmit = (data: BookingFormData) => {
+  const onSubmit = (data: BookingFormData): void => {
     console.log("Form submitted:", data);
     setShowSummary(true);
     // Here you would integrate with Paytabs payment gateway

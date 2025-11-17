@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
-import { ArrowUp } from "lucide-react";
+import React, { useState } from "react";
 import MediaModal from "@/components/pageComponents/SingerDetails/MediaModal";
 import MessageModal from "@/components/pageComponents/SingerDetails/MessageModal";
 import ReviewsModal from "@/components/pageComponents/SingerDetails/ReviewsModal";
@@ -37,54 +36,53 @@ const faqs = [
 ];
 
 const allReviews = [
-    {
-      id: 1,
-      name: "Liam",
-      location: "Yellowknife, Canada",
-      avatar:
-        "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=96&q=60",
-      rating: 5.0,
-      timeAgo: "1 week ago",
-      text: "Jhon was awesome singer, knew exactly where to go for the best artist experience !",
-    },
-    {
-      id: 2,
-      name: "Liam",
-      location: "Yellowknife, Canada",
-      avatar:
-        "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=96&q=60",
-      rating: 5.0,
-      timeAgo: "1 week ago",
-      text: "Jhon was awesome artist, knew exactly where to go for the best artist experience !",
-    },
-    {
-      id: 3,
-      name: "Liam",
-      location: "Yellowknife, Canada",
-      avatar:
-        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=96&q=60",
-      rating: 5.0,
-      timeAgo: "1 week ago",
-      text: "Jhon was awesome artist, knew exactly where to go for the best artist experience !",
-    },
-    {
-      id: 4,
-      name: "Liam",
-      location: "Yellowknife, Canada",
-      avatar:
-        "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?auto=format&fit=crop&w=96&q=60",
-      rating: 5.0,
-      timeAgo: "1 week ago",
-      text: "Jhon was awesome artist, knew exactly where to go for the best artist experience !",
-    },
-  ];
+  {
+    id: 1,
+    name: "Liam",
+    location: "Yellowknife, Canada",
+    avatar:
+      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=96&q=60",
+    rating: 5.0,
+    timeAgo: "1 week ago",
+    text: "Jhon was awesome singer, knew exactly where to go for the best artist experience !",
+  },
+  {
+    id: 2,
+    name: "Liam",
+    location: "Yellowknife, Canada",
+    avatar:
+      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=96&q=60",
+    rating: 5.0,
+    timeAgo: "1 week ago",
+    text: "Jhon was awesome artist, knew exactly where to go for the best artist experience !",
+  },
+  {
+    id: 3,
+    name: "Liam",
+    location: "Yellowknife, Canada",
+    avatar:
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=96&q=60",
+    rating: 5.0,
+    timeAgo: "1 week ago",
+    text: "Jhon was awesome artist, knew exactly where to go for the best artist experience !",
+  },
+  {
+    id: 4,
+    name: "Liam",
+    location: "Yellowknife, Canada",
+    avatar:
+      "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?auto=format&fit=crop&w=96&q=60",
+    rating: 5.0,
+    timeAgo: "1 week ago",
+    text: "Jhon was awesome artist, knew exactly where to go for the best artist experience !",
+  },
+];
 
 const SingerDetails: React.FC = () => {
   const name = "John Doberman";
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [messageOpen, setMessageOpen] = useState(false);
   const [mediaOpen, setMediaOpen] = useState(false);
-
 
   return (
     <div className="custom-container pb-16">
@@ -94,12 +92,8 @@ const SingerDetails: React.FC = () => {
 
         {/* Right content */}
         <section className="space-y-8">
-
           {/* Media gallery - matches layout: big left (2x2), four small on right */}
-          <div
-            onClick={() => setMediaOpen(true)}
-            className="cursor-pointer"
-          >
+          <div onClick={() => setMediaOpen(true)} className="cursor-pointer">
             <MediaGrid />
           </div>
 

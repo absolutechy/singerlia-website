@@ -3,10 +3,10 @@ import { Heart, Share2, Calendar, Clock } from "lucide-react";
 import singer1 from "@/assets/images/singer/singer-detail-1.png";
 import singer2 from "@/assets/images/singer/singer-detail-2.png";
 import ShareModal from "@/components/pageComponents/SingerDetails/ShareModal";
-import { Button, Input, Select } from "@/components/common";
+import { Button } from "@/components/common";
 import { useNavigate } from "react-router";
 
-type Props = { name: string, id: number };
+type Props = { name: string; id: number };
 
 const ProfileSidebar: React.FC<Props> = ({ name, id }) => {
   const [shareOpen, setShareOpen] = useState(false);
@@ -28,14 +28,18 @@ const ProfileSidebar: React.FC<Props> = ({ name, id }) => {
         preFilledTimeSlot: timeSlot,
       },
     });
-  }
+  };
 
   return (
     <aside className="self-start lg:sticky top-28 space-y-5">
       {/* Main card */}
       <div className="rounded-3xl bg-white p-2 sm:p-4">
         <div className="relative">
-          <img src={singer2} alt="cover" className="w-full rounded-2xl h-52 object-cover overflow-hidden" />
+          <img
+            src={singer2}
+            alt="cover"
+            className="w-full rounded-2xl h-52 object-cover overflow-hidden"
+          />
           {/* small avatar */}
           <img
             src={singer1}
@@ -52,7 +56,10 @@ const ProfileSidebar: React.FC<Props> = ({ name, id }) => {
           </div>
 
           <div className="mt-4 flex gap-2">
-            <button onClick={() => setShareOpen(true)} className="h-10 w-10 rounded-full border border-[#E7DEFF] bg-white flex items-center justify-center">
+            <button
+              onClick={() => setShareOpen(true)}
+              className="h-10 w-10 rounded-full border border-[#E7DEFF] bg-white flex items-center justify-center"
+            >
               <Share2 size={18} className="text-[#6F5D9E]" />
             </button>
             <button className="h-10 w-10 rounded-full border border-[#E7DEFF] bg-white flex items-center justify-center">
@@ -103,11 +110,16 @@ const ProfileSidebar: React.FC<Props> = ({ name, id }) => {
           variant="primary"
           size="large"
           onClick={nav}
-          className="w-full h-12 rounded-full bg-gradient-to-b from-secondary to-secondary-dark text-[#1C1C1C] !font-semibold shadow">
+          className="w-full h-12 rounded-full bg-gradient-to-b from-secondary to-secondary-dark text-[#1C1C1C] !font-semibold shadow"
+        >
           Book Artist
         </Button>
       </div>
-      <ShareModal open={shareOpen} onClose={() => setShareOpen(false)} name={name} />
+      <ShareModal
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+        name={name}
+      />
     </aside>
   );
 };
