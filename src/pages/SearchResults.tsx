@@ -176,7 +176,8 @@ const SearchResults: React.FC = () => {
   // Applied filters
   const [filters, setFilters] = useState<FilterState>({
     priceRange: { min: 0, max: 75000 },
-    genres: [],
+    eventTypes: [],
+    artistTypes: [],
     cities: [],
     minRating: 0,
     active: "Custom Dates",
@@ -194,9 +195,8 @@ const SearchResults: React.FC = () => {
       const inPrice =
         it.price >= filters.priceRange.min &&
         it.price <= filters.priceRange.max;
-      const inGenre = filters.genres.length
-        ? filters.genres.includes(it.genre)
-        : true;
+      // Note: eventTypes and artistTypes filters are ready for backend integration
+      // Currently kept for UI consistency
       const inCity = filters.cities.length
         ? filters.cities.includes(it.city)
         : true;
@@ -212,7 +212,6 @@ const SearchResults: React.FC = () => {
           : it.availability === filters.active;
       return (
         inPrice &&
-        inGenre &&
         inCity &&
         meetsRating &&
         matchesSearch &&
@@ -250,7 +249,8 @@ const SearchResults: React.FC = () => {
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (filters.priceRange.min !== 0 || filters.priceRange.max !== 75000) count++;
-    if (filters.genres.length > 0) count++;
+    if (filters.eventTypes.length > 0) count++;
+    if (filters.artistTypes.length > 0) count++;
     if (filters.cities.length > 0) count++;
     if (filters.minRating > 0) count++;
     if (filters.active !== "Custom Dates") count++;

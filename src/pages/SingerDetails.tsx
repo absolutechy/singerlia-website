@@ -85,83 +85,9 @@ const SingerDetails: React.FC = () => {
   const [messageOpen, setMessageOpen] = useState(false);
   const [mediaOpen, setMediaOpen] = useState(false);
 
-  // Floating "View all" cursor setup
-  const cursorRef = useRef<HTMLDivElement | null>(null);
-  const targetPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
-  const currentPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
-  const rafRef = useRef<number | null>(null);
-  const [cursorVisible, setCursorVisible] = useState(false);
-
-  // Smooth follow animation
-  useEffect(() => {
-    if (!cursorVisible) return;
-    const animate = () => {
-      const lerp = 0.18; // smoothing factor
-      currentPosRef.current.x += (targetPosRef.current.x - currentPosRef.current.x) * lerp;
-      currentPosRef.current.y += (targetPosRef.current.y - currentPosRef.current.y) * lerp;
-      if (cursorRef.current) {
-        cursorRef.current.style.transform = `translate3d(${currentPosRef.current.x}px, ${currentPosRef.current.y}px, 0)`;
-      }
-      rafRef.current = requestAnimationFrame(animate);
-    };
-    rafRef.current = requestAnimationFrame(animate);
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      rafRef.current = null;
-    };
-  }, [cursorVisible]);
-
-  const handleGridMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Position cursor centered on pointer
-    const size = 80; // approximate visual size of the circle
-    targetPosRef.current = { x: e.clientX - size / 2, y: e.clientY - size / 2 };
-    if (!cursorVisible) setCursorVisible(true);
-    // Initialize current position if first move
-    if (currentPosRef.current.x === 0 && currentPosRef.current.y === 0) {
-      currentPosRef.current = { ...targetPosRef.current };
-      if (cursorRef.current) {
-        cursorRef.current.style.transform = `translate3d(${currentPosRef.current.x}px, ${currentPosRef.current.y}px, 0)`;
-      }
-    }
-  };
-
-  const handleGridMouseEnter = () => setCursorVisible(true);
-  const handleGridMouseLeave = () => {
-    setCursorVisible(false);
-  };
 
   return (
     <div className="custom-container pb-16">
-      {/* Floating cursor element (hidden until hovering media grid) */}
-      {cursorVisible && (
-        <div
-          ref={cursorRef}
-          className="fixed z-50 pointer-events-none"
-          style={{ left: 0, top: 0 }}
-          aria-hidden
-        >
-          <div className="relative inline-flex h-20 w-20 items-center justify-center rounded-full text-sm font-medium text-gray-900 select-none">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="120"
-              height="120"
-              viewBox="0 0 120 120"
-              fill="none"
-              className="absolute -inset-[20px]"
-            >
-              <circle cx="60" cy="60" r="59.5" fill="white" stroke="url(#paint0_linear_46_486)" />
-              <defs>
-                <linearGradient id="paint0_linear_46_486" x1="-52.8" y1="120" x2="145.2" y2="20.4" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="white" stopOpacity="0" />
-                  <stop offset="1" stopColor="#4D4D4D" />
-                </linearGradient>
-              </defs>
-            </svg>
-            <ArrowUp className="absolute bottom-8 left-8 rotate-45" size={30} />
-            <span className="absolute rotate-45 bottom-4 right-6 outfit">View all</span>
-          </div>
-        </div>
-      )}
       <div className="grid gap-8 lg:grid-cols-[0.4fr_1fr] ">
         {/* Left fixed column */}
         <ProfileSidebar id={1} name={name} />
@@ -171,11 +97,8 @@ const SingerDetails: React.FC = () => {
 
           {/* Media gallery - matches layout: big left (2x2), four small on right */}
           <div
-            onMouseEnter={handleGridMouseEnter}
-            onMouseMove={handleGridMouseMove}
-            onMouseLeave={handleGridMouseLeave}
             onClick={() => setMediaOpen(true)}
-            className="cursor-none"
+            className="cursor-pointer"
           >
             <MediaGrid />
           </div>

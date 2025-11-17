@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import { ArrowLeft, CalendarDays, MapPin, User, MessageSquare, CreditCard } from "lucide-react";
 import Input from "@/components/common/Input";
 import Select from "@/components/common/Select";
@@ -11,6 +11,7 @@ import Textarea from "@/components/common/Textarea";
 import RadioGroup from "@/components/common/RadioGroup";
 import Checkbox from "@/components/common/Checkbox";
 import Button from "@/components/common/Button";
+import authService from "@/api/services/authService";
 
 // Zod validation schema
 const bookingSchema = z.object({
@@ -38,8 +39,8 @@ const bookingSchema = z.object({
   phoneNumber: z.string().min(10, "Valid phone number is required"),
 
   // Section 4: Special Requirements & Message
-  messageToSinger: z.string().optional(),
-  specialSongRequests: z.string().optional(),
+  messageToSinger: z.string().min(1, "Message to singer is required"),
+  specialSongRequests: z.string().min(1, "Special song requests is required"),
   equipment: z.enum(["provide", "singer-brings"], {
     message: "Please select equipment option",
   }),
@@ -53,14 +54,37 @@ const bookingSchema = z.object({
 
 type BookingFormData = z.infer<typeof bookingSchema>;
 
+interface LocationState {
+  preFilledEventDate?: string;
+  preFilledTimeSlot?: string;
+}
+
 const BookingSinger: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const state = location.state as LocationState | undefined;
   const [showSummary, setShowSummary] = useState(false);
 
-  // Mock singer data (would come from API)
-  const singerFee = 200;
-  const platformFee = 20;
-  const totalPrice = singerFee + platformFee;
+  // Check authentication on component mount
+  useEffect(() => {
+    if (!authService.isAuthenticated()) {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
+
+  // Event type to fee mapping
+  const eventTypeFeeMap: Record<string, number> = {
+    "wedding": 5000,
+    "corporate": 3500,
+    "birthday": 2500,
+    "virtual": 1000,
+    "other": 1500,
+  };
+
+  // Calculate dynamic pricing based on event type
+  const getArtistFee = (eventType: string): number => {
+    return eventTypeFeeMap[eventType] || 2000; // Default fee if not found
+  };
 
   const {
     control,
@@ -70,11 +94,18 @@ const BookingSinger: React.FC = () => {
   } = useForm<BookingFormData>({
     resolver: zodResolver(bookingSchema),
     defaultValues: {
+      eventDate: state?.preFilledEventDate || "",
+      timeSlot: state?.preFilledTimeSlot || "",
       agreeToTerms: false,
     },
   });
 
   const formValues = watch();
+
+  // Calculate pricing dynamically
+  const artistFee = getArtistFee(formValues.eventType);
+  const vat = artistFee * 0.15; // 15% VAT
+  const totalPrice = artistFee + vat;
 
   const onSubmit = (data: BookingFormData) => {
     console.log("Form submitted:", data);
@@ -238,12 +269,12 @@ const BookingSinger: React.FC = () => {
               </h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-[#6F5D9E]">Singer's Fee:</span>
-                  <span className="text-[#2E1B4D] font-medium">${singerFee}</span>
+                  <span className="text-[#6F5D9E]">Artist's Fee:</span>
+                  <span className="text-[#2E1B4D] font-medium">${artistFee}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#6F5D9E]">Platform Fee:</span>
-                  <span className="text-[#2E1B4D] font-medium">${platformFee}</span>
+                  <span className="text-[#6F5D9E]">VAT (15%):</span>
+                  <span className="text-[#2E1B4D] font-medium">${vat.toFixed(2)}</span>
                 </div>
                 {formValues.promoCode && (
                   <div className="flex justify-between text-green-600">
@@ -254,7 +285,7 @@ const BookingSinger: React.FC = () => {
                 <div className="h-px bg-[#E7DEFF] my-2" />
                 <div className="flex justify-between text-lg">
                   <span className="text-[#2E1B4D] font-bold">Total:</span>
-                  <span className="text-[#2E1B4D] font-bold">${totalPrice}</span>
+                  <span className="text-[#2E1B4D] font-bold">${totalPrice.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -290,7 +321,7 @@ const BookingSinger: React.FC = () => {
             </span>
           </button>
           <div className="text-center w-full">
-          <h1 className="text-3xl lg:text-5xl font-bold text-[#2E1B4D]">Book Your Singer</h1>
+          <h1 className="text-3xl lg:text-5xl font-bold text-[#2E1B4D]">Book Your Artist</h1>
           <p className="text-[#6F5D9E] mt-2">Fill in the details to complete your booking</p>
           </div>
         </div>
@@ -554,17 +585,17 @@ const BookingSinger: React.FC = () => {
               {/* Pricing Summary */}
               <div className="bg-[#F9F7FF] rounded-2xl p-6 space-y-3">
                 <div className="flex justify-between text-sm">
-                  <span className="text-[#6F5D9E]">Singer's Fee:</span>
-                  <span className="text-[#2E1B4D] font-semibold">${singerFee}</span>
+                  <span className="text-[#6F5D9E]">Artist's Fee:</span>
+                  <span className="text-[#2E1B4D] font-semibold">${artistFee}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-[#6F5D9E]">Platform Fee:</span>
-                  <span className="text-[#2E1B4D] font-semibold">${platformFee}</span>
+                  <span className="text-[#6F5D9E]">VAT (15%):</span>
+                  <span className="text-[#2E1B4D] font-semibold">${vat.toFixed(2)}</span>
                 </div>
                 <div className="h-px bg-[#E7DEFF]" />
                 <div className="flex justify-between text-lg">
                   <span className="text-[#2E1B4D] font-bold">Total Price:</span>
-                  <span className="text-primary font-bold">${totalPrice}</span>
+                  <span className="text-primary font-bold">${totalPrice.toFixed(2)}</span>
                 </div>
               </div>
 

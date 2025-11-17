@@ -1,19 +1,33 @@
 import React, { useState } from "react";
-import { Heart, Share2 } from "lucide-react";
+import { Heart, Share2, Calendar, Clock } from "lucide-react";
 import singer1 from "@/assets/images/singer/singer-detail-1.png";
 import singer2 from "@/assets/images/singer/singer-detail-2.png";
 import ShareModal from "@/components/pageComponents/SingerDetails/ShareModal";
-import { Button } from "@/components/common";
+import { Button, Input, Select } from "@/components/common";
 import { useNavigate } from "react-router";
 
 type Props = { name: string, id: number };
 
 const ProfileSidebar: React.FC<Props> = ({ name, id }) => {
   const [shareOpen, setShareOpen] = useState(false);
+  const [eventDate, setEventDate] = useState("");
+  const [timeSlot, setTimeSlot] = useState("");
   const navigate = useNavigate();
 
+  const timeSlotOptions = [
+    { value: "morning", label: "Morning (8:00 AM onwards)" },
+    { value: "afternoon", label: "Afternoon (12:00 PM onwards)" },
+    { value: "evening", label: "Evening (6:00 PM onwards)" },
+  ];
+
   const nav = () => {
-    navigate(`/booking/singer/${id}`);
+    // Pass selected date and time to booking page via state or query params
+    navigate(`/booking/singer/${id}`, {
+      state: {
+        preFilledEventDate: eventDate,
+        preFilledTimeSlot: timeSlot,
+      },
+    });
   }
 
   return (
@@ -49,16 +63,48 @@ const ProfileSidebar: React.FC<Props> = ({ name, id }) => {
       </div>
 
       {/* Booking card */}
-      <div className="relative rounded-2xl bg-white px-2.5 sm:px-5 py-10 shadow border border-[#EBE4FF]">
-        <p className="absolute -top-3 right-6 text-xs bg-white shadow px-3 py-1 rounded-full border border-[#EBE4FF]">
-          Free cancellation
-        </p>
-        <Button 
+      <div className="rounded-2xl bg-white px-2.5 sm:px-5 py-6 shadow border border-[#EBE4FF] space-y-4">
+        {/* Event Date Selector */}
+        <div>
+          <label className="text-sm font-semibold text-[#1C1C1C] flex items-center gap-2 mb-2">
+            <Calendar className="h-4 w-4 text-primary" />
+            Event Date
+          </label>
+          <input
+            type="date"
+            value={eventDate}
+            onChange={(e) => setEventDate(e.target.value)}
+            className="w-full px-3 py-2 border border-[#E7DEFF] rounded-lg text-[#2E1B4D] text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
+          />
+        </div>
+
+        {/* Time Slot Selector */}
+        <div>
+          <label className="text-sm font-semibold text-[#1C1C1C] flex items-center gap-2 mb-2">
+            <Clock className="h-4 w-4 text-primary" />
+            Time Slot
+          </label>
+          <select
+            value={timeSlot}
+            onChange={(e) => setTimeSlot(e.target.value)}
+            className="w-full px-3 py-2 border border-[#E7DEFF] rounded-lg text-[#2E1B4D] text-sm focus:ring-2 focus:ring-primary focus:border-transparent bg-white"
+          >
+            <option value="">Select time slot</option>
+            {timeSlotOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Book Artist Button */}
+        <Button
           variant="primary"
           size="large"
           onClick={nav}
           className="w-full h-12 rounded-full bg-gradient-to-b from-secondary to-secondary-dark text-[#1C1C1C] !font-semibold shadow">
-          Book Singer
+          Book Artist
         </Button>
       </div>
       <ShareModal open={shareOpen} onClose={() => setShareOpen(false)} name={name} />
