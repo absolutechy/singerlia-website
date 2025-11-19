@@ -12,6 +12,7 @@ import RadioGroup from "@/components/common/RadioGroup";
 import Checkbox from "@/components/common/Checkbox";
 import Button from "@/components/common/Button";
 import authService from "@/api/services/authService";
+import bookingService from "@/api/services/bookingService";
 
 // Zod validation schema
 const bookingSchema = z.object({
@@ -57,6 +58,7 @@ type BookingFormData = z.infer<typeof bookingSchema>;
 interface LocationState {
   preFilledEventDate?: string;
   preFilledTimeSlot?: string;
+  singerId?: string;
 }
 
 const BookingSinger: React.FC = () => {
@@ -64,6 +66,9 @@ const BookingSinger: React.FC = () => {
   const location = useLocation();
   const state = location.state as LocationState | undefined;
   const [showSummary, setShowSummary] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [bookingId, setBookingId] = useState<string>("");
 
   // Check authentication on component mount
   useEffect(() => {
@@ -107,10 +112,75 @@ const BookingSinger: React.FC = () => {
   const vat = artistFee * 0.15; // 15% VAT
   const totalPrice = artistFee + vat;
 
-  const onSubmit = (data: BookingFormData): void => {
-    console.log("Form submitted:", data);
-    setShowSummary(true);
-    // Here you would integrate with Paytabs payment gateway
+  const onSubmit = async (data: BookingFormData): Promise<void> => {
+    setLoading(true);
+    setError("");
+
+    try {
+      // Get current user for singer ID (or use pre-filled singer ID from navigation state)
+      const currentUser = authService.getCurrentUser();
+
+      if (!currentUser) {
+        setError("User authentication failed. Please login again.");
+        setLoading(false);
+        return;
+      }
+
+      // If singerId is not pre-filled from navigation state, we need it
+      // For now, we'll use a placeholder - this should come from context or props
+      const singerId = state?.singerId || "";
+
+      if (!singerId) {
+        setError("Singer information is missing. Please navigate from a singer profile.");
+        setLoading(false);
+        return;
+      }
+
+      // Create booking data object matching API requirements
+      const bookingData = {
+        singerId,
+        eventDate: data.eventDate,
+        timeSlot: data.timeSlot, // Frontend uses "morning", "afternoon", "evening"
+        eventType: data.eventType,
+        venueName: data.venueName,
+        venueAddress: data.venueAddress,
+        city: data.city,
+        postalCode: data.postalCode,
+        venueType: data.venueType,
+        numberOfGuests: data.numberOfGuests,
+        fullName: data.fullName,
+        email: data.email,
+        phoneNumber: data.phoneNumber,
+        messageToSinger: data.messageToSinger,
+        specialSongRequests: data.specialSongRequests,
+        equipment: data.equipment, // API expects string[] or string
+        promoCode: data.promoCode,
+        agreeToTerms: data.agreeToTerms,
+      };
+
+      console.log("Submitting booking:", bookingData);
+
+      // Call booking API
+      const response = await bookingService.createBooking(bookingData);
+
+      console.log("Booking created successfully:", response);
+
+      // Store booking ID for payment processing
+      setBookingId(response.bookingId);
+      localStorage.setItem("currentBookingId", response.bookingId);
+
+      // Show summary after successful booking creation
+      setShowSummary(true);
+    } catch (err: any) {
+      console.error("Booking error:", err);
+      const errorMessage =
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to create booking. Please try again.";
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const eventTypeOptions = [
@@ -294,12 +364,19 @@ const BookingSinger: React.FC = () => {
             <Button
               variant="primary"
               className="w-full !h-14 text-base"
+              disabled={loading}
               onClick={() => {
-                // Integrate with Paytabs payment gateway
-                alert("Redirecting to secure payment gateway...");
+                setLoading(true);
+                // TODO: Integrate with Paytabs payment gateway
+                // For now, show a placeholder message
+                console.log("Booking ID:", bookingId);
+                console.log("Total Amount:", totalPrice);
+                // window.location.href = `/payment?bookingId=${bookingId}&amount=${totalPrice}`;
+                alert("Payment integration coming soon. Booking ID: " + bookingId);
+                setLoading(false);
               }}
             >
-              Proceed to Secure Payment
+              {loading ? "Processing..." : "Proceed to Secure Payment"}
             </Button>
           </div>
         </div>
@@ -325,6 +402,13 @@ const BookingSinger: React.FC = () => {
           <p className="text-[#6F5D9E] mt-2">Fill in the details to complete your booking</p>
           </div>
         </div>
+
+        {/* Error Alert */}
+        {error && (
+          <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-red-700 text-sm">{error}</p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           {/* Section 1: Event Date & Time */}
@@ -635,16 +719,17 @@ const BookingSinger: React.FC = () => {
               variant="default"
               className="flex-1"
               onClick={() => navigate(-1)}
+              disabled={loading}
             >
               Cancel
             </Button>
             <Button
               type="submit"
               variant="primary"
-            //   className="flex-1"
               size="large"
+              disabled={loading}
             >
-              Review Booking
+              {loading ? "Creating Booking..." : "Review Booking"}
             </Button>
           </div>
         </form>
