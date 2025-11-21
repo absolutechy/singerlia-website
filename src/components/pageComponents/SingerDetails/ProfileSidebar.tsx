@@ -42,6 +42,7 @@ const ProfileSidebar: React.FC<Props> = ({ name, id }) => {
       state: {
         preFilledEventDate: dateString,
         preFilledTimeSlot: timeSlot,
+        singerId: id,
       },
     });
   };
@@ -142,9 +143,8 @@ const ProfileSidebar: React.FC<Props> = ({ name, id }) => {
         {/* Book Artist Button */}
         <Button
           variant="primary"
-          size="large"
           onClick={nav}
-          className="w-full h-12 rounded-full bg-gradient-to-b from-secondary to-secondary-dark text-[#1C1C1C] !font-semibold shadow"
+          className="w-full h-10 rounded-lg bg-gradient-to-b from-secondary to-secondary-dark text-[#1C1C1C] font-semibold shadow text-sm"
         >
           Book Artist
         </Button>

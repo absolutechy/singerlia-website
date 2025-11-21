@@ -40,8 +40,8 @@ const bookingSchema = z.object({
   phoneNumber: z.string().min(10, "Valid phone number is required"),
 
   // Section 4: Special Requirements & Message
-  messageToSinger: z.string().min(1, "Message to singer is required"),
-  specialSongRequests: z.string().min(1, "Special song requests is required"),
+  messageToSinger: z.string(),
+  specialSongRequests: z.string(),
   equipment: z.enum(["provide", "singer-brings"], {
     message: "Please select equipment option",
   }),
@@ -91,6 +91,8 @@ const BookingSinger: React.FC = () => {
     return eventTypeFeeMap[eventType] || 2000; // Default fee if not found
   };
 
+  const currentUser = authService.getCurrentUser();
+
   const {
     control,
     handleSubmit,
@@ -101,6 +103,11 @@ const BookingSinger: React.FC = () => {
     defaultValues: {
       eventDate: state?.preFilledEventDate || "",
       timeSlot: (state?.preFilledTimeSlot as "morning" | "afternoon" | "evening") || undefined,
+      fullName: currentUser?.name || "",
+      email: "",
+      phoneNumber: "",
+      messageToSinger: "",
+      specialSongRequests: "",
       agreeToTerms: false,
     },
   });
@@ -622,7 +629,7 @@ const BookingSinger: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <Textarea
-                    label="Message to the Singer"
+                    label="Message to the Singer (Optional)"
                     placeholder="Share any special requests, event theme, dress code, or other details..."
                     rows={4}
                     {...field}
@@ -635,7 +642,7 @@ const BookingSinger: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <Textarea
-                    label="Special Song Requests"
+                    label="Special Song Requests (Optional)"
                     placeholder='e.g., "First dance song," "Company anthem," etc.'
                     rows={3}
                     {...field}
