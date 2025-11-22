@@ -37,7 +37,13 @@ const ProfileSidebar: React.FC<Props> = ({ name, id }) => {
 
   const nav = () => {
     // Pass selected date and time to booking page via state or query params
-    const dateString = eventDate ? eventDate.toISOString().split('T')[0] : "";
+    let dateString = "";
+    if (eventDate) {
+      const year = eventDate.getFullYear();
+      const month = String(eventDate.getMonth() + 1).padStart(2, '0');
+      const day = String(eventDate.getDate()).padStart(2, '0');
+      dateString = `${year}-${month}-${day}`;
+    }
     navigate(`/booking/singer/${id}`, {
       state: {
         preFilledEventDate: dateString,
