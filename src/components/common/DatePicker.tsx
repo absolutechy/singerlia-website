@@ -17,6 +17,7 @@ export interface DatePickerProps {
   className?: string;
   error?: string;
   showTime?: boolean;
+  disabled?: (date: Date) => boolean;
 }
 
 const DatePicker: React.FC<DatePickerProps> = ({
@@ -27,6 +28,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   className = '',
   error,
   showTime = false,
+  disabled,
 }) => {
   const [date, setDate] = useState<Date | undefined>(
     value ? new Date(value) : undefined
@@ -76,6 +78,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
             selected={date}
             onSelect={handleDateSelect}
             initialFocus
+            disabled={disabled}
           />
         </PopoverContent>
       </Popover>

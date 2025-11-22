@@ -3,7 +3,14 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useNavigate, useLocation } from "react-router";
-import { ArrowLeft, CalendarDays, MapPin, User, MessageSquare, CreditCard } from "lucide-react";
+import {
+  ArrowLeft,
+  CalendarDays,
+  MapPin,
+  User,
+  MessageSquare,
+  CreditCard,
+} from "lucide-react";
 import Input from "@/components/common/Input";
 import Select from "@/components/common/Select";
 import DatePicker from "@/components/common/DatePicker";
@@ -79,11 +86,11 @@ const BookingSinger: React.FC = () => {
 
   // Event type to fee mapping
   const eventTypeFeeMap: Record<string, number> = {
-    "wedding": 5000,
-    "corporate": 3500,
-    "birthday": 2500,
-    "virtual": 1000,
-    "other": 1500,
+    wedding: 5000,
+    corporate: 3500,
+    birthday: 2500,
+    virtual: 1000,
+    other: 1500,
   };
 
   // Calculate dynamic pricing based on event type
@@ -102,7 +109,9 @@ const BookingSinger: React.FC = () => {
     resolver: zodResolver(bookingSchema),
     defaultValues: {
       eventDate: state?.preFilledEventDate || "",
-      timeSlot: (state?.preFilledTimeSlot as "morning" | "afternoon" | "evening") || undefined,
+      timeSlot:
+        (state?.preFilledTimeSlot as "morning" | "afternoon" | "evening") ||
+        undefined,
       fullName: currentUser?.name || "",
       email: "",
       phoneNumber: "",
@@ -138,7 +147,9 @@ const BookingSinger: React.FC = () => {
       const singerId = state?.singerId || "";
 
       if (!singerId) {
-        setError("Singer information is missing. Please navigate from a singer profile.");
+        setError(
+          "Singer information is missing. Please navigate from a singer profile."
+        );
         setLoading(false);
         return;
       }
@@ -219,7 +230,10 @@ const BookingSinger: React.FC = () => {
 
   const equipmentOptions = [
     { value: "provide", label: "I will provide a PA system (speakers, mic)" },
-    { value: "singer-brings", label: "The singer needs to bring their own equipment" },
+    {
+      value: "singer-brings",
+      label: "The singer needs to bring their own equipment",
+    },
   ];
 
   if (showSummary) {
@@ -238,8 +252,10 @@ const BookingSinger: React.FC = () => {
               Back to Form
             </button>
             <div className="w-full text-center">
-            <h1 className="heading-2 text-[#2E1B4D]">Booking Summary</h1>
-            <p className="text-[#6F5D9E] mt-2">Review your booking details before proceeding to payment</p>
+              <h1 className="heading-2 text-[#2E1B4D]">Booking Summary</h1>
+              <p className="text-[#6F5D9E] mt-2">
+                Review your booking details before proceeding to payment
+              </p>
             </div>
           </div>
 
@@ -254,19 +270,27 @@ const BookingSinger: React.FC = () => {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-[#6F5D9E]">Date:</span>
-                  <span className="text-[#2E1B4D] font-medium">{formValues.eventDate}</span>
+                  <span className="text-[#2E1B4D] font-medium">
+                    {formValues.eventDate}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#6F5D9E]">Time:</span>
-                  <span className="text-[#2E1B4D] font-medium capitalize">{formValues.timeSlot}</span>
+                  <span className="text-[#2E1B4D] font-medium capitalize">
+                    {formValues.timeSlot}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#6F5D9E]">Event Type:</span>
-                  <span className="text-[#2E1B4D] font-medium capitalize">{formValues.eventType}</span>
+                  <span className="text-[#2E1B4D] font-medium capitalize">
+                    {formValues.eventType}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#6F5D9E]">Guests:</span>
-                  <span className="text-[#2E1B4D] font-medium">{formValues.numberOfGuests}</span>
+                  <span className="text-[#2E1B4D] font-medium">
+                    {formValues.numberOfGuests}
+                  </span>
                 </div>
               </div>
             </div>
@@ -282,19 +306,27 @@ const BookingSinger: React.FC = () => {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-[#6F5D9E]">Venue:</span>
-                  <span className="text-[#2E1B4D] font-medium">{formValues.venueName}</span>
+                  <span className="text-[#2E1B4D] font-medium">
+                    {formValues.venueName}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#6F5D9E]">Address:</span>
-                  <span className="text-[#2E1B4D] font-medium text-right max-w-xs">{formValues.venueAddress}</span>
+                  <span className="text-[#2E1B4D] font-medium text-right max-w-xs">
+                    {formValues.venueAddress}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#6F5D9E]">City:</span>
-                  <span className="text-[#2E1B4D] font-medium">{formValues.city}</span>
+                  <span className="text-[#2E1B4D] font-medium">
+                    {formValues.city}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#6F5D9E]">Type:</span>
-                  <span className="text-[#2E1B4D] font-medium capitalize">{formValues.venueType}</span>
+                  <span className="text-[#2E1B4D] font-medium capitalize">
+                    {formValues.venueType}
+                  </span>
                 </div>
               </div>
             </div>
@@ -310,15 +342,21 @@ const BookingSinger: React.FC = () => {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-[#6F5D9E]">Name:</span>
-                  <span className="text-[#2E1B4D] font-medium">{formValues.fullName}</span>
+                  <span className="text-[#2E1B4D] font-medium">
+                    {formValues.fullName}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#6F5D9E]">Email:</span>
-                  <span className="text-[#2E1B4D] font-medium">{formValues.email}</span>
+                  <span className="text-[#2E1B4D] font-medium">
+                    {formValues.email}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#6F5D9E]">Phone:</span>
-                  <span className="text-[#2E1B4D] font-medium">{formValues.phoneNumber}</span>
+                  <span className="text-[#2E1B4D] font-medium">
+                    {formValues.phoneNumber}
+                  </span>
                 </div>
               </div>
             </div>
@@ -331,7 +369,9 @@ const BookingSinger: React.FC = () => {
                     <MessageSquare className="h-5 w-5 text-primary" />
                     Special Requests
                   </h3>
-                  <p className="text-sm text-[#6F5D9E]">{formValues.messageToSinger}</p>
+                  <p className="text-sm text-[#6F5D9E]">
+                    {formValues.messageToSinger}
+                  </p>
                 </div>
               </>
             )}
@@ -347,11 +387,15 @@ const BookingSinger: React.FC = () => {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-[#6F5D9E]">Artist's Fee:</span>
-                  <span className="text-[#2E1B4D] font-medium">${artistFee}</span>
+                  <span className="text-[#2E1B4D] font-medium">
+                    ${artistFee}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#6F5D9E]">VAT (15%):</span>
-                  <span className="text-[#2E1B4D] font-medium">${vat.toFixed(2)}</span>
+                  <span className="text-[#2E1B4D] font-medium">
+                    ${vat.toFixed(2)}
+                  </span>
                 </div>
                 {formValues.promoCode && (
                   <div className="flex justify-between text-green-600">
@@ -362,7 +406,9 @@ const BookingSinger: React.FC = () => {
                 <div className="h-px bg-[#E7DEFF] my-2" />
                 <div className="flex justify-between text-lg">
                   <span className="text-[#2E1B4D] font-bold">Total:</span>
-                  <span className="text-[#2E1B4D] font-bold">${totalPrice.toFixed(2)}</span>
+                  <span className="text-[#2E1B4D] font-bold">
+                    ${totalPrice.toFixed(2)}
+                  </span>
                 </div>
               </div>
             </div>
@@ -379,7 +425,9 @@ const BookingSinger: React.FC = () => {
                 console.log("Booking ID:", bookingId);
                 console.log("Total Amount:", totalPrice);
                 // window.location.href = `/payment?bookingId=${bookingId}&amount=${totalPrice}`;
-                alert("Payment integration coming soon. Booking ID: " + bookingId);
+                alert(
+                  "Payment integration coming soon. Booking ID: " + bookingId
+                );
                 setLoading(false);
               }}
             >
@@ -405,8 +453,12 @@ const BookingSinger: React.FC = () => {
             </span>
           </button>
           <div className="text-center w-full">
-          <h1 className="text-3xl lg:text-5xl font-bold text-[#2E1B4D]">Book Your Artist</h1>
-          <p className="text-[#6F5D9E] mt-2">Fill in the details to complete your booking</p>
+            <h1 className="text-3xl lg:text-5xl font-bold text-[#2E1B4D]">
+              Book Your Artist
+            </h1>
+            <p className="text-[#6F5D9E] mt-2">
+              Fill in the details to complete your booking
+            </p>
           </div>
         </div>
 
@@ -434,6 +486,9 @@ const BookingSinger: React.FC = () => {
                     placeholder="Select event date"
                     value={field.value}
                     onChange={field.onChange}
+                    disabled={(date) =>
+                      date < new Date(new Date().setHours(0, 0, 0, 0))
+                    }
                     error={errors.eventDate?.message}
                   />
                 )}
@@ -479,19 +534,19 @@ const BookingSinger: React.FC = () => {
                 )}
               />
               <Controller
-                  name="venueType"
-                  control={control}
-                  render={({ field }) => (
-                    <RadioGroup
-                      label="Venue Type"
-                      options={venueTypeOptions}
-                      value={field.value}
-                      onChange={field.onChange}
-                      error={errors.venueType?.message}
-                      className="flex-row gap-6"
-                    />
-                  )}
-                />
+                name="venueType"
+                control={control}
+                render={({ field }) => (
+                  <RadioGroup
+                    label="Venue Type"
+                    options={venueTypeOptions}
+                    value={field.value}
+                    onChange={field.onChange}
+                    error={errors.venueType?.message}
+                    className="flex-row gap-6"
+                  />
+                )}
+              />
               <Controller
                 name="numberOfGuests"
                 control={control}
@@ -533,26 +588,26 @@ const BookingSinger: React.FC = () => {
                   />
                 )}
               />
-                <Controller
-                  name="venueName"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                        className="!bg-[#F9F7FF] !px-4 py-6"
-                      label="Venue Name"
-                      placeholder="Enter venue name"
-                      {...field}
-                      error={errors.venueName?.message}
-                    />
-                  )}
-                />
+              <Controller
+                name="venueName"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    className="!bg-[#F9F7FF] !px-4 py-6"
+                    label="Venue Name"
+                    placeholder="Enter venue name"
+                    {...field}
+                    error={errors.venueName?.message}
+                  />
+                )}
+              />
               <div className="md:col-span-2">
                 <Controller
                   name="venueAddress"
                   control={control}
                   render={({ field }) => (
                     <Input
-                        className="!bg-[#F9F7FF] !px-4 py-6"
+                      className="!bg-[#F9F7FF] !px-4 py-6"
                       label="Venue Address"
                       placeholder="Street address"
                       {...field}
@@ -577,7 +632,7 @@ const BookingSinger: React.FC = () => {
                   control={control}
                   render={({ field }) => (
                     <Input
-                        className="!bg-[#F9F7FF] !px-4 py-6"
+                      className="!bg-[#F9F7FF] !px-4 py-6"
                       label="Full Name"
                       placeholder="Enter your full name"
                       {...field}
@@ -677,16 +732,22 @@ const BookingSinger: React.FC = () => {
               <div className="bg-[#F9F7FF] rounded-2xl p-6 space-y-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-[#6F5D9E]">Artist's Fee:</span>
-                  <span className="text-[#2E1B4D] font-semibold">${artistFee}</span>
+                  <span className="text-[#2E1B4D] font-semibold">
+                    ${artistFee}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-[#6F5D9E]">VAT (15%):</span>
-                  <span className="text-[#2E1B4D] font-semibold">${vat.toFixed(2)}</span>
+                  <span className="text-[#2E1B4D] font-semibold">
+                    ${vat.toFixed(2)}
+                  </span>
                 </div>
                 <div className="h-px bg-[#E7DEFF]" />
                 <div className="flex justify-between text-lg">
                   <span className="text-[#2E1B4D] font-bold">Total Price:</span>
-                  <span className="text-primary font-bold">${totalPrice.toFixed(2)}</span>
+                  <span className="text-primary font-bold">
+                    ${totalPrice.toFixed(2)}
+                  </span>
                 </div>
               </div>
 
