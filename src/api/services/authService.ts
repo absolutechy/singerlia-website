@@ -42,6 +42,8 @@ export interface UserMetadata {
   userId: string;
   name: string;
   role: string;
+  email?: string;
+  phoneNumber?: string;
 }
 
 export interface LoginResponse {
@@ -53,6 +55,8 @@ export interface UserProfileResponse {
   userId: string;
   name: string;
   role: string;
+  email?: string;
+  phoneNumber?: string;
 }
 
 export interface SendResetCodeData {
@@ -229,7 +233,28 @@ const authService = {
    */
   checkAuth: async (): Promise<UserProfileResponse> => {
     const response = await axiosInstance.get<UserProfileResponse>('/auth/check-auth');
-    return response.data;
+    console.log('checkAuth - Full Response:', response);
+    console.log('checkAuth - Response Data:', response.data);
+
+    // Handle potential field name variations from backend
+    const data = response.data as any;
+    console.log(data,"data")
+
+    // Ensure proper field names - backend might return 'phonenumber' instead of 'phoneNumber'
+    const normalizedData: UserProfileResponse = {
+      userId: data.userId || data.user_id || data.id,
+      name: data.name || data.full_name || data.firstName,
+      role: data.role,
+      email: data.email || null,
+      phoneNumber: data.phoneNumber || data.phonenumber || data.phone_number || null,
+    };
+
+    console.log('checkAuth - Normalized Data:', normalizedData);
+    console.log('checkAuth - Email:', normalizedData.email);
+    console.log('checkAuth - PhoneNumber:', normalizedData.phoneNumber);
+    console.log('checkAuth - Name:', normalizedData.name);
+
+    return normalizedData;
   },
 
   /**

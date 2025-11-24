@@ -77,27 +77,6 @@ const BookingSinger: React.FC = () => {
   const [error, setError] = useState("");
   const [bookingId, setBookingId] = useState<string>("");
 
-  // Check authentication on component mount
-  useEffect(() => {
-    if (!authService.isAuthenticated()) {
-      navigate("/auth/login");
-    }
-  }, [navigate]);
-
-  // Event type to fee mapping
-  const eventTypeFeeMap: Record<string, number> = {
-    wedding: 5000,
-    corporate: 3500,
-    birthday: 2500,
-    virtual: 1000,
-    other: 1500,
-  };
-
-  // Calculate dynamic pricing based on event type
-  const getArtistFee = (eventType: string): number => {
-    return eventTypeFeeMap[eventType] || 2000; // Default fee if not found
-  };
-
   const currentUser = authService.getCurrentUser();
 
   const {
@@ -105,6 +84,7 @@ const BookingSinger: React.FC = () => {
     handleSubmit,
     formState: { errors },
     watch,
+    setValue,
   } = useForm<BookingFormData>({
     resolver: zodResolver(bookingSchema),
     defaultValues: {
@@ -121,7 +101,93 @@ const BookingSinger: React.FC = () => {
     },
   });
 
+  // Check authentication on component mount
+  useEffect(() => {
+    if (!authService.isAuthenticated()) {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
+
+  // Fetch user profile to get email and phone number
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const profile = await authService.checkAuth();
+        console.log('BookingSinger - Profile from checkAuth:', profile);
+
+        // Update localStorage with complete user profile
+        const existingUser = authService.getCurrentUser();
+        console.log('BookingSinger - Existing user from localStorage:', existingUser);
+
+        const updatedUser = {
+          ...existingUser,
+          name: profile.name || existingUser?.name,
+          email: profile.email,
+          phoneNumber: profile.phoneNumber,
+        };
+        console.log('BookingSinger - Updated user to store:', updatedUser);
+
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        console.log('BookingSinger - User stored in localStorage:', localStorage.getItem("user"));
+
+        // Update form fields with all user information
+        console.log('BookingSinger - Setting form values. Name:', profile.name, 'Email:', profile.email, 'Phone:', profile.phoneNumber);
+
+        // Always set fullName (use profile or existing user name)
+        const fullNameToSet = profile.name || currentUser?.name || '';
+        if (fullNameToSet) {
+          setValue("fullName", fullNameToSet);
+          console.log('BookingSinger - Name setValue called with:', fullNameToSet);
+        }
+
+        // Set email if available
+        if (profile.email) {
+          setValue("email", profile.email);
+          console.log('BookingSinger - Email setValue called with:', profile.email);
+        } else {
+          console.log('BookingSinger - No email found in profile');
+        }
+
+        // Set phone if available
+        if (profile.phoneNumber) {
+          setValue("phoneNumber", profile.phoneNumber);
+          console.log('BookingSinger - Phone setValue called with:', profile.phoneNumber);
+        } else {
+          console.log('BookingSinger - No phoneNumber found in profile');
+        }
+
+        console.log('BookingSinger - Final form values after setting:', {
+          fullName: profile.name,
+          email: profile.email,
+          phoneNumber: profile.phoneNumber,
+        });
+      } catch (error) {
+        console.error("Failed to fetch user profile:", error);
+      }
+    };
+
+    if (authService.isAuthenticated()) {
+      fetchUserProfile();
+    }
+  }, [setValue]);
+
+  // Event type to fee mapping
+  const eventTypeFeeMap: Record<string, number> = {
+    wedding: 5000,
+    corporate: 3500,
+    birthday: 2500,
+    virtual: 1000,
+    other: 1500,
+  };
+
+  // Calculate dynamic pricing based on event type
+  const getArtistFee = (eventType: string): number => {
+    return eventTypeFeeMap[eventType] || 2000; // Default fee if not found
+  };
+
   const formValues = watch();
+
+  console.log(formValues);
 
   // Calculate pricing dynamically
   const artistFee = getArtistFee(formValues.eventType);
