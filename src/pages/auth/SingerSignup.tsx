@@ -234,8 +234,24 @@ const SingerSignup: React.FC = () => {
           />
           <span>
             I agree to the{" "}
-            <span className="font-semibold">Terms of Service</span> and{" "}
-            <span className="font-semibold">Privacy Policy</span>.
+            <a
+              href="/terms-and-conditions"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-primary underline hover:text-primary/80"
+            >
+              Terms of Service
+            </a>
+            {" "}and{" "}
+            <a
+              href="/privacy-policy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-primary underline hover:text-primary/80"
+            >
+              Privacy Policy
+            </a>
+            .
           </span>
         </label>
 

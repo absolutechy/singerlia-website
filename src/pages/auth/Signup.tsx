@@ -190,7 +190,7 @@ const Signup: React.FC = () => {
           <h6>
             I agree to the{" "}
             <a
-              href="/terms"
+              href="/terms-and-conditions"
               target="_blank"
               rel="noopener noreferrer"
               className="font-semibold text-primary underline hover:text-primary/80"

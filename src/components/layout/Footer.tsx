@@ -11,14 +11,22 @@ import {
 import logo from "@/assets/images/common/logolia.png";
 
 const quickLinks = [
-  "Home",
-  "Artists listing",
-  "About Us",
-  "Contact Us",
-  "Testimonials",
+  { label: "Home", href: "/" },
+  { label: "Artists listing", href: "/search" },
+  { label: "About Us", href: "/#about" },
+  { label: "Contact Us", href: "/contact" },
+  { label: "Testimonials", href: "/#reviews" },
 ];
-const artistLinks = ["Join Platform", "Success Stories"];
-const supportLinks = ["Help Center", "Contact Support", "Terms", "Policy"];
+const artistLinks = [
+  { label: "Join Platform", href: "/auth/singer-signup" },
+  { label: "Success Stories", href: "/#artists" },
+];
+const supportLinks = [
+  { label: "Help Center", href: "/contact" },
+  { label: "Contact Support", href: "/contact" },
+  { label: "Terms", href: "/terms-and-conditions" },
+  { label: "Policy", href: "/privacy-policy" },
+];
 
 const Footer: React.FC = () => {
   return (
@@ -131,9 +139,9 @@ const Footer: React.FC = () => {
             <p className="text-base font-semibold text-white">Quick Links</p>
             <ul className="space-y-3">
               {quickLinks.map((link) => (
-                <li key={link}>
-                  <a className="transition hover:text-[#FFD700]" href="#">
-                    {link}
+                <li key={link.label}>
+                  <a className="transition hover:text-[#FFD700]" href={link.href}>
+                    {link.label}
                   </a>
                 </li>
               ))}
@@ -143,9 +151,9 @@ const Footer: React.FC = () => {
             <p className="text-base font-semibold text-white">For Artists</p>
             <ul className="space-y-3">
               {artistLinks.map((link) => (
-                <li key={link}>
-                  <a className="transition hover:text-[#FFD700]" href="#">
-                    {link}
+                <li key={link.label}>
+                  <a className="transition hover:text-[#FFD700]" href={link.href}>
+                    {link.label}
                   </a>
                 </li>
               ))}
@@ -155,9 +163,9 @@ const Footer: React.FC = () => {
             <p className="text-base font-semibold text-white">Help & Support</p>
             <ul className="space-y-3">
               {supportLinks.map((link) => (
-                <li key={link}>
-                  <a className="transition hover:text-[#FFD700]" href="#">
-                    {link}
+                <li key={link.label}>
+                  <a className="transition hover:text-[#FFD700]" href={link.href}>
+                    {link.label}
                   </a>
                 </li>
               ))}

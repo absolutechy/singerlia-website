@@ -5,6 +5,8 @@ import {
   SearchResults,
   SingerDetails,
   SingerProfile,
+  TermsAndConditions,
+  PrivacyPolicy,
 } from "@/pages";
 import {
   CreateAccountWelcome,
@@ -37,6 +39,8 @@ const AppRouter = () => {
       <Route path="/singers/:id" element={<SingerDetails />} />
       <Route path="/booking/singer/:id" element={<BookingSinger />} />
       <Route path="/contact" element={<Contact />} />
+      <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
     </Routes>
   );
 };
