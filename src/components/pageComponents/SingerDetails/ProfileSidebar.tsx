@@ -19,10 +19,17 @@ import {
 } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Button as UIButton } from "@/components/ui/button";
+import type { Pricing } from "@/api/services/singerService";
 
-type Props = { name: string; id: number };
+type Props = { 
+  name: string; 
+  id: string; 
+  pricing?: Pricing;
+  city?: string;
+  isVerified?: boolean;
+};
 
-const ProfileSidebar: React.FC<Props> = ({ name, id }) => {
+const ProfileSidebar: React.FC<Props> = ({ name, id, pricing, city, isVerified }) => {
   const [shareOpen, setShareOpen] = useState(false);
   const [eventDate, setEventDate] = useState<Date | undefined>();
   const [timeSlot, setTimeSlot] = useState("");
@@ -73,8 +80,17 @@ const ProfileSidebar: React.FC<Props> = ({ name, id }) => {
         <div className="pt-6 z-10">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-[#1C1C1C]">{name}</h2>
-              <p className="text-sm text-[#6F5D9E]">Responds within 1/hr</p>
+              <div className="flex items-center gap-2">
+                <h2 className="text-2xl font-bold text-[#1C1C1C]">{name}</h2>
+                {isVerified && (
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-green-500 text-white text-xs">
+                    ✓
+                  </span>
+                )}
+              </div>
+              <p className="text-sm text-[#6F5D9E]">
+                {city || "Saudi Arabia"} • Responds within 1/hr
+              </p>
             </div>
 
           <div className="mt-2 flex gap-2">
@@ -93,8 +109,28 @@ const ProfileSidebar: React.FC<Props> = ({ name, id }) => {
         </div>
       </div>
 
-      {/* Booking card */}
-      <div className="rounded-2xl bg-white px-2.5 sm:px-5 py-6 shadow border border-[#EBE4FF] space-y-2">
+      {/* Pricing & Booking card */}
+      <div className="rounded-2xl bg-white px-2.5 sm:px-5 py-6 shadow border border-[#EBE4FF] space-y-4">
+        {/* Pricing Info */}
+        {pricing && (
+          <div className="space-y-2 pb-4 border-b border-[#E7DEFF]">
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-[#6F5D9E]">Base Price</span>
+              <span className="text-lg font-bold text-[#2E1B4D]">SAR {pricing.base_price}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-[#6F5D9E]">Extra Hour</span>
+              <span className="text-sm font-semibold text-[#2E1B4D]">SAR {pricing.extra_hour_price}</span>
+            </div>
+            {pricing.location_surcharge > 0 && (
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-[#6F5D9E]">Location Surcharge</span>
+                <span className="text-sm font-semibold text-[#2E1B4D]">SAR {pricing.location_surcharge}</span>
+              </div>
+            )}
+          </div>
+        )}
+        
         {/* Event Date Selector */}
         <div>
           <label className="text-sm font-semibold text-[#1C1C1C] flex items-center gap-2 mb-2">

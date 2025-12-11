@@ -93,6 +93,7 @@ const Footer: React.FC = () => {
                 Singerlia
               </p>
             </div>
+            <p>Lia Premier Real Estate & Creative Investments <br></br> ليابريمييرر للاستثمارات العقارية والإبداعية </p>
             <p className="max-w-sm text-sm text-white/70">
               Professional live music booking made simple, secure, and
               memorable.
@@ -174,7 +175,7 @@ const Footer: React.FC = () => {
         </div>
 
         <p className="mt-12 border-t border-white/15 pt-6 text-center text-xs text-white/60">
-          © {new Date().getFullYear()} Singerlia. All rights reserved.
+          © {new Date().getFullYear()} Lia Premier Real Estate & Creative Investments &nbsp; <br className="block sm:hidden" /> ليابريمييرر للاستثمارات العقارية والإبداعية All rights reserved.
         </p>
       </div>
     </footer>

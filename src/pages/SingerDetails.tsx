@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router";
+import singerService, { type Singer } from "@/api/services/singerService";
 import MediaModal from "@/components/pageComponents/SingerDetails/MediaModal";
 import MessageModal from "@/components/pageComponents/SingerDetails/MessageModal";
 import ReviewsModal from "@/components/pageComponents/SingerDetails/ReviewsModal";
@@ -7,9 +9,6 @@ import MediaGrid from "@/components/pageComponents/SingerDetails/MediaGrid";
 import IconBubble from "@/components/pageComponents/SingerDetails/IconBubble";
 import ReviewsPreview from "@/components/pageComponents/SingerDetails/ReviewsPreview";
 import FAQSection from "@/components/pageComponents/SingerDetails/FAQSection";
-
-const paragraph =
-  "We are committed to supporting artists by providing them with greater visibility, valuable opportunities, and direct connections with clients who truly appreciate their art. From solo acts to bands, classical to contemporary, we give artists the tools to showcase their talent, grow their audience, and build lasting relationships with customers.";
 
 // FAQ data with dummy answers (UI shows questions only to match design)
 const faqs = [
@@ -35,60 +34,87 @@ const faqs = [
   },
 ];
 
-const allReviews = [
-  {
-    id: 1,
-    name: "Liam",
-    location: "Yellowknife, Canada",
-    avatar:
-      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=96&q=60",
-    rating: 5.0,
-    timeAgo: "1 week ago",
-    text: "Jhon was awesome singer, knew exactly where to go for the best artist experience !",
-  },
-  {
-    id: 2,
-    name: "Liam",
-    location: "Yellowknife, Canada",
-    avatar:
-      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=96&q=60",
-    rating: 5.0,
-    timeAgo: "1 week ago",
-    text: "Jhon was awesome artist, knew exactly where to go for the best artist experience !",
-  },
-  {
-    id: 3,
-    name: "Liam",
-    location: "Yellowknife, Canada",
-    avatar:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=96&q=60",
-    rating: 5.0,
-    timeAgo: "1 week ago",
-    text: "Jhon was awesome artist, knew exactly where to go for the best artist experience !",
-  },
-  {
-    id: 4,
-    name: "Liam",
-    location: "Yellowknife, Canada",
-    avatar:
-      "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?auto=format&fit=crop&w=96&q=60",
-    rating: 5.0,
-    timeAgo: "1 week ago",
-    text: "Jhon was awesome artist, knew exactly where to go for the best artist experience !",
-  },
-];
-
 const SingerDetails: React.FC = () => {
-  const name = "John Doberman";
+  const { id } = useParams<{ id: string }>();
+  const [singer, setSinger] = useState<Singer | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [messageOpen, setMessageOpen] = useState(false);
   const [mediaOpen, setMediaOpen] = useState(false);
+
+  useEffect(() => {
+    if (id) {
+      fetchSingerDetails(id);
+    }
+  }, [id]);
+
+  const fetchSingerDetails = async (userId: string) => {
+    try {
+      setLoading(true);
+      const data = await singerService.getSingerById(userId);
+      setSinger(data);
+      setError("");
+    } catch (err: any) {
+      console.error("Failed to fetch singer details:", err);
+      setError("Failed to load singer details");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="custom-container pb-16 flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (error || !singer) {
+    return (
+      <div className="custom-container pb-16 flex justify-center items-center min-h-screen">
+        <div className="text-center">
+          <p className="text-red-600 text-lg">{error || "Singer not found"}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const name = singer.name || "Artist";
+  
+  // Transform API reviews to match ReviewsPreview component format
+  const reviewsPreviewData = singer.reviews?.slice(0, 3).map((review, index) => ({
+    id: index + 1,
+    name: review.userName,
+    location: "Saudi Arabia", // API doesn't provide location
+    avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(review.userName)}&background=random`,
+    rating: parseFloat(review.rating) || 0,
+    timeAgo: new Date(review.createdAt).toLocaleDateString(),
+  })) || [];
+
+  // Transform reviews for modal
+  const allReviews = singer.reviews?.map((review, index) => ({
+    id: index + 1,
+    name: review.userName,
+    location: "Saudi Arabia",
+    avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(review.userName)}&background=random`,
+    rating: parseFloat(review.rating) || 0,
+    timeAgo: new Date(review.createdAt).toLocaleDateString(),
+    text: review.comment,
+  })) || [];
 
   return (
     <div className="custom-container pb-16">
       <div className="grid gap-8 lg:grid-cols-[0.4fr_1fr] ">
         {/* Left fixed column */}
-        <ProfileSidebar id={1} name={name} />
+        <ProfileSidebar 
+          id={singer.userId} 
+          name={name}
+          pricing={singer.pricing}
+          city={singer.city}
+          isVerified={singer.isVerified}
+        />
 
         {/* Right content */}
         <section className="space-y-8">
@@ -100,7 +126,7 @@ const SingerDetails: React.FC = () => {
           {/* My Experience header aligned with social icons */}
           <div className="flex items-center justify-between pt-2">
             <h3 className="text-lg lg:text-2xl font-bold text-[#1C1C1C]">
-              My Experience
+              About {name.split(" ")[0]}
             </h3>
             <div className="flex gap-3">
               <IconBubble type="instagram" />
@@ -111,29 +137,35 @@ const SingerDetails: React.FC = () => {
             </div>
           </div>
 
-          {/* My Experience content */}
+          {/* Artist Info */}
           <div>
             <div className="h-px bg-[#E7DEFF] my-4" />
             <ul className="space-y-6 text-[#2F1C4E]">
               <li>
-                <p className="font-semibold">14 years of experience</p>
-                <p className="text-[#6F5D9E]">{paragraph}</p>
+                <p className="font-semibold">Genre</p>
+                <p className="text-[#6F5D9E]">{singer.genre || "Various genres"}</p>
               </li>
               <li>
-                <p className="font-semibold">Career highlight</p>
-                <p className="text-[#6F5D9E]">
-                  Over 10 years singing customers around UK and Europe!
-                </p>
+                <p className="font-semibold">Location</p>
+                <p className="text-[#6F5D9E]">{singer.city}{singer.address ? `, ${singer.address}` : ""}</p>
               </li>
               <li>
-                <p className="font-semibold">Education and training</p>
+                <p className="font-semibold">Contact</p>
+                <p className="text-[#6F5D9E]">{singer.email}</p>
+                <p className="text-[#6F5D9E]">{singer.phonenumber}</p>
+              </li>
+              <li>
+                <p className="font-semibold">Member since</p>
                 <p className="text-[#6F5D9E]">
-                  Singing Diploma of ETIC and earned an MBA in Marketing at
-                  University of Sunderland.
+                  {new Date(singer.joinedAt).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long' 
+                  })}
                 </p>
               </li>
             </ul>
           </div>
+          
           {/* Message button */}
           <div className="pt-4">
             <button
@@ -145,47 +177,24 @@ const SingerDetails: React.FC = () => {
           </div>
 
           {/* Reviews preview */}
-          <ReviewsPreview
-            items={[
-              {
-                id: 1,
-                name: "Liam",
-                location: "Yellowknife, Canada",
-                avatar:
-                  "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=96&q=60",
-                rating: 5.0,
-                timeAgo: "1 week ago",
-              },
-              {
-                id: 2,
-                name: "Liam",
-                location: "Yellowknife, Canada",
-                avatar:
-                  "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=96&q=60",
-                rating: 5.0,
-                timeAgo: "1 week ago",
-              },
-              {
-                id: 3,
-                name: "Liam",
-                location: "Yellowknife, Canada",
-                avatar:
-                  "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=96&q=60",
-                rating: 5.0,
-                timeAgo: "1 week ago",
-              },
-            ]}
-            onShowAll={() => setReviewsOpen(true)}
-          />
+          {reviewsPreviewData.length > 0 && (
+            <ReviewsPreview
+              items={reviewsPreviewData}
+              onShowAll={() => setReviewsOpen(true)}
+            />
+          )}
         </section>
+        
         {/* Media Modal */}
         <MediaModal open={mediaOpen} onClose={() => setMediaOpen(false)} />
+        
         {/* Message Modal */}
         <MessageModal
           open={messageOpen}
           onClose={() => setMessageOpen(false)}
           name={name}
         />
+        
         {/* Reviews Modal */}
         <ReviewsModal
           open={reviewsOpen}
@@ -193,6 +202,7 @@ const SingerDetails: React.FC = () => {
           reviews={allReviews}
         />
       </div>
+      
       {/* FAQ Section */}
       <FAQSection faqs={faqs} />
     </div>

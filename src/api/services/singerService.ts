@@ -1,0 +1,107 @@
+import axiosInstance from '../axiosInstance';
+
+// Types
+export interface SingerSearchParams {
+  genre?: string;
+  city?: string;
+  address?: string;
+  name?: string;
+  limit?: number;
+  page?: number;
+  highlight?: 'feature' | '';
+}
+
+export interface Review {
+  reviewId: string;
+  singerId: string;
+  userName: string;
+  rating: string;
+  comment: string;
+  createdAt: string;
+}
+
+export interface Pricing {
+  base_price: number;
+  extra_hour_price: number;
+  location_surcharge: number;
+}
+
+export interface Singer {
+  userId: string;
+  name: string;
+  phonenumber: string;
+  email: string;
+  genre: string | null;
+  intro_vid_link: string | null;
+  city: string;
+  address: string | null;
+  joinedAt: string;
+  isVerified: boolean;
+  pricing: Pricing;
+  reviews: Review[];
+  highlight: string;
+}
+
+export interface SingerSearchResponse {
+  singers: Singer[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+const singerService = {
+  /**
+   * Search singers with filters
+   * @param params - Search parameters
+   */
+  searchSingers: async (params: SingerSearchParams = {}): Promise<SingerSearchResponse> => {
+    const queryParams = new URLSearchParams();
+    
+    if (params.genre) queryParams.append('genre', params.genre);
+    if (params.city) queryParams.append('city', params.city);
+    if (params.address) queryParams.append('address', params.address);
+    if (params.name) queryParams.append('name', params.name);
+    if (params.limit) queryParams.append('limit', params.limit.toString());
+    if (params.page) queryParams.append('page', params.page.toString());
+    if (params.highlight) queryParams.append('highlight', params.highlight);
+    
+    const response = await axiosInstance.get<SingerSearchResponse>(
+      `/singer?${queryParams.toString()}`
+    );
+    
+    return response.data;
+  },
+
+  /**
+   * Get featured singers for homepage
+   * @param limit - Number of featured singers to fetch
+   */
+  getFeaturedSingers: async (limit: number = 10): Promise<SingerSearchResponse> => {
+    return singerService.searchSingers({
+      highlight: 'feature',
+      limit,
+      page: 1,
+    });
+  },
+
+  /**
+   * Get singer details by ID
+   * Note: Since there's no dedicated endpoint for single singer, we search and filter
+   * You may want to create a dedicated /singer/:id endpoint in the backend
+   * @param userId - The user ID of the singer
+   */
+  getSingerById: async (userId: string): Promise<Singer | null> => {
+    try {
+      // For now, fetch all and filter (this is inefficient - backend should add GET /singer/:id)
+      const response = await singerService.searchSingers({ limit: 100 });
+      const singer = response.singers.find(s => s.userId === userId);
+      return singer || null;
+    } catch (error) {
+      console.error('Failed to fetch singer by ID:', error);
+      return null;
+    }
+  },
+};
+
+export default singerService;
