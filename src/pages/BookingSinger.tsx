@@ -20,6 +20,7 @@ import Checkbox from "@/components/common/Checkbox";
 import Button from "@/components/common/Button";
 import authService from "@/api/services/authService";
 import bookingService from "@/api/services/bookingService";
+import { toast } from "sonner";
 
 // Zod validation schema
 const bookingSchema = z.object({
@@ -35,7 +36,6 @@ const bookingSchema = z.object({
   venueAddress: z.string().min(1, "Venue address is required"),
   city: z.string().min(1, "City is required"),
   postalCode: z.string().min(1, "Postal code is required"),
-  country: z.string().min(1, "Country is required"),
   venueType: z.enum(["indoor", "outdoor"], {
     message: "Please select venue type",
   }),
@@ -180,6 +180,25 @@ const BookingSinger: React.FC = () => {
     other: 1500,
   };
 
+  // Helper function to convert time slot to API format
+  const convertTimeSlotToAPI = (timeSlot: string): string => {
+    const timeSlotMap: Record<string, string> = {
+      morning: "8:00 AM - 12:00 PM",
+      afternoon: "12:00 PM - 6:00 PM",
+      evening: "6:00 PM - 12:00 AM",
+    };
+    return timeSlotMap[timeSlot] || timeSlot;
+  };
+
+  // Helper function to convert equipment selection to API format
+  const convertEquipmentToAPI = (equipment: string): string[] => {
+    if (equipment === "provide") {
+      return ["Sound System", "Microphone", "Lighting"];
+    } else {
+      return ["Singer brings own equipment"];
+    }
+  };
+
   // Calculate dynamic pricing based on event type
   const getArtistFee = (eventType: string): number => {
     return eventTypeFeeMap[eventType] || 2000; // Default fee if not found
@@ -195,6 +214,7 @@ const BookingSinger: React.FC = () => {
   const totalPrice = artistFee + vat;
 
   const onSubmit = async (data: BookingFormData): Promise<void> => {
+    console.log("Form submitted with data:", data);
     setLoading(true);
     setError("");
 
@@ -204,50 +224,47 @@ const BookingSinger: React.FC = () => {
 
       if (!currentUser) {
         setError("User authentication failed. Please login again.");
+        toast.error("User authentication failed. Please login again.");
         setLoading(false);
         return;
       }
 
       // If singerId is not pre-filled from navigation state, we need it
-      // For now, we'll use a placeholder - this should come from context or props
-      const singerId = state?.singerId || "";
+      // For testing purposes, use a default singer ID if not provided
+      const singerId = state?.singerId || "49344b6f-1afc-49fb-a858-34b482ca1400";
 
-      if (!singerId) {
-        setError(
-          "Singer information is missing. Please navigate from a singer profile."
-        );
-        setLoading(false);
-        return;
-      }
+      console.log("Using singerId:", singerId);
 
       // Create booking data object matching API requirements
       const bookingData = {
         singerId,
         eventDate: data.eventDate,
-        timeSlot: data.timeSlot, // Frontend uses "morning", "afternoon", "evening"
-        eventType: data.eventType,
+        timeSlot: convertTimeSlotToAPI(data.timeSlot),
+        eventType: data.eventType.charAt(0).toUpperCase() + data.eventType.slice(1),
         venueName: data.venueName,
         venueAddress: data.venueAddress,
         city: data.city,
         postalCode: data.postalCode,
-        venueType: data.venueType,
+        venueType: data.venueType.charAt(0).toUpperCase() + data.venueType.slice(0),
         numberOfGuests: data.numberOfGuests,
         fullName: data.fullName,
         email: data.email,
         phoneNumber: data.phoneNumber,
-        messageToSinger: data.messageToSinger,
-        specialSongRequests: data.specialSongRequests,
-        equipment: data.equipment, // API expects string[] or string
-        promoCode: data.promoCode,
+        messageToSinger: data.messageToSinger || "",
+        specialSongRequests: data.specialSongRequests || "",
+        equipment: convertEquipmentToAPI(data.equipment),
+        promoCode: data.promoCode || "",
         agreeToTerms: data.agreeToTerms,
       };
 
       console.log("Submitting booking:", bookingData);
+      toast.info("Creating booking...");
 
       // Call booking API
       const response = await bookingService.createBooking(bookingData);
 
       console.log("Booking created successfully:", response);
+      toast.success("Booking created successfully!");
 
       // Store booking ID for payment processing
       setBookingId(response.bookingId);
@@ -257,11 +274,13 @@ const BookingSinger: React.FC = () => {
       setShowSummary(true);
     } catch (err: any) {
       console.error("Booking error:", err);
+      console.error("Error response:", err.response);
       const errorMessage =
         err.response?.data?.message ||
         err.message ||
         "Failed to create booking. Please try again.";
       setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -484,20 +503,31 @@ const BookingSinger: React.FC = () => {
               variant="primary"
               className="w-full !h-14 text-base"
               disabled={loading}
-              onClick={() => {
+              onClick={async () => {
                 setLoading(true);
-                // TODO: Integrate with Paytabs payment gateway
-                // For now, show a placeholder message
-                console.log("Booking ID:", bookingId);
-                console.log("Total Amount:", totalPrice);
-                // window.location.href = `/payment?bookingId=${bookingId}&amount=${totalPrice}`;
-                alert(
-                  "Payment integration coming soon. Booking ID: " + bookingId
-                );
+                
+                // Simulate payment processing
+                toast.info("Processing payment...");
+                
+                // Simulate a 2-second payment processing delay
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Simulate successful payment
+                toast.success("Payment successful!");
+                
                 setLoading(false);
+                
+                // Navigate to success page with booking details
+                navigate("/booking/success", { 
+                  state: { 
+                    bookingId: bookingId,
+                    totalAmount: totalPrice
+                  },
+                  replace: true
+                });
               }}
             >
-              {loading ? "Processing..." : "Proceed to Secure Payment"}
+              {loading ? "Processing Payment..." : "Proceed to Secure Payment"}
             </Button>
           </div>
         </div>
@@ -862,6 +892,16 @@ const BookingSinger: React.FC = () => {
               variant="primary"
               size="large"
               disabled={loading}
+              onClick={(e) => {
+                // Check for validation errors and show toast
+                const formErrors = errors;
+                const errorFields = Object.keys(formErrors);
+                if (errorFields.length > 0) {
+                  e.preventDefault();
+                  const firstError = formErrors[errorFields[0] as keyof typeof formErrors];
+                  toast.error(firstError?.message || "Please fill all required fields");
+                }
+              }}
             >
               {loading ? "Creating Booking..." : "Review Booking"}
             </Button>

@@ -9,10 +9,22 @@ const Artists: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [visibleCount, setVisibleCount] = useState(9);
+  const [wishlist, setWishlist] = useState<string[]>([]);
 
   useEffect(() => {
     fetchFeaturedSingers();
+    fetchWishlist();
   }, []);
+
+  const fetchWishlist = async () => {
+    try {
+      const wishlistData = await singerService.getWishlist();
+      setWishlist(wishlistData);
+    } catch (error) {
+      console.error("Failed to fetch wishlist:", error);
+      // Silently fail - user might not be logged in
+    }
+  };
 
   const fetchFeaturedSingers = async () => {
     try {
@@ -61,9 +73,11 @@ const Artists: React.FC = () => {
               return (
                 <SingerCard
                   key={singer.userId}
+                  singerId={singer.userId}
                   name={name}
                   serviceTitle={genre}
                   images={images}
+                  isInWishlist={wishlist.includes(singer.userId)}
                   onViewDetails={() => navigate(`/singers/${singer.userId}`)}
                 />
               );

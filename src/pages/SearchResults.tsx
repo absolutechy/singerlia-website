@@ -32,6 +32,22 @@ const SearchResults: React.FC = () => {
   
   const [apiSingers, setApiSingers] = useState<Singer[]>([]);
   const [loading, setLoading] = useState(false);
+  const [wishlist, setWishlist] = useState<string[]>([]);
+
+  // Fetch wishlist on mount
+  useEffect(() => {
+    fetchWishlist();
+  }, []);
+
+  const fetchWishlist = async () => {
+    try {
+      const wishlistData = await singerService.getWishlist();
+      setWishlist(wishlistData);
+    } catch (error) {
+      console.error("Failed to fetch wishlist:", error);
+      // Silently fail - user might not be logged in
+    }
+  };
 
   // Fetch singers from API
   useEffect(() => {
@@ -196,9 +212,11 @@ const SearchResults: React.FC = () => {
                 return (
                   <SingerCard
                     key={it.userId}
+                    singerId={it.userId}
                     images={images}
                     name={name}
                     serviceTitle={genre}
+                    isInWishlist={wishlist.includes(it.userId)}
                     onViewDetails={() => navigate(`/singers/${it.userId}`)}
                   />
                 );

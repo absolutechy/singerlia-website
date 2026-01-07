@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router";
 import {
   Home,
   BookingSinger,
+  BookingSuccess,
   SearchResults,
   SingerDetails,
   SingerProfile,
@@ -38,6 +39,7 @@ const AppRouter = () => {
       <Route path="/search" element={<SearchResults />} />
       <Route path="/singers/:id" element={<SingerDetails />} />
       <Route path="/booking/singer/:id" element={<BookingSinger />} />
+      <Route path="/booking/success" element={<BookingSuccess />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />

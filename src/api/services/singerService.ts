@@ -102,6 +102,25 @@ const singerService = {
       return null;
     }
   },
+
+  /**
+   * Add singer to wishlist
+   * @param singerId - The ID of the singer to add to wishlist
+   */
+  addToWishlist: async (singerId: string): Promise<{ message: string }> => {
+    const response = await axiosInstance.post('/singer/add-to-wishlist', {
+      singerId,
+    });
+    return response.data;
+  },
+
+  /**
+   * Get user's wishlist
+   */
+  getWishlist: async (): Promise<string[]> => {
+    const response = await axiosInstance.get<{ message: string; wishlist: string[] }>('/singer/user/get-wishlist');
+    return response.data.wishlist || [];
+  },
 };
 
 export default singerService;

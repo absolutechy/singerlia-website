@@ -1,5 +1,5 @@
 import { Heart, ArrowRight, ArrowLeft } from "lucide-react";
-import React, { useId, useMemo, useState } from "react";
+import React, { useId, useMemo, useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation } from 'swiper/modules';
 import 'swiper/swiper-bundle.css';
@@ -7,6 +7,8 @@ import type { Swiper as SwiperInstance } from 'swiper';
 import logo from "@/assets/images/common/artise-card.png";
 import singerperson from "@/assets/images/singer/singerperson.png";
 import Button from "./Button";
+import { toast } from "sonner";
+import singerService from "@/api/services/singerService";
 
 // Default images used when none are provided
 const defaultSingerImages = [
@@ -21,9 +23,11 @@ interface SingerCardProps {
   serviceTitle?: string;
   images?: string[];
   responseTime?: string;
+  singerId?: string;
+  isInWishlist?: boolean;
 }
 
-const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Artist Name here", serviceTitle, images, responseTime = "Responds within 1/hr" } ) => {
+const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Artist Name here", serviceTitle, images, responseTime = "Responds within 1/hr", singerId, isInWishlist = false } ) => {
   const uniqueId = useId();
   const uniqueBase = useMemo(() => uniqueId.replace(/:/g, ""), [uniqueId]);
   const paginationClass = `swiper-pagination-${uniqueBase}`;
@@ -32,10 +36,42 @@ const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Artist N
   const imgs = images && images.length > 0 ? images : defaultSingerImages;
   const [isAtStart, setIsAtStart] = useState(true);
   const [isAtEnd, setIsAtEnd] = useState(imgs.length <= 1);
+  const [isWishlisted, setIsWishlisted] = useState(isInWishlist);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  // Sync wishlist state with prop changes
+  useEffect(() => {
+    setIsWishlisted(isInWishlist);
+  }, [isInWishlist]);
 
   const updateNavState = (swiper: SwiperInstance) => {
     setIsAtStart(swiper.isBeginning);
     setIsAtEnd(swiper.isEnd);
+  };
+
+  const handleWishlistClick = async () => {
+    if (!singerId) {
+      toast.error("Singer ID is missing");
+      return;
+    }
+
+    if (isWishlisted) {
+      return; // Already in wishlist, do nothing
+    }
+
+    try {
+      setIsAnimating(true);
+      await singerService.addToWishlist(singerId);
+      setIsWishlisted(true);
+      toast.success("Singer added to wishlist!");
+      
+      // Reset animation after it completes
+      setTimeout(() => setIsAnimating(false), 600);
+    } catch (error) {
+      setIsAnimating(false);
+      toast.error("Failed to add singer to wishlist");
+      console.error("Wishlist error:", error);
+    }
   };
 
   return (
@@ -46,8 +82,20 @@ const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Artist N
           alt="Artist"
           className="w-12 h-12 object-cover absolute top-3 left-3 z-10"
         />
-        <button className="bg-white w-10 h-10 flex items-center justify-center rounded-full absolute top-3 right-3 z-10 cursor-pointer">
-          <Heart />
+        <button 
+          onClick={handleWishlistClick}
+          disabled={isWishlisted}
+          className={`bg-white w-10 h-10 flex items-center justify-center rounded-full absolute top-3 right-3 z-10 transition-all duration-300 ${
+            isAnimating ? 'scale-125' : 'scale-100'
+          } ${
+            isWishlisted ? 'cursor-default' : 'cursor-pointer hover:scale-110'
+          }`}
+        >
+          <Heart 
+            className={`transition-all duration-300 ${
+              isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-700'
+            }`}
+          />
         </button>
         <div className="w-full blur-effect text-white absolute bottom-0 left-0 px-5 py-2 z-10">
           <div className="grid grid-cols-2 items-center justify-between gap-4">
