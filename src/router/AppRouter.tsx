@@ -19,6 +19,9 @@ import {
   ForgotPassword,
   ResetPassword,
   SelectVerification,
+  DocumentTypeSelection,
+  DocumentUpload,
+  VerificationPending,
 } from "@/pages/auth";
 import Contact from "@/pages/Contact";
 
@@ -33,6 +36,9 @@ const AppRouter = () => {
       <Route path="/auth/singer-signup" element={<SingerSignup />} />
       <Route path="/auth/verification-method" element={<SelectVerification />} />
       <Route path="/auth/verification-code" element={<VerificationCode />} />
+      <Route path="/auth/select-document-type" element={<DocumentTypeSelection />} />
+      <Route path="/auth/upload-document" element={<DocumentUpload />} />
+      <Route path="/auth/verification-pending" element={<VerificationPending />} />
       <Route path="/auth/forgot-password" element={<ForgotPassword />} />
       <Route path="/auth/reset-password" element={<ResetPassword />} />
       <Route path="/singer-profile" element={<SingerProfile />} />

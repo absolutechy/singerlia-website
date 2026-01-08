@@ -35,10 +35,23 @@ axiosInstance.interceptors.response.use(
     if (error.response) {
       switch (error.response.status) {
         case 401:
-          // Unauthorized - Clear token and redirect to login
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('user');
-          window.location.href = '/auth/login';
+          // Unauthorized - Only redirect to login if:
+          // 1. User is on a protected page (not home, search, singer details, etc.)
+          // 2. Or if the request was explicitly for authentication
+          const currentPath = window.location.pathname;
+          const publicPaths = ['/', '/search', '/singers', '/contact', '/terms-and-conditions', '/privacy-policy', '/auth'];
+          const isPublicPath = publicPaths.some(path => currentPath.startsWith(path));
+          
+          // Only clear token and redirect if on a protected page
+          if (!isPublicPath) {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            window.location.href = '/auth/login';
+          } else {
+            // On public pages, just clear the token silently without redirecting
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+          }
           break;
         
         case 403:

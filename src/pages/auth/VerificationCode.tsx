@@ -71,6 +71,9 @@ const VerificationCode: React.FC = () => {
     setError("");
 
     try {
+      // Get user role to determine next step
+      const userRole = sessionStorage.getItem("userRole");
+      
       await authService.verifyUser({
         userId,
         otp: code,
@@ -78,16 +81,23 @@ const VerificationCode: React.FC = () => {
 
       setSuccess("Verification successful! Redirecting...");
       
-      // Clear session storage
-      sessionStorage.removeItem("userId");
+      // Clear some session storage but keep userId temporarily for document upload
       sessionStorage.removeItem("userPhone");
       sessionStorage.removeItem("userEmail");
-      sessionStorage.removeItem("userRole");
       sessionStorage.removeItem("verificationType");
       
-      // Redirect to home/dashboard after 1 second (user is now logged in)
+      // If singer, redirect to document upload flow after 1 second
+      // Keep them logged in temporarily for document upload
+      // They will be logged out after successful document upload
+      // If regular user, redirect to home
       setTimeout(() => {
-        navigate("/");
+        if (userRole === "singer") {
+          sessionStorage.removeItem("userRole"); // Clear role after checking
+          navigate("/auth/select-document-type");
+        } else {
+          sessionStorage.removeItem("userRole");
+          navigate("/");
+        }
       }, 1000);
     } catch (err: any) {
       setError(err.response?.data?.message || "Verification failed. Please check your code and try again.");

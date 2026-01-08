@@ -357,6 +357,28 @@ const authService = {
     );
     return response.data;
   },
+
+  /**
+   * Upload verification document for singer
+   * @param documentType - 'national_id' or 'passport'
+   * @param file - The document file to upload
+   */
+  uploadVerificationDocument: async (documentType: string, file: File): Promise<{ message: string }> => {
+    const formData = new FormData();
+    formData.append('documentType', documentType);
+    formData.append('document', file);
+
+    const response = await axiosInstance.post<{ message: string }>(
+      '/singer/upload-verification-document',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+    return response.data;
+  },
 };
 
 export default authService;
