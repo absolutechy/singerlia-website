@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import singerService, { type Singer } from "@/api/services/singerService";
+import authService from "@/api/services/authService";
+import { getViewFile } from "@/api/services/getViewFile";
+import unavailabilityService, { type UnavailabilityRecord } from "@/api/services/unavailabilityService";
 import MediaModal from "@/components/pageComponents/SingerDetails/MediaModal";
 import MessageModal from "@/components/pageComponents/SingerDetails/MessageModal";
 import ReviewsModal from "@/components/pageComponents/SingerDetails/ReviewsModal";
@@ -42,6 +45,10 @@ const SingerDetails: React.FC = () => {
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [messageOpen, setMessageOpen] = useState(false);
   const [mediaOpen, setMediaOpen] = useState(false);
+  const [photoUrls, setPhotoUrls] = useState<string[]>([]);
+  const [photosLoading, setPhotosLoading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [unavailability, setUnavailability] = useState<UnavailabilityRecord[]>([]);
 
   useEffect(() => {
     if (id) {
@@ -55,11 +62,46 @@ const SingerDetails: React.FC = () => {
       const data = await singerService.getSingerById(userId);
       setSinger(data);
       setError("");
+      
+      // Check if user is authenticated
+      const authenticated = authService.isAuthenticated();
+      setIsAuthenticated(authenticated);
+      
+      // Fetch photos only if user is authenticated
+      if (authenticated && data?.singerProfile?.photos && data.singerProfile.photos.length > 0) {
+        fetchPhotos(data.singerProfile.photos);
+      }
+      
+      // Fetch singer unavailability (public endpoint)
+      try {
+        const unavailabilityData = await unavailabilityService.getSingerUnavailability(userId);
+        setUnavailability(unavailabilityData.unavailability);
+      } catch (err) {
+        console.error("Failed to fetch unavailability:", err);
+        // Don't fail the whole page if unavailability fetch fails
+      }
     } catch (err: any) {
       console.error("Failed to fetch singer details:", err);
       setError("Failed to load singer details");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchPhotos = async (photos: { s3Path: string; fileType: string }[]) => {
+    try {
+      setPhotosLoading(true);
+      const urls = await Promise.all(
+        photos.map(async (photo) => {
+          const response = await getViewFile(photo.s3Path, photo.fileType);
+          return response.isError ? null : response.data;
+        })
+      );
+      setPhotoUrls(urls.filter((url): url is string => url !== null));
+    } catch (err) {
+      console.error("Failed to fetch photos:", err);
+    } finally {
+      setPhotosLoading(false);
     }
   };
 
@@ -82,6 +124,12 @@ const SingerDetails: React.FC = () => {
   }
 
   const name = singer.name || "Artist";
+  
+  // Get social links
+  const socialLinks = singer.singerProfile?.social_links || {};
+  
+  // Get YouTube links
+  const youtubeLinks = singer.singerProfile?.youtube_links || [];
   
   // Transform API reviews to match ReviewsPreview component format
   const reviewsPreviewData = singer.reviews?.slice(0, 3).map((review, index) => ({
@@ -114,13 +162,34 @@ const SingerDetails: React.FC = () => {
           pricing={singer.pricing}
           city={singer.city}
           isVerified={singer.isVerified}
+          unavailability={unavailability}
         />
 
         {/* Right content */}
         <section className="space-y-8">
           {/* Media gallery - matches layout: big left (2x2), four small on right */}
-          <div onClick={() => setMediaOpen(true)} className="cursor-pointer">
-            <MediaGrid />
+          <div 
+            onClick={() => isAuthenticated && setMediaOpen(true)} 
+            className={isAuthenticated ? "cursor-pointer" : "cursor-not-allowed relative"}
+          >
+            {photosLoading ? (
+              <div className="flex justify-center items-center h-[328px]">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            ) : (
+              <>
+                <div className={!isAuthenticated ? "blur-sm" : ""}>
+                  <MediaGrid photos={photoUrls} />
+                </div>
+                {!isAuthenticated && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-2xl">
+                    <div className="bg-white px-6 py-3 rounded-lg shadow-lg">
+                      <p className="text-[#2E1B4D] font-semibold">Please log in to view photos</p>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
           </div>
 
           {/* My Experience header aligned with social icons */}
@@ -129,30 +198,38 @@ const SingerDetails: React.FC = () => {
               About {name.split(" ")[0]}
             </h3>
             <div className="flex gap-3">
-              <IconBubble type="instagram" />
-              <IconBubble type="music" />
-              <IconBubble type="youtube" />
-              <IconBubble type="disc" />
-              <IconBubble type="linkedin" />
+              {socialLinks.instagram && <IconBubble type="instagram" url={socialLinks.instagram} />}
+              {socialLinks.facebook && <IconBubble type="facebook" url={socialLinks.facebook} />}
+              {socialLinks.twitter && <IconBubble type="twitter" url={socialLinks.twitter} />}
+              {socialLinks.tiktok && <IconBubble type="tiktok" url={socialLinks.tiktok} />}
             </div>
           </div>
 
           {/* Artist Info */}
           <div>
+            {singer.singerProfile?.bio && (
+              <div className="mb-4">
+                <p className="font-semibold text-[#2F1C4E]">Bio</p>
+                <p className="text-[#6F5D9E] mt-2">{singer.singerProfile.bio}</p>
+              </div>
+            )}
+            {singer.singerProfile?.experience && (
+              <div className="mb-4">
+                <p className="font-semibold text-[#2F1C4E]">Experience</p>
+                <p className="text-[#6F5D9E] mt-2">{singer.singerProfile.experience}</p>
+              </div>
+            )}
             <div className="h-px bg-[#E7DEFF] my-4" />
             <ul className="space-y-6 text-[#2F1C4E]">
               <li>
                 <p className="font-semibold">Genre</p>
-                <p className="text-[#6F5D9E]">{singer.genre || "Various genres"}</p>
+                <p className="text-[#6F5D9E]">
+                  {singer.singerProfile?.genres?.join(", ") || singer.genre || "Various genres"}
+                </p>
               </li>
               <li>
                 <p className="font-semibold">Location</p>
                 <p className="text-[#6F5D9E]">{singer.city}{singer.address ? `, ${singer.address}` : ""}</p>
-              </li>
-              <li>
-                <p className="font-semibold">Contact</p>
-                <p className="text-[#6F5D9E]">{singer.email}</p>
-                <p className="text-[#6F5D9E]">{singer.phonenumber}</p>
               </li>
               <li>
                 <p className="font-semibold">Member since</p>
@@ -186,7 +263,12 @@ const SingerDetails: React.FC = () => {
         </section>
         
         {/* Media Modal */}
-        <MediaModal open={mediaOpen} onClose={() => setMediaOpen(false)} />
+        <MediaModal 
+          open={mediaOpen} 
+          onClose={() => setMediaOpen(false)}
+          photos={photoUrls}
+          youtubeLinks={youtubeLinks}
+        />
         
         {/* Message Modal */}
         <MessageModal

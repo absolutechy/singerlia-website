@@ -379,6 +379,29 @@ const authService = {
     );
     return response.data;
   },
+
+  /**
+   * Reupload verification document for singer
+   * @param email - Singer's email address
+   * @param file - The document file to upload
+   * @param documentType - Type of document (national_id or passport)
+   */
+  reuploadVerificationDocument: async (email: string, file: File, documentType: string): Promise<{ message: string }> => {
+    const formData = new FormData();
+    formData.append('document', file);
+    formData.append('documentType', documentType);
+
+    const response = await axiosInstance.post<{ message: string }>(
+      `/singer/reupload-verification-document?email=${encodeURIComponent(email)}`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+    return response.data;
+  },
 };
 
 export default authService;
