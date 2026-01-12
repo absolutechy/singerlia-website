@@ -80,15 +80,13 @@ const BookingSuccess: React.FC = () => {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
-          <Button
-            variant="primary"
-            size="large"
-            className="flex-1 !h-14 text-base"
-            onClick={() => navigate("/singer-profile")}
+          <a
+            className="px-10 py-4 !text-lg h-14 flex-1 flex justify-center items-center rounded-lg bg-gradient-to-b from-secondary to-secondary-dark text-[#2e2e2e] hover:from-[#ffed4e] hover:to-[#d4a04a] shadow-md hover:shadow-lg"
+            href="https://portal.singerlia.com/"
           >
             <LayoutDashboard className="w-5 h-5 mr-2" />
             Visit Dashboard
-          </Button>
+          </a>
           <Button
             variant="default"
             size="large"
