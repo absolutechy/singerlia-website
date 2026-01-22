@@ -25,10 +25,16 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   });
 
   const handleInputChange = (field: keyof SearchData, value: string) => {
-    setSearchData((prev) => ({
-      ...prev,
+    const updatedData = {
+      ...searchData,
       [field]: value,
-    }));
+    };
+    setSearchData(updatedData);
+    
+    // Automatically trigger search when date changes
+    if (field === 'date' && onSearch) {
+      onSearch(updatedData);
+    }
   };
 
   const handleSearch = () => {
@@ -36,6 +42,15 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
       onSearch(searchData);
     }
     console.log("Search data:", searchData);
+  };
+
+  // Disable past dates - only allow today and future dates
+  const disablePastDates = (date: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
+    const compareDate = new Date(date);
+    compareDate.setHours(0, 0, 0, 0);
+    return compareDate < today;
   };
 
   return (
@@ -57,6 +72,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
             placeholder="Event Date"
             value={searchData.date}
             onChange={(value) => handleInputChange("date", value)}
+            disabled={disablePastDates}
             className=""
           />
         </div>

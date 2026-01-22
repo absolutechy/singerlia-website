@@ -301,16 +301,18 @@ const Header: React.FC = () => {
                   transition={{ duration: 0.2 }}
                   className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg overflow-hidden z-50"
                 >
-                  <button
+                  <a 
+                    href="https://portal.singerlia.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     onClick={() => {
                       setDropdownOpen(false);
-                      navigate('/dashboard');
                     }}
                     className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
                   >
                     <LayoutDashboard size={18} />
                     <span className="font-medium">Dashboard</span>
-                  </button>
+                  </a>
                   <div className="border-t border-gray-200"></div>
                   <button
                     onClick={handleLogout}
