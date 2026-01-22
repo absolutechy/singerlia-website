@@ -26,6 +26,29 @@ export interface Pricing {
   location_surcharge: number;
 }
 
+export interface PhotoFile {
+  fileName: string;
+  fileType: string;
+  s3Path: string;
+}
+
+export interface SocialLinks {
+  instagram?: string;
+  facebook?: string;
+  twitter?: string;
+  tiktok?: string;
+}
+
+export interface SingerProfile {
+  userId: string;
+  bio: string;
+  experience: string;
+  genres: string[];
+  social_links: SocialLinks;
+  photos: PhotoFile[];
+  youtube_links: string[];
+}
+
 export interface Singer {
   userId: string;
   name: string;
@@ -40,6 +63,8 @@ export interface Singer {
   pricing: Pricing;
   reviews: Review[];
   highlight: string;
+  isSingerApproved: boolean;
+  singerProfile?: SingerProfile;
 }
 
 export interface SingerSearchResponse {
@@ -87,16 +112,18 @@ const singerService = {
 
   /**
    * Get singer details by ID
-   * Note: Since there's no dedicated endpoint for single singer, we search and filter
-   * You may want to create a dedicated /singer/:id endpoint in the backend
    * @param userId - The user ID of the singer
    */
   getSingerById: async (userId: string): Promise<Singer | null> => {
     try {
-      // For now, fetch all and filter (this is inefficient - backend should add GET /singer/:id)
-      const response = await singerService.searchSingers({ limit: 100 });
-      const singer = response.singers.find(s => s.userId === userId);
-      return singer || null;
+      const response = await axiosInstance.get<{ singer: Singer; singerProfile: SingerProfile }>(
+        `/singer/${userId}`
+      );
+      // Merge singerProfile into singer object
+      return {
+        ...response.data.singer,
+        singerProfile: response.data.singerProfile,
+      };
     } catch (error) {
       console.error('Failed to fetch singer by ID:', error);
       return null;

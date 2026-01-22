@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Heart, Share2, Calendar, Clock } from "lucide-react";
 import singer1 from "@/assets/images/singer/singer-detail-1.png";
 import singer2 from "@/assets/images/singer/singer-detail-2.png";
 import ShareModal from "@/components/pageComponents/SingerDetails/ShareModal";
 import { Button } from "@/components/common";
 import { useNavigate } from "react-router";
+import type { UnavailabilityRecord } from "@/api/services/unavailabilityService";
 import {
   Select,
   SelectContent,
@@ -27,9 +28,10 @@ type Props = {
   pricing?: Pricing;
   city?: string;
   isVerified?: boolean;
+  unavailability?: UnavailabilityRecord[];
 };
 
-const ProfileSidebar: React.FC<Props> = ({ name, id, pricing, city, isVerified }) => {
+const ProfileSidebar: React.FC<Props> = ({ name, id, pricing, city, isVerified, unavailability = [] }) => {
   const [shareOpen, setShareOpen] = useState(false);
   const [eventDate, setEventDate] = useState<Date | undefined>();
   const [timeSlot, setTimeSlot] = useState("");
@@ -42,14 +44,40 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, pricing, city, isVerified }
     { value: "evening", label: "Evening (6:00 PM onwards)" },
   ];
 
+  // Helper to format date to YYYY-MM-DD
+  const formatDateToYYYYMMDD = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  // Check if a date is fully unavailable (all 3 slots booked)
+  const isDateFullyUnavailable = (date: Date): boolean => {
+    const dateStr = formatDateToYYYYMMDD(date);
+    const unavailableSlotsForDate = unavailability.filter(record => record.date === dateStr);
+    return unavailableSlotsForDate.length === 3;
+  };
+
+  // Get unavailable time slots for selected date
+  const unavailableSlots = useMemo(() => {
+    if (!eventDate) return [];
+    const dateStr = formatDateToYYYYMMDD(eventDate);
+    return unavailability
+      .filter(record => record.date === dateStr)
+      .map(record => record.timeSlot);
+  }, [eventDate, unavailability]);
+
+  // Filter available time slots
+  const availableTimeSlots = timeSlotOptions.filter(
+    option => !unavailableSlots.includes(option.value as 'morning' | 'afternoon' | 'evening')
+  );
+
   const nav = () => {
     // Pass selected date and time to booking page via state or query params
     let dateString = "";
     if (eventDate) {
-      const year = eventDate.getFullYear();
-      const month = String(eventDate.getMonth() + 1).padStart(2, '0');
-      const day = String(eventDate.getDate()).padStart(2, '0');
-      dateString = `${year}-${month}-${day}`;
+      dateString = formatDateToYYYYMMDD(eventDate);
     }
     navigate(`/booking/singer/${id}`, {
       state: {
@@ -152,11 +180,18 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, pricing, city, isVerified }
                 selected={eventDate}
                 onSelect={(date) => {
                   setEventDate(date);
+                  setTimeSlot(""); // Reset time slot when date changes
                   setCalendarOpen(false);
                 }}
-                disabled={(date) =>
-                  date < new Date(new Date().setHours(0, 0, 0, 0))
-                }
+                disabled={(date) => {
+                  // Disable past dates
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  if (date < today) return true;
+                  
+                  // Disable dates where all time slots are unavailable
+                  return isDateFullyUnavailable(date);
+                }}
               />
             </PopoverContent>
           </Popover>
@@ -168,18 +203,29 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, pricing, city, isVerified }
             <Clock className="h-4 w-4 text-primary" />
             Time Slot
           </label>
-          <Select value={timeSlot}  onValueChange={setTimeSlot}>
+          <Select 
+            value={timeSlot}  
+            onValueChange={setTimeSlot}
+            disabled={!eventDate || availableTimeSlots.length === 0}
+          >
             <SelectTrigger className="w-full border border-[#E7DEFF] rounded-lg text-[#2E1B4D]">
-              <SelectValue placeholder="Select time slot" />
+              <SelectValue placeholder={!eventDate ? "Select a date first" : "Select time slot"} />
             </SelectTrigger>
             <SelectContent className="bg-white">
-              {timeSlotOptions.map((option) => (
+              {availableTimeSlots.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
+          {eventDate && unavailableSlots.length > 0 && (
+            <p className="text-xs text-orange-600 mt-1">
+              {unavailableSlots.length === 3 
+                ? "No time slots available for this date" 
+                : `${unavailableSlots.length} slot(s) unavailable`}
+            </p>
+          )}
         </div>
 
         {/* Book Artist Button */}

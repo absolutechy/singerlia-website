@@ -20,6 +20,7 @@ import Checkbox from "@/components/common/Checkbox";
 import Button from "@/components/common/Button";
 import authService from "@/api/services/authService";
 import bookingService from "@/api/services/bookingService";
+import unavailabilityService, { type UnavailabilityRecord } from "@/api/services/unavailabilityService";
 import { toast } from "sonner";
 
 // Zod validation schema
@@ -76,6 +77,7 @@ const BookingSinger: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [bookingId, setBookingId] = useState<string>("");
+  const [unavailability, setUnavailability] = useState<UnavailabilityRecord[]>([]);
 
   const currentUser = authService.getCurrentUser();
 
@@ -107,6 +109,22 @@ const BookingSinger: React.FC = () => {
       navigate("/auth/login");
     }
   }, [navigate]);
+
+  // Fetch singer unavailability
+  useEffect(() => {
+    const fetchUnavailability = async () => {
+      if (state?.singerId) {
+        try {
+          const data = await unavailabilityService.getSingerUnavailability(state.singerId);
+          setUnavailability(data.unavailability);
+        } catch (err) {
+          console.error("Failed to fetch unavailability:", err);
+          // Don't block booking if unavailability fetch fails
+        }
+      }
+    };
+    fetchUnavailability();
+  }, [state?.singerId]);
 
   // Fetch user profile to get email and phone number
   useEffect(() => {
@@ -190,6 +208,20 @@ const BookingSinger: React.FC = () => {
     return timeSlotMap[timeSlot] || timeSlot;
   };
 
+  // Check if date is fully unavailable
+  const isDateFullyUnavailable = (date: Date): boolean => {
+    const dateStr = date.toISOString().split('T')[0];
+    const unavailableSlotsForDate = unavailability.filter(record => record.date === dateStr);
+    return unavailableSlotsForDate.length === 3;
+  };
+
+  // Get unavailable slots for the selected date
+  const getUnavailableSlotsForDate = (dateStr: string): string[] => {
+    return unavailability
+      .filter(record => record.date === dateStr)
+      .map(record => record.timeSlot);
+  };
+
   // Helper function to convert equipment selection to API format
   const convertEquipmentToAPI = (equipment: string): string[] => {
     if (equipment === "provide") {
@@ -207,6 +239,16 @@ const BookingSinger: React.FC = () => {
   const formValues = watch();
 
   console.log(formValues);
+
+  // Clear time slot if it becomes unavailable when date changes
+  useEffect(() => {
+    if (formValues.eventDate && formValues.timeSlot) {
+      const unavailableSlots = getUnavailableSlotsForDate(formValues.eventDate);
+      if (unavailableSlots.includes(formValues.timeSlot)) {
+        setValue('timeSlot', undefined as any);
+      }
+    }
+  }, [formValues.eventDate, unavailability, formValues.timeSlot, setValue]);
 
   // Calculate pricing dynamically
   const artistFee = getArtistFee(formValues.eventType);
@@ -307,6 +349,16 @@ const BookingSinger: React.FC = () => {
     { value: "afternoon", label: "Afternoon (12:00 PM onwards)" },
     { value: "evening", label: "Evening (6:00 PM onwards)" },
   ];
+
+  // Filter time slots based on selected date and unavailability
+  const availableTimeSlotOptions = React.useMemo(() => {
+    if (!formValues.eventDate) return timeSlotOptions;
+    
+    const unavailableSlots = getUnavailableSlotsForDate(formValues.eventDate);
+    return timeSlotOptions.filter(
+      option => !unavailableSlots.includes(option.value as 'morning' | 'afternoon' | 'evening')
+    );
+  }, [formValues.eventDate, unavailability]);
 
   const venueTypeOptions = [
     { value: "indoor", label: "Indoor" },
@@ -582,9 +634,14 @@ const BookingSinger: React.FC = () => {
                     placeholder="Select event date"
                     value={field.value}
                     onChange={field.onChange}
-                    disabled={(date) =>
-                      date < new Date(new Date().setHours(0, 0, 0, 0))
-                    }
+                    disabled={(date) => {
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      // Disable past dates
+                      if (date < today) return true;
+                      // Disable dates where all slots are unavailable
+                      return isDateFullyUnavailable(date);
+                    }}
                     error={errors.eventDate?.message}
                   />
                 )}
@@ -596,13 +653,20 @@ const BookingSinger: React.FC = () => {
                   render={({ field }) => (
                     <RadioGroup
                       label="Time Slot"
-                      options={timeSlotOptions}
+                      options={availableTimeSlotOptions}
                       value={field.value}
                       onChange={field.onChange}
                       error={errors.timeSlot?.message}
                     />
                   )}
                 />
+                {formValues.eventDate && availableTimeSlotOptions.length < 3 && (
+                  <p className="text-xs text-orange-600 mt-2">
+                    {availableTimeSlotOptions.length === 0 
+                      ? "No time slots available for this date. Please select another date." 
+                      : `${3 - availableTimeSlotOptions.length} time slot(s) unavailable for this date.`}
+                  </p>
+                )}
               </div>
             </div>
           </div>
