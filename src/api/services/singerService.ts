@@ -8,7 +8,7 @@ export interface SingerSearchParams {
   name?: string;
   limit?: number;
   page?: number;
-  highlight?: 'feature' | '';
+  highlight?: 'featured' | '';
 }
 
 export interface Review {
@@ -82,7 +82,7 @@ const singerService = {
    */
   searchSingers: async (params: SingerSearchParams = {}): Promise<SingerSearchResponse> => {
     const queryParams = new URLSearchParams();
-    
+
     if (params.genre) queryParams.append('genre', params.genre);
     if (params.city) queryParams.append('city', params.city);
     if (params.address) queryParams.append('address', params.address);
@@ -90,11 +90,11 @@ const singerService = {
     if (params.limit) queryParams.append('limit', params.limit.toString());
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.highlight) queryParams.append('highlight', params.highlight);
-    
+
     const response = await axiosInstance.get<SingerSearchResponse>(
       `/singer?${queryParams.toString()}`
     );
-    
+
     return response.data;
   },
 
@@ -104,7 +104,7 @@ const singerService = {
    */
   getFeaturedSingers: async (limit: number = 10): Promise<SingerSearchResponse> => {
     return singerService.searchSingers({
-      highlight: 'feature',
+      highlight: 'featured',
       limit,
       page: 1,
     });

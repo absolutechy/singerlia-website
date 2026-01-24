@@ -42,6 +42,8 @@ const PartyExperience: React.FC = () => {
 
   // Smoothly follow target using lerp + rAF
   useEffect(() => {
+    if (!isHovering) return;
+    
     let raf = 0;
     const tick = () => {
       // LERP factor controls smoothness (0.1-0.25 good range)
@@ -53,7 +55,7 @@ const PartyExperience: React.FC = () => {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [isHovering]);
 
   return (
     <div ref={sectionRef} className="w-full bg-white relative" style={{ cursor: isHovering ? "none" : "auto" }}>
