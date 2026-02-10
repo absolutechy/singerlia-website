@@ -13,6 +13,14 @@ const BookingSuccess: React.FC = () => {
   const location = useLocation();
   const state = location.state as LocationState | undefined;
 
+  // Fallback: read bookingId from state → URL params → localStorage
+  const searchParams = new URLSearchParams(location.search);
+  const bookingId =
+    state?.bookingId ||
+    searchParams.get("bookingId") ||
+    localStorage.getItem("currentBookingId") ||
+    undefined;
+
   useEffect(() => {
     // Clear booking data from localStorage
     localStorage.removeItem("currentBookingId");
@@ -61,9 +69,9 @@ const BookingSuccess: React.FC = () => {
               <p className="text-green-700 text-sm leading-relaxed">
                 Your booking has been confirmed! The singer will be notified and will review
                 your request. You'll receive a confirmation email shortly with all the details.
-                {state?.bookingId && (
+                {bookingId && (
                   <span className="block mt-2 font-medium">
-                    Booking ID: <span className="font-mono">{state.bookingId}</span>
+                    Booking ID: <span className="font-mono">{bookingId}</span>
                   </span>
                 )}
               </p>

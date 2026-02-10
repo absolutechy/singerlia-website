@@ -1,6 +1,7 @@
 export { default as Home } from "@/pages/Home"
 export { default as BookingSinger } from "@/pages/BookingSinger"
 export { default as BookingSuccess } from "@/pages/BookingSuccess"
+export { default as PaymentResult } from "@/pages/PaymentResult"
 export { default as SearchResults } from "@/pages/SearchResults"
 export { default as SingerDetails } from "@/pages/SingerDetails"
 export { default as SingerProfile } from "@/pages/SingerProfile"

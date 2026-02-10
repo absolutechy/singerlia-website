@@ -20,7 +20,9 @@ import Checkbox from "@/components/common/Checkbox";
 import Button from "@/components/common/Button";
 import authService from "@/api/services/authService";
 import bookingService from "@/api/services/bookingService";
+import paymentService from "@/api/services/paymentService";
 import unavailabilityService, { type UnavailabilityRecord } from "@/api/services/unavailabilityService";
+import HyperPayWidget from "@/components/pageComponents/BookingSinger/HyperPayWidget";
 import { toast } from "sonner";
 
 // Zod validation schema
@@ -78,6 +80,9 @@ const BookingSinger: React.FC = () => {
   const [error, setError] = useState("");
   const [bookingId, setBookingId] = useState<string>("");
   const [unavailability, setUnavailability] = useState<UnavailabilityRecord[]>([]);
+  const [checkoutId, setCheckoutId] = useState<string | null>(null);
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   const currentUser = authService.getCurrentUser();
 
@@ -255,6 +260,86 @@ const BookingSinger: React.FC = () => {
   const vat = artistFee * 0.15; // 15% VAT
   const totalPrice = artistFee + vat;
 
+  // Fetch HyperPay checkout when summary is shown
+  useEffect(() => {
+    console.log("[Payment] useEffect triggered. showSummary:", showSummary, "bookingId:", bookingId);
+    
+    if (!showSummary || !bookingId) {
+      console.log("[Payment] Exiting early - conditions not met");
+      return;
+    }
+
+    let cancelled = false;
+
+    const fetchCheckout = async () => {
+      setPaymentLoading(true);
+      setPaymentError(null);
+      setCheckoutId(null);
+
+      try {
+        console.log("[Payment] Requesting checkout for bookingId:", bookingId);
+        const response = await paymentService.createCheckout(bookingId);
+        console.log("[Payment] Checkout response:", response);
+
+        if (cancelled) return;
+
+        if (response?.checkoutId) {
+          setCheckoutId(response.checkoutId);
+        } else {
+          setPaymentError("Invalid checkout response from server.");
+        }
+      } catch (err: any) {
+        if (cancelled) return;
+        console.error("[Payment] Checkout error:", err);
+        const message =
+          err?.response?.data?.message ||
+          err?.message ||
+          "Failed to initialize payment. Please try again.";
+        setPaymentError(message);
+        toast.error(message);
+      } finally {
+        if (!cancelled) {
+          setPaymentLoading(false);
+        }
+      }
+    };
+
+    fetchCheckout();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [showSummary, bookingId]);
+
+  const retryCheckout = async () => {
+    if (!bookingId) return;
+    setPaymentLoading(true);
+    setPaymentError(null);
+    setCheckoutId(null);
+
+    try {
+      console.log("[Payment] Retrying checkout for bookingId:", bookingId);
+      const response = await paymentService.createCheckout(bookingId);
+      console.log("[Payment] Retry response:", response);
+
+      if (response?.checkoutId) {
+        setCheckoutId(response.checkoutId);
+      } else {
+        setPaymentError("Invalid checkout response from server.");
+      }
+    } catch (err: any) {
+      console.error("[Payment] Retry error:", err);
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to initialize payment. Please try again.";
+      setPaymentError(message);
+      toast.error(message);
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
+
   const onSubmit = async (data: BookingFormData): Promise<void> => {
     console.log("Form submitted with data:", data);
     setLoading(true);
@@ -306,6 +391,8 @@ const BookingSinger: React.FC = () => {
       const response = await bookingService.createBooking(bookingData);
 
       console.log("Booking created successfully:", response);
+      console.log("Booking ID from response:", response.bookingId);
+      console.log("Full response keys:", Object.keys(response));
       toast.success("Booking created successfully!");
 
       // Store booking ID for payment processing
@@ -525,13 +612,13 @@ const BookingSinger: React.FC = () => {
                 <div className="flex justify-between">
                   <span className="text-[#6F5D9E]">Artist's Fee:</span>
                   <span className="text-[#2E1B4D] font-medium">
-                    ${artistFee}
+                    SAR {artistFee.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#6F5D9E]">VAT (15%):</span>
                   <span className="text-[#2E1B4D] font-medium">
-                    ${vat.toFixed(2)}
+                    SAR {vat.toFixed(2)}
                   </span>
                 </div>
                 {formValues.promoCode && (
@@ -544,43 +631,38 @@ const BookingSinger: React.FC = () => {
                 <div className="flex justify-between text-lg">
                   <span className="text-[#2E1B4D] font-bold">Total:</span>
                   <span className="text-[#2E1B4D] font-bold">
-                    ${totalPrice.toFixed(2)}
+                    SAR {totalPrice.toFixed(2)}
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Payment Button */}
-            <Button
-              variant="primary"
-              className="w-full !h-14 text-base"
-              disabled={loading}
-              onClick={async () => {
-                setLoading(true);
-                
-                // Simulate payment processing
-                toast.info("Processing payment...");
-                
-                // Simulate a 2-second payment processing delay
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                
-                // Simulate successful payment
-                toast.success("Payment successful!");
-                
-                setLoading(false);
-                
-                // Navigate to success page with booking details
-                navigate("/booking/success", { 
-                  state: { 
-                    bookingId: bookingId,
-                    totalAmount: totalPrice
-                  },
-                  replace: true
-                });
-              }}
-            >
-              {loading ? "Processing Payment..." : "Proceed to Secure Payment"}
-            </Button>
+            {/* HyperPay Payment Widget */}
+            <div className="mt-2">
+              {paymentError && (
+                <div className="text-center py-6 space-y-3">
+                  <p className="text-red-600 text-sm">{paymentError}</p>
+                  <Button
+                    variant="primary"
+                    className="!h-12"
+                    onClick={retryCheckout}
+                  >
+                    Retry Payment
+                  </Button>
+                </div>
+              )}
+
+              {!paymentError && !checkoutId && (
+                <div className="flex items-center justify-center py-8 gap-3">
+                  <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                  <span className="text-[#6F5D9E] text-sm">Preparing secure payment...</span>
+                </div>
+              )}
+
+              {checkoutId && !paymentError && (
+                <HyperPayWidget checkoutId={checkoutId} bookingId={bookingId} />
+              )}
+            </div>
           </div>
         </div>
       </div>
