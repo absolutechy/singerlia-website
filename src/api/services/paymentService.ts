@@ -11,9 +11,12 @@ export interface CreateCheckoutResponse {
 }
 
 export interface PaymentStatusResponse {
-  status: 'success' | 'pending' | 'failed';
+  message: string;
+  paymentStatus: 'paid' | 'pending' | 'failed' | 'checkout_prepared';
   bookingId: string;
-  amount: number;
+  amount: string;
+  paymentId?: string;
+  paymentBrand?: string;
   resultCode?: string;
   resultDescription?: string;
 }

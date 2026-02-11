@@ -31,7 +31,7 @@ const PaymentResult: React.FC = () => {
         const result = await paymentService.getPaymentStatus(bookingId);
         console.log("[PaymentResult] Payment status result:", result);
 
-        if (result.status === "success") {
+        if (result.paymentStatus === "paid") {
           setStatus("success");
           // Short delay so the user sees the success state before redirect
           setTimeout(() => {
@@ -40,6 +40,11 @@ const PaymentResult: React.FC = () => {
               replace: true,
             });
           }, 1500);
+        } else if (result.paymentStatus === "pending" || result.paymentStatus === "checkout_prepared") {
+          setStatus("failed");
+          setErrorMessage(
+            "Payment is still being processed. Please wait a moment and check your booking status."
+          );
         } else {
           setStatus("failed");
           setErrorMessage(

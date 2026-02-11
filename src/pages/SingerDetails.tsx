@@ -61,6 +61,7 @@ const SingerDetails: React.FC = () => {
       setLoading(true);
       const data = await singerService.getSingerById(userId);
       setSinger(data);
+      console.log("Fetched singer details:", data);
       setError("");
       
       // Check if user is authenticated
