@@ -81,7 +81,7 @@ const BookingSinger: React.FC = () => {
   const [bookingId, setBookingId] = useState<string>("");
   const [unavailability, setUnavailability] = useState<UnavailabilityRecord[]>([]);
   const [checkoutId, setCheckoutId] = useState<string | null>(null);
-  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [, setPaymentLoading] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
 
   const currentUser = authService.getCurrentUser();
