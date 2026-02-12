@@ -81,6 +81,7 @@ const BookingSinger: React.FC = () => {
   const [bookingId, setBookingId] = useState<string>("");
   const [unavailability, setUnavailability] = useState<UnavailabilityRecord[]>([]);
   const [checkoutId, setCheckoutId] = useState<string | null>(null);
+  const [integrity, setIntegrity] = useState<string | null>(null); // SRI hash for PCI DSS 4.x
   const [, setPaymentLoading] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
 
@@ -275,6 +276,7 @@ const BookingSinger: React.FC = () => {
       setPaymentLoading(true);
       setPaymentError(null);
       setCheckoutId(null);
+      setIntegrity(null);
 
       try {
         console.log("[Payment] Requesting checkout for bookingId:", bookingId);
@@ -283,8 +285,10 @@ const BookingSinger: React.FC = () => {
 
         if (cancelled) return;
 
-        if (response?.checkoutId) {
+        if (response?.checkoutId && response?.integrity) {
           setCheckoutId(response.checkoutId);
+          setIntegrity(response.integrity);
+          console.log("[Payment] SRI integrity hash received (PCI DSS 4.x compliant)");
         } else {
           setPaymentError("Invalid checkout response from server.");
         }
@@ -316,14 +320,17 @@ const BookingSinger: React.FC = () => {
     setPaymentLoading(true);
     setPaymentError(null);
     setCheckoutId(null);
+    setIntegrity(null);
 
     try {
       console.log("[Payment] Retrying checkout for bookingId:", bookingId);
       const response = await paymentService.createCheckout(bookingId);
       console.log("[Payment] Retry response:", response);
 
-      if (response?.checkoutId) {
+      if (response?.checkoutId && response?.integrity) {
         setCheckoutId(response.checkoutId);
+        setIntegrity(response.integrity);
+        console.log("[Payment] SRI integrity hash received (PCI DSS 4.x compliant)");
       } else {
         setPaymentError("Invalid checkout response from server.");
       }
@@ -659,8 +666,12 @@ const BookingSinger: React.FC = () => {
                 </div>
               )}
 
-              {checkoutId && !paymentError && (
-                <HyperPayWidget checkoutId={checkoutId} bookingId={bookingId} />
+              {checkoutId && integrity && !paymentError && (
+                <HyperPayWidget 
+                  checkoutId={checkoutId} 
+                  bookingId={bookingId} 
+                  integrity={integrity}
+                />
               )}
             </div>
           </div>
