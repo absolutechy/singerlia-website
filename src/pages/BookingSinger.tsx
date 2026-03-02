@@ -22,6 +22,7 @@ import authService from "@/api/services/authService";
 import bookingService from "@/api/services/bookingService";
 import paymentService from "@/api/services/paymentService";
 import unavailabilityService, { type UnavailabilityRecord } from "@/api/services/unavailabilityService";
+import singerService, { type Singer } from "@/api/services/singerService";
 import HyperPayWidget from "@/components/pageComponents/BookingSinger/HyperPayWidget";
 import { toast } from "sonner";
 
@@ -84,6 +85,7 @@ const BookingSinger: React.FC = () => {
   const [integrity, setIntegrity] = useState<string | null>(null); // SRI hash for PCI DSS 4.x
   const [, setPaymentLoading] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [singer, setSinger] = useState<Singer | null>(null);
 
   const currentUser = authService.getCurrentUser();
 
@@ -116,20 +118,27 @@ const BookingSinger: React.FC = () => {
     }
   }, [navigate]);
 
-  // Fetch singer unavailability
+  // Fetch singer data and unavailability
   useEffect(() => {
-    const fetchUnavailability = async () => {
+    const fetchSingerData = async () => {
       if (state?.singerId) {
         try {
+          // Fetch singer profile with pricing
+          const singerData = await singerService.getSingerById(state.singerId);
+          if (singerData) {
+            setSinger(singerData);
+          }
+          
+          // Fetch unavailability
           const data = await unavailabilityService.getSingerUnavailability(state.singerId);
           setUnavailability(data.unavailability);
         } catch (err) {
-          console.error("Failed to fetch unavailability:", err);
-          // Don't block booking if unavailability fetch fails
+          console.error("Failed to fetch singer data:", err);
+          // Don't block booking if fetch fails
         }
       }
     };
-    fetchUnavailability();
+    fetchSingerData();
   }, [state?.singerId]);
 
   // Fetch user profile to get email and phone number
@@ -195,15 +204,6 @@ const BookingSinger: React.FC = () => {
     }
   }, [setValue]);
 
-  // Event type to fee mapping
-  const eventTypeFeeMap: Record<string, number> = {
-    wedding: 5000,
-    corporate: 3500,
-    birthday: 2500,
-    virtual: 1000,
-    other: 1500,
-  };
-
   // Helper function to convert time slot to API format
   const convertTimeSlotToAPI = (timeSlot: string): string => {
     const timeSlotMap: Record<string, string> = {
@@ -237,11 +237,6 @@ const BookingSinger: React.FC = () => {
     }
   };
 
-  // Calculate dynamic pricing based on event type
-  const getArtistFee = (eventType: string): number => {
-    return eventTypeFeeMap[eventType] || 2000; // Default fee if not found
-  };
-
   const formValues = watch();
 
   console.log(formValues);
@@ -256,8 +251,8 @@ const BookingSinger: React.FC = () => {
     }
   }, [formValues.eventDate, unavailability, formValues.timeSlot, setValue]);
 
-  // Calculate pricing dynamically
-  const artistFee = getArtistFee(formValues.eventType);
+  // Calculate pricing from singer's base price
+  const artistFee = singer?.pricing?.base_price || 0;
   const vat = artistFee * 0.15; // 15% VAT
   const totalPrice = artistFee + vat;
 
@@ -615,33 +610,52 @@ const BookingSinger: React.FC = () => {
                 <CreditCard className="h-5 w-5 text-primary" />
                 Payment Summary
               </h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-[#6F5D9E]">Artist's Fee:</span>
-                  <span className="text-[#2E1B4D] font-medium">
-                    SAR {artistFee.toLocaleString()}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[#6F5D9E]">VAT (15%):</span>
-                  <span className="text-[#2E1B4D] font-medium">
-                    SAR {vat.toFixed(2)}
-                  </span>
-                </div>
-                {formValues.promoCode && (
-                  <div className="flex justify-between text-green-600">
-                    <span>Promo Code Applied:</span>
-                    <span className="font-medium">{formValues.promoCode}</span>
+              {singer?.pricing ? (
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-[#6F5D9E]">Base Price:</span>
+                    <span className="text-[#2E1B4D] font-medium">
+                      SAR {singer.pricing.base_price.toLocaleString()}
+                    </span>
                   </div>
-                )}
-                <div className="h-px bg-[#E7DEFF] my-2" />
-                <div className="flex justify-between text-lg">
-                  <span className="text-[#2E1B4D] font-bold">Total:</span>
-                  <span className="text-[#2E1B4D] font-bold">
-                    SAR {totalPrice.toFixed(2)}
-                  </span>
+                  <div className="flex justify-between">
+                    <span className="text-[#6F5D9E]">Extra Hour:</span>
+                    <span className="text-[#2E1B4D] font-medium">
+                      SAR {singer.pricing.extra_hour_price.toLocaleString()}
+                    </span>
+                  </div>
+                  {singer.pricing.location_surcharge > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-[#6F5D9E]">Location Surcharge:</span>
+                      <span className="text-[#2E1B4D] font-medium">
+                        SAR {singer.pricing.location_surcharge.toLocaleString()}
+                      </span>
+                    </div>
+                  )}
+                  <div className="h-px bg-[#E7DEFF] my-2" />
+                  <div className="flex justify-between">
+                    <span className="text-[#6F5D9E]">VAT (15%):</span>
+                    <span className="text-[#2E1B4D] font-medium">
+                      SAR {vat.toFixed(2)}
+                    </span>
+                  </div>
+                  {formValues.promoCode && (
+                    <div className="flex justify-between text-green-600">
+                      <span>Promo Code Applied:</span>
+                      <span className="font-medium">{formValues.promoCode}</span>
+                    </div>
+                  )}
+                  <div className="h-px bg-[#E7DEFF] my-2" />
+                  <div className="flex justify-between text-lg">
+                    <span className="text-[#2E1B4D] font-bold">Total:</span>
+                    <span className="text-[#2E1B4D] font-bold">
+                      SAR {totalPrice.toFixed(2)}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="text-sm text-[#6F5D9E]">Loading pricing...</div>
+              )}
             </div>
 
             {/* HyperPay Payment Widget */}
@@ -982,27 +996,48 @@ const BookingSinger: React.FC = () => {
             </h2>
             <div className="space-y-6">
               {/* Pricing Summary */}
-              <div className="bg-[#F9F7FF] rounded-2xl p-6 space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-[#6F5D9E]">Artist's Fee:</span>
-                  <span className="text-[#2E1B4D] font-semibold">
-                    ${artistFee}
-                  </span>
+              {singer?.pricing ? (
+                <div className="bg-[#F9F7FF] rounded-2xl p-6 space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-[#6F5D9E]">Base Price:</span>
+                    <span className="text-[#2E1B4D] font-semibold">
+                      SAR {singer.pricing.base_price.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-[#6F5D9E]">Extra Hour:</span>
+                    <span className="text-[#2E1B4D] font-semibold">
+                      SAR {singer.pricing.extra_hour_price.toLocaleString()}
+                    </span>
+                  </div>
+                  {singer.pricing.location_surcharge > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-[#6F5D9E]">Location Surcharge:</span>
+                      <span className="text-[#2E1B4D] font-semibold">
+                        SAR {singer.pricing.location_surcharge.toLocaleString()}
+                      </span>
+                    </div>
+                  )}
+                  <div className="h-px bg-[#E7DEFF]" />
+                  <div className="flex justify-between text-sm">
+                    <span className="text-[#6F5D9E]">VAT (15%):</span>
+                    <span className="text-[#2E1B4D] font-semibold">
+                      SAR {vat.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="h-px bg-[#E7DEFF]" />
+                  <div className="flex justify-between text-lg">
+                    <span className="text-[#2E1B4D] font-bold">Total Price:</span>
+                    <span className="text-primary font-bold">
+                      SAR {totalPrice.toFixed(2)}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-[#6F5D9E]">VAT (15%):</span>
-                  <span className="text-[#2E1B4D] font-semibold">
-                    ${vat.toFixed(2)}
-                  </span>
+              ) : (
+                <div className="bg-[#F9F7FF] rounded-2xl p-6 text-sm text-[#6F5D9E] text-center">
+                  Loading pricing...
                 </div>
-                <div className="h-px bg-[#E7DEFF]" />
-                <div className="flex justify-between text-lg">
-                  <span className="text-[#2E1B4D] font-bold">Total Price:</span>
-                  <span className="text-primary font-bold">
-                    ${totalPrice.toFixed(2)}
-                  </span>
-                </div>
-              </div>
+              )}
 
               <Controller
                 name="promoCode"

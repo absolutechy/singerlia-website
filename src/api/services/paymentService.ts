@@ -23,6 +23,17 @@ export interface PaymentStatusResponse {
   requiresCapture?: boolean; // For PA transactions
 }
 
+export interface CapturePaymentResponse {
+  message: string;
+  paymentStatus: string;
+  bookingId: string;
+  capturedAmount: number;
+  captureId?: string;
+  paymentId?: string;
+  resultCode?: string;
+  resultDescription?: string;
+}
+
 // ============================================================================
 // PAYMENT SERVICE
 // ============================================================================
@@ -54,6 +65,19 @@ const paymentService = {
     const url = `/payment/status/${bookingId}${params.toString() ? `?${params.toString()}` : ''}`;
     
     const response = await axiosInstance.get<PaymentStatusResponse>(url);
+    return response.data;
+  },
+
+  /**
+   * Capture a pre-authorized payment.
+   * @param bookingId - The booking ID
+   * @param amount - Optional custom amount to capture (if not provided, captures full pre-authorized amount)
+   */
+  capturePayment: async (bookingId: string, amount?: number): Promise<CapturePaymentResponse> => {
+    const response = await axiosInstance.post<CapturePaymentResponse>(
+      `/payment/capture/${bookingId}`,
+      amount ? { amount } : {}
+    );
     return response.data;
   },
 };

@@ -14,7 +14,7 @@ export function generateNonce(): string {
  * @returns HyperPay base URL (test or production)
  */
 export function getHyperPayUrl(): string {
-  return import.meta.env.VITE_HYPERPAY_URL || 'https://eu-test.oppwa.com';
+  return import.meta.env.VITE_HYPERPAY_URL || 'https://eu-prod.oppwa.com';
 }
 
 /**
@@ -28,9 +28,9 @@ export function generateCSPContent(nonce: string): string {
   return `
     style-src 'self' ${hyperPayUrl} 'unsafe-inline' ;
     frame-src 'self' ${hyperPayUrl};
-    script-src 'self' ${hyperPayUrl} 'nonce-${nonce}' ;
+    script-src 'self' ${hyperPayUrl} https://mpsnare.iesnare.com 'nonce-${nonce}' ;
     worker-src 'self' ${hyperPayUrl} blob: ;
-    connect-src 'self' ${hyperPayUrl};
-    img-src 'self' ${hyperPayUrl} data:;
+    connect-src 'self' ${hyperPayUrl} https://mpsnare.iesnare.com;
+    img-src 'self' ${hyperPayUrl} https://mpsnare.iesnare.com data:;
   `.trim().replace(/\s+/g, ' ');
 }

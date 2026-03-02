@@ -47,10 +47,47 @@ const PaymentResult: React.FC = () => {
         const result = await paymentService.getPaymentStatus(bookingId, resourcePath || undefined);
         console.log("[PaymentResult] Payment status result:", result);
 
-        // Treat both 'paid' and 'pre_authorized' as successful payment
-        if (result.paymentStatus === "paid" || result.paymentStatus === "pre_authorized") {
-          console.log("[PaymentResult] Payment successful", 
-            result.paymentStatus === "pre_authorized" ? "(pre-authorized)" : "(captured)");
+        // If payment is pre-authorized, capture it automatically
+        if (result.paymentStatus === "pre_authorized") {
+          console.log("[PaymentResult] Payment pre-authorized, capturing payment...");
+          
+          try {
+            const captureResult = await paymentService.capturePayment(bookingId);
+            console.log("[PaymentResult] Capture result:", captureResult);
+            
+            if (captureResult.paymentStatus === "paid") {
+              console.log("[PaymentResult] Payment captured successfully");
+              setStatus("success");
+              // Short delay so the user sees the success state before redirect
+              setTimeout(() => {
+                navigate("/booking/success", {
+                  state: { bookingId, totalAmount: captureResult.capturedAmount },
+                  replace: true,
+                });
+              }, 1500);
+            } else {
+              // Capture failed
+              setStatus("failed");
+              setErrorMessage(
+                captureResult.resultDescription ||
+                  "Payment capture failed. Please contact support."
+              );
+              setErrorDetails(captureResult);
+            }
+          } catch (captureErr: any) {
+            console.error("[PaymentResult] Payment capture error:", captureErr);
+            const captureErrorData = captureErr?.response?.data;
+            setStatus("failed");
+            setErrorDetails(captureErrorData);
+            setErrorMessage(
+              captureErrorData?.message || 
+              captureErrorData?.resultDescription ||
+              "Failed to capture payment. Please contact support."
+            );
+          }
+        } else if (result.paymentStatus === "paid") {
+          // Payment already captured/paid
+          console.log("[PaymentResult] Payment already captured");
           setStatus("success");
           // Short delay so the user sees the success state before redirect
           setTimeout(() => {
@@ -130,7 +167,7 @@ const PaymentResult: React.FC = () => {
                 Verifying Your Payment
               </h1>
               <p className="text-[#6F5D9E]">
-                Please wait while we confirm your payment...
+                Please wait while we confirm and process your payment...
               </p>
             </div>
           </div>
