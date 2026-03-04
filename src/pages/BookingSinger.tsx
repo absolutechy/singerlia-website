@@ -253,8 +253,8 @@ const BookingSinger: React.FC = () => {
 
   // Calculate pricing from singer's base price
   const artistFee = singer?.pricing?.base_price || 0;
-  const vat = artistFee * 0.15; // 15% VAT
-  const totalPrice = artistFee + vat;
+  // const vat = artistFee * 0.15;
+  const totalPrice = artistFee;
 
   // Fetch HyperPay checkout when summary is shown
   useEffect(() => {
@@ -633,12 +633,12 @@ const BookingSinger: React.FC = () => {
                     </div>
                   )}
                   <div className="h-px bg-[#E7DEFF] my-2" />
-                  <div className="flex justify-between">
+                  {/* <div className="flex justify-between">
                     <span className="text-[#6F5D9E]">VAT (15%):</span>
                     <span className="text-[#2E1B4D] font-medium">
                       SAR {vat.toFixed(2)}
                     </span>
-                  </div>
+                  </div> */}
                   {formValues.promoCode && (
                     <div className="flex justify-between text-green-600">
                       <span>Promo Code Applied:</span>
@@ -1019,12 +1019,12 @@ const BookingSinger: React.FC = () => {
                     </div>
                   )}
                   <div className="h-px bg-[#E7DEFF]" />
-                  <div className="flex justify-between text-sm">
+                  {/* <div className="flex justify-between text-sm">
                     <span className="text-[#6F5D9E]">VAT (15%):</span>
                     <span className="text-[#2E1B4D] font-semibold">
                       SAR {vat.toFixed(2)}
                     </span>
-                  </div>
+                  </div> */}
                   <div className="h-px bg-[#E7DEFF]" />
                   <div className="flex justify-between text-lg">
                     <span className="text-[#2E1B4D] font-bold">Total Price:</span>
