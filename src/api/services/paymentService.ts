@@ -6,9 +6,11 @@ import axiosInstance from '../axiosInstance';
 
 export interface CreateCheckoutResponse {
   checkoutId: string;
-  amount: number;
+  amount: number | string;
   currency: string;
   integrity: string; // SRI hash for PCI DSS 4.x compliance
+  message?: string;
+  expiresIn?: number;
 }
 
 export interface PaymentStatusResponse {

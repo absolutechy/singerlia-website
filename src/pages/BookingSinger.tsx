@@ -86,6 +86,8 @@ const BookingSinger: React.FC = () => {
   const [, setPaymentLoading] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [singer, setSinger] = useState<Singer | null>(null);
+  const [bookingTotalAmount, setBookingTotalAmount] = useState<number | null>(null);
+  const [priceConfirmed, setPriceConfirmed] = useState(false);
 
   const currentUser = authService.getCurrentUser();
 
@@ -251,10 +253,18 @@ const BookingSinger: React.FC = () => {
     }
   }, [formValues.eventDate, unavailability, formValues.timeSlot, setValue]);
 
-  // Calculate pricing from singer's base price
-  const artistFee = singer?.pricing?.base_price || 0;
-  // const vat = artistFee * 0.15;
-  const totalPrice = artistFee;
+  // Calculate pricing matching backend calculateAmount() logic
+  const slotDurationMap: Record<string, number> = {
+    morning: 4,   // 8:00 AM - 12:00 PM
+    afternoon: 6, // 12:00 PM - 6:00 PM
+    evening: 6,   // 6:00 PM - 12:00 AM
+  };
+  const duration = slotDurationMap[formValues.timeSlot] || 1;
+  // const extraHours = Math.max(0, duration - 1);
+  const baseFee = singer?.pricing?.base_price || 0;
+  // const extraFee = extraHours * (singer?.pricing?.extra_hour_price || 0);
+  const surcharge = singer?.pricing?.location_surcharge || 0;
+  const totalPrice = baseFee + /* extraFee + */ surcharge;
 
   // Fetch HyperPay checkout when summary is shown
   useEffect(() => {
@@ -283,6 +293,9 @@ const BookingSinger: React.FC = () => {
         if (response?.checkoutId && response?.integrity) {
           setCheckoutId(response.checkoutId);
           setIntegrity(response.integrity);
+          if (response.amount) {
+            setBookingTotalAmount(typeof response.amount === 'string' ? parseFloat(response.amount) : response.amount);
+          }
           console.log("[Payment] SRI integrity hash received (PCI DSS 4.x compliant)");
         } else {
           setPaymentError("Invalid checkout response from server.");
@@ -325,6 +338,9 @@ const BookingSinger: React.FC = () => {
       if (response?.checkoutId && response?.integrity) {
         setCheckoutId(response.checkoutId);
         setIntegrity(response.integrity);
+        if (response.amount) {
+          setBookingTotalAmount(typeof response.amount === 'string' ? parseFloat(response.amount) : response.amount);
+        }
         console.log("[Payment] SRI integrity hash received (PCI DSS 4.x compliant)");
       } else {
         setPaymentError("Invalid checkout response from server.");
@@ -397,8 +413,11 @@ const BookingSinger: React.FC = () => {
       console.log("Full response keys:", Object.keys(response));
       toast.success("Booking created successfully!");
 
-      // Store booking ID for payment processing
+      // Store booking ID and confirmed total for payment processing
       setBookingId(response.bookingId);
+      if (response.totalAmount !== undefined) {
+        setBookingTotalAmount(response.totalAmount);
+      }
       localStorage.setItem("currentBookingId", response.bookingId);
 
       // Show summary after successful booking creation
@@ -613,32 +632,27 @@ const BookingSinger: React.FC = () => {
               {singer?.pricing ? (
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-[#6F5D9E]">Base Price:</span>
-                    <span className="text-[#2E1B4D] font-medium">
-                      SAR {singer.pricing.base_price.toLocaleString()}
-                    </span>
+                    <span className="text-[#6F5D9E]">Duration:</span>
+                    <span className="text-[#2E1B4D] font-medium">{duration} hour{duration !== 1 ? 's' : ''}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#6F5D9E]">Extra Hour:</span>
-                    <span className="text-[#2E1B4D] font-medium">
-                      SAR {singer.pricing.extra_hour_price.toLocaleString()}
-                    </span>
+                    <span className="text-[#6F5D9E]">Base Price (1st hour):</span>
+                    <span className="text-[#2E1B4D] font-medium">SAR {baseFee.toLocaleString()}</span>
                   </div>
-                  {singer.pricing.location_surcharge > 0 && (
+                  {/* Extra hour charges disabled
+                  {extraHours > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-[#6F5D9E]">Location Surcharge:</span>
-                      <span className="text-[#2E1B4D] font-medium">
-                        SAR {singer.pricing.location_surcharge.toLocaleString()}
-                      </span>
+                      <span className="text-[#6F5D9E]">Extra Hours ({extraHours} × SAR {singer.pricing.extra_hour_price.toLocaleString()}):</span>
+                      <span className="text-[#2E1B4D] font-medium">SAR {extraFee.toLocaleString()}</span>
                     </div>
                   )}
-                  <div className="h-px bg-[#E7DEFF] my-2" />
-                  {/* <div className="flex justify-between">
-                    <span className="text-[#6F5D9E]">VAT (15%):</span>
-                    <span className="text-[#2E1B4D] font-medium">
-                      SAR {vat.toFixed(2)}
-                    </span>
-                  </div> */}
+                  */}
+                  {surcharge > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-[#6F5D9E]">Location Surcharge:</span>
+                      <span className="text-[#2E1B4D] font-medium">SAR {surcharge.toLocaleString()}</span>
+                    </div>
+                  )}
                   {formValues.promoCode && (
                     <div className="flex justify-between text-green-600">
                       <span>Promo Code Applied:</span>
@@ -649,7 +663,7 @@ const BookingSinger: React.FC = () => {
                   <div className="flex justify-between text-lg">
                     <span className="text-[#2E1B4D] font-bold">Total:</span>
                     <span className="text-[#2E1B4D] font-bold">
-                      SAR {totalPrice.toFixed(2)}
+                      SAR {(bookingTotalAmount ?? totalPrice).toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -680,7 +694,26 @@ const BookingSinger: React.FC = () => {
                 </div>
               )}
 
-              {checkoutId && integrity && !paymentError && (
+              {checkoutId && integrity && !paymentError && !priceConfirmed && (
+                <div className="bg-[#F9F7FF] rounded-2xl p-5 text-center space-y-4">
+                  <p className="text-[#2E1B4D] font-semibold text-base">
+                    You will be charged{" "}
+                    <span className="text-primary">
+                      SAR {(bookingTotalAmount ?? totalPrice).toFixed(2)}
+                    </span>
+                  </p>
+                  <p className="text-[#6F5D9E] text-sm">Please confirm this amount before proceeding to payment.</p>
+                  <Button
+                    variant="primary"
+                    className="!h-12 w-full"
+                    onClick={() => setPriceConfirmed(true)}
+                  >
+                    Confirm &amp; Proceed to Payment
+                  </Button>
+                </div>
+              )}
+
+              {checkoutId && integrity && !paymentError && priceConfirmed && (
                 <HyperPayWidget 
                   checkoutId={checkoutId} 
                   bookingId={bookingId} 
@@ -999,37 +1032,32 @@ const BookingSinger: React.FC = () => {
               {singer?.pricing ? (
                 <div className="bg-[#F9F7FF] rounded-2xl p-6 space-y-3">
                   <div className="flex justify-between text-sm">
-                    <span className="text-[#6F5D9E]">Base Price:</span>
-                    <span className="text-[#2E1B4D] font-semibold">
-                      SAR {singer.pricing.base_price.toLocaleString()}
-                    </span>
+                    <span className="text-[#6F5D9E]">Duration:</span>
+                    <span className="text-[#2E1B4D] font-semibold">{duration} hour{duration !== 1 ? 's' : ''}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-[#6F5D9E]">Extra Hour:</span>
-                    <span className="text-[#2E1B4D] font-semibold">
-                      SAR {singer.pricing.extra_hour_price.toLocaleString()}
-                    </span>
+                    <span className="text-[#6F5D9E]">Base Price (1st hour):</span>
+                    <span className="text-[#2E1B4D] font-semibold">SAR {baseFee.toLocaleString()}</span>
                   </div>
-                  {singer.pricing.location_surcharge > 0 && (
+                  {/* Extra hour charges disabled
+                  {extraHours > 0 && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-[#6F5D9E]">Location Surcharge:</span>
-                      <span className="text-[#2E1B4D] font-semibold">
-                        SAR {singer.pricing.location_surcharge.toLocaleString()}
-                      </span>
+                      <span className="text-[#6F5D9E]">Extra Hours ({extraHours} × SAR {singer.pricing.extra_hour_price.toLocaleString()}):</span>
+                      <span className="text-[#2E1B4D] font-semibold">SAR {extraFee.toLocaleString()}</span>
                     </div>
                   )}
-                  <div className="h-px bg-[#E7DEFF]" />
-                  {/* <div className="flex justify-between text-sm">
-                    <span className="text-[#6F5D9E]">VAT (15%):</span>
-                    <span className="text-[#2E1B4D] font-semibold">
-                      SAR {vat.toFixed(2)}
-                    </span>
-                  </div> */}
+                  */}
+                  {surcharge > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-[#6F5D9E]">Location Surcharge:</span>
+                      <span className="text-[#2E1B4D] font-semibold">SAR {surcharge.toLocaleString()}</span>
+                    </div>
+                  )}
                   <div className="h-px bg-[#E7DEFF]" />
                   <div className="flex justify-between text-lg">
                     <span className="text-[#2E1B4D] font-bold">Total Price:</span>
                     <span className="text-primary font-bold">
-                      SAR {totalPrice.toFixed(2)}
+                      SAR {(bookingTotalAmount ?? totalPrice).toFixed(2)}
                     </span>
                   </div>
                 </div>
