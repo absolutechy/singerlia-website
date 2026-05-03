@@ -15,7 +15,7 @@ export interface CreateCheckoutResponse {
 
 export interface PaymentStatusResponse {
   message: string;
-  paymentStatus: 'paid' | 'pending' | 'failed' | 'checkout_prepared' | 'pre_authorized';
+  paymentStatus: 'paid' | 'pending' | 'failed' | 'checkout_prepared' | 'pre_authorized' | 'authorized' | 'captured' | 'voided' | 'void_failed' | 'refunded' | 'refund_pending' | 'capture_failed';
   bookingId: string;
   amount: string;
   paymentId?: string;

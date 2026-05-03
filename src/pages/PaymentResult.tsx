@@ -47,45 +47,18 @@ const PaymentResult: React.FC = () => {
         const result = await paymentService.getPaymentStatus(bookingId, resourcePath || undefined);
         console.log("[PaymentResult] Payment status result:", result);
 
-        // If payment is pre-authorized, capture it automatically
-        if (result.paymentStatus === "pre_authorized") {
-          console.log("[PaymentResult] Payment pre-authorized, capturing payment...");
-          
-          try {
-            const captureResult = await paymentService.capturePayment(bookingId);
-            console.log("[PaymentResult] Capture result:", captureResult);
-            
-            if (captureResult.paymentStatus === "paid") {
-              console.log("[PaymentResult] Payment captured successfully");
-              setStatus("success");
-              // Short delay so the user sees the success state before redirect
-              setTimeout(() => {
-                navigate("/booking/success", {
-                  state: { bookingId, totalAmount: captureResult.capturedAmount },
-                  replace: true,
-                });
-              }, 1500);
-            } else {
-              // Capture failed
-              setStatus("failed");
-              setErrorMessage(
-                captureResult.resultDescription ||
-                  "Payment capture failed. Please contact support."
-              );
-              setErrorDetails(captureResult);
-            }
-          } catch (captureErr: any) {
-            console.error("[PaymentResult] Payment capture error:", captureErr);
-            const captureErrorData = captureErr?.response?.data;
-            setStatus("failed");
-            setErrorDetails(captureErrorData);
-            setErrorMessage(
-              captureErrorData?.message || 
-              captureErrorData?.resultDescription ||
-              "Failed to capture payment. Please contact support."
-            );
-          }
-        } else if (result.paymentStatus === "paid") {
+        // With the new flow, we DO NOT capture the payment here.
+        // The payment is authorized (PA) and the artist must accept the booking within 24h to capture it.
+        if (result.paymentStatus === "pre_authorized" || result.paymentStatus === "authorized") {
+          console.log("[PaymentResult] Payment authorized, waiting for artist confirmation...");
+          setStatus("success");
+          setTimeout(() => {
+            navigate("/booking/success", {
+              state: { bookingId, totalAmount: result.amount, paymentStatus: result.paymentStatus },
+              replace: true,
+            });
+          }, 1500);
+        } else if (result.paymentStatus === "paid" || result.paymentStatus === "captured") {
           // Payment already captured/paid
           console.log("[PaymentResult] Payment already captured");
           setStatus("success");

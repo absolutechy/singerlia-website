@@ -6,6 +6,7 @@ import Button from "@/components/common/Button";
 interface LocationState {
   bookingId?: string;
   totalAmount?: number;
+  paymentStatus?: string;
 }
 
 const BookingSuccess: React.FC = () => {
@@ -52,7 +53,7 @@ const BookingSuccess: React.FC = () => {
             Your booking has been successfully made!
           </h1>
           <p className="text-[#6F5D9E] text-lg">
-            Payment has been processed successfully and your event is confirmed.
+            Your payment has been securely authorized.
           </p>
         </div>
 
@@ -64,11 +65,11 @@ const BookingSuccess: React.FC = () => {
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-green-800 mb-2">
-                Booking Confirmation
+                Awaiting Artist Decision
               </h3>
               <p className="text-green-700 text-sm leading-relaxed">
-                Your booking has been confirmed! The singer will be notified and will review
-                your request. You'll receive a confirmation email shortly with all the details.
+                Your request has been sent! The artist has <strong>24 hours</strong> to review and confirm your booking.
+                You will not be charged until the artist accepts.
                 {bookingId && (
                   <span className="block mt-2 font-medium">
                     Booking ID: <span className="font-mono">{bookingId}</span>

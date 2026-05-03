@@ -55,8 +55,20 @@ export interface BookingDetails {
   specialSongRequests: string;
   equipment: string[];
   promoCode?: string;
-  status: 'pending' | 'approved' | 'declined' | 'completed' | 'cancelled';
+  status: 'pending' | 'pending_artist_confirmation' | 'confirmed' | 'rejected' | 'cancelled_by_artist' | 'payment_failed' | 'completed' | 'dispute' | 'cancelled';
+  paymentStatus?: 'authorized' | 'captured' | 'voided' | 'void_failed' | 'refunded' | 'refund_pending' | 'capture_failed' | 'pending' | 'failed' | string;
+  payoutStatus?: 'not_initiated' | 'processing' | 'scheduled' | 'completed' | 'failed' | 'on_hold' | string;
+  artistResponseDueAt?: string;
+  authorizedAt?: string;
+  acceptedAt?: string;
+  cancellationWindowEndsAt?: string;
+  confirmationEmailSentAt?: string;
+  confirmationDeadlineAt?: string;
+  customerConfirmedAt?: string;
+  singerConfirmedAt?: string;
   totalAmount: number;
+  payoutAmount?: number;
+  platformFeeAmount?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -188,6 +200,20 @@ const bookingService = {
   cancelBookingBySinger: async (bookingId: string): Promise<CancelBookingResponse> => {
     const response = await axiosInstance.put<CancelBookingResponse>(
       `/booking/cancel-singer/${bookingId}`
+    );
+    return response.data;
+  },
+
+  /**
+   * Complete booking by user
+   * PUT /api/booking/complete-user/:bookingId
+   *
+   * @param bookingId - ID of booking to complete
+   * @returns Completion response
+   */
+  completeBookingByUser: async (bookingId: string): Promise<CompleteBookingResponse> => {
+    const response = await axiosInstance.put<CompleteBookingResponse>(
+      `/booking/complete-user/${bookingId}`
     );
     return response.data;
   },
