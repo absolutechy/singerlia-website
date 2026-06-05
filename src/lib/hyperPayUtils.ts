@@ -14,7 +14,7 @@ export function generateNonce(): string {
  * @returns HyperPay base URL (test or production)
  */
 export function getHyperPayUrl(): string {
-  return import.meta.env.VITE_HYPERPAY_URL || 'https://eu-prod.oppwa.com';
+  return import.meta.env.VITE_HYPERPAY_URL || "https://eu-test.oppwa.com";
 }
 
 /**

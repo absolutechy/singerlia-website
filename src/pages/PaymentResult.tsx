@@ -13,108 +13,99 @@ const PaymentResult: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [errorDetails, setErrorDetails] = useState<any>(null);
 
-  // Extract bookingId and all query params from HyperPay redirect
   const searchParams = new URLSearchParams(location.search);
   const bookingId = searchParams.get("bookingId");
   const resourcePath = searchParams.get("resourcePath");
   const id = searchParams.get("id");
-  
-  // Log all HyperPay redirect parameters for debugging
+  const storedResourcePathKey = bookingId
+    ? `hyperpay_resource_path_${bookingId}`
+    : null;
+  const resolvedResourcePath =
+    resourcePath ||
+    (storedResourcePathKey
+      ? sessionStorage.getItem(storedResourcePathKey) ||
+        localStorage.getItem(storedResourcePathKey)
+      : null);
+
   console.log("[PaymentResult] HyperPay redirect params:", {
     bookingId,
-    resourcePath,
+    resourcePath: resolvedResourcePath,
     id,
     fullURL: location.search,
     hyperPayURL: import.meta.env.VITE_HYPERPAY_URL,
-    apiURL: import.meta.env.VITE_API_BASE_URL
+    apiURL: import.meta.env.VITE_API_BASE_URL,
   });
 
   useEffect(() => {
     if (!bookingId) {
-      console.log("[PaymentResult] No bookingId found, redirecting to home");
       navigate("/", { replace: true });
       return;
     }
 
-    console.log("[PaymentResult] Verifying payment for bookingId:", bookingId);
+    if (resourcePath && storedResourcePathKey) {
+      sessionStorage.setItem(storedResourcePathKey, resourcePath);
+      localStorage.setItem(storedResourcePathKey, resourcePath);
+    }
+
+    let cancelled = false;
 
     const verifyPayment = async () => {
       try {
-        console.log("[PaymentResult] Calling getPaymentStatus...");
-        console.log("[PaymentResult] Using resourcePath:", resourcePath || "Not provided");
-        
-        // Pass resourcePath to backend if available (critical for HyperPay verification)
-        const result = await paymentService.getPaymentStatus(bookingId, resourcePath || undefined);
-        console.log("[PaymentResult] Payment status result:", result);
+        const result = await paymentService.getPaymentStatus(
+          bookingId,
+          resolvedResourcePath || undefined
+        );
 
-        if (result.paymentStatus === "pre_authorized" || result.paymentStatus === "authorized") {
-          // Backend should auto-capture PA. If a PA still appears, force capture to ensure settlement.
-          console.log("[PaymentResult] Payment authorized. Triggering capture to settle to merchant.");
-          const capture = await paymentService.capturePayment(bookingId, result.amount);
+        if (cancelled) return;
 
-          if (capture.paymentStatus === "paid") {
-            setStatus("success");
-            setTimeout(() => {
-              navigate("/booking/success", {
-                state: { bookingId, totalAmount: capture.capturedAmount || result.amount, paymentStatus: "paid" },
-                replace: true,
-              });
-            }, 1500);
-          } else {
-            setStatus("failed");
-            setErrorMessage(capture.resultDescription || capture.message || "Payment capture failed.");
-          }
-        } else if (result.paymentStatus === "paid" || result.paymentStatus === "captured") {
-          // Payment already captured/paid
-          console.log("[PaymentResult] Payment already captured");
+        if (result.retryable) {
+          window.setTimeout(() => {
+            if (!cancelled) {
+              void verifyPayment();
+            }
+          }, result.retryAfterMs || 3000);
+          return;
+        }
+
+        if (result.paymentStatus === "paid" || result.paymentStatus === "captured") {
           setStatus("success");
-          // Short delay so the user sees the success state before redirect
-          setTimeout(() => {
+          window.setTimeout(() => {
             navigate("/booking/success", {
               state: { bookingId, totalAmount: result.amount },
               replace: true,
             });
           }, 1500);
-        } else if (result.paymentStatus === "pending" || result.paymentStatus === "checkout_prepared") {
-          setStatus("failed");
-          setErrorMessage(
-            "Payment is still being processed. Please wait a moment and check your booking status."
-          );
-        } else {
-          setStatus("failed");
-          setErrorMessage(
-            result.resultDescription ||
-              "Payment was not completed. Please try again."
-          );
+          return;
         }
+
+        setStatus("failed");
+        setErrorMessage(
+          result.resultDescription ||
+            result.message ||
+            "Payment was not completed. Please try again."
+        );
       } catch (err: any) {
-        console.error("[PaymentResult] Payment verification error:", err);
-        console.error("[PaymentResult] Error response:", err?.response?.data);
-        
+        if (cancelled) return;
+
         const errorData = err?.response?.data;
         setStatus("failed");
         setErrorDetails(errorData);
-        
-        // Provide specific error messages based on error codes
-        let message = "Unable to verify payment status. Please contact support if you were charged.";
-        
-        if (errorData?.resultCode === "800.100.156") {
-          message = "Payment declined due to a format error.\n\n" +
-            "This usually means:\n" +
-            "• The card doesn't support Pre-Authorization (PA) transactions\n" +
-            "• Backend entity ID not configured for PA with HyperPay\n" +
-            "• Try using VISA test card: 4200000000000000\n" +
-            "• Or Mastercard test card: 5453010000059780\n\n" +
-            "If using correct test cards and still failing, contact HyperPay support to enable PA on entity ID.";
+
+        let message =
+          "Unable to verify payment status. Please contact support if you were charged.";
+
+        if (errorData?.resultCode === "800.100.152") {
+          message =
+            "Transaction declined by the authorization system.\n\n" +
+            "Use a HyperPay-supported test VISA or Mastercard instead of MADA for PA verification.\n" +
+            "Recommended test cards:\n" +
+            "4200000000000000\n" +
+            "5453010000059780";
         } else if (errorData?.resultCode === "200.300.404") {
-          message = "Payment session not found. This could be due to:\n" +
-            "• Environment mismatch between frontend and backend\n" +
-            "• Payment session expired (>30 minutes)\n" +
-            "• Backend configuration issue\n" +
-            "\nPlease contact support with Booking ID: " + bookingId;
-        } else if (errorData?.resultCode === "100.390.111") {
-          message = "3D Secure authentication error. This usually indicates a backend configuration issue.\n" +
-            "Please contact support with Booking ID: " + bookingId;
+          message =
+            "Payment session not found yet.\n\n" +
+            "This is usually caused by querying before HyperPay makes the payment session available, " +
+            "or by missing resourcePath on redirect.";
         } else if (errorData?.resultDescription) {
           message = errorData.resultDescription;
         } else if (errorData?.message) {
@@ -122,18 +113,21 @@ const PaymentResult: React.FC = () => {
         } else if (err?.message) {
           message = err.message;
         }
-        
+
         setErrorMessage(message);
       }
     };
 
-    verifyPayment();
-  }, [bookingId, navigate]);
+    void verifyPayment();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [bookingId, navigate, resolvedResourcePath, resourcePath, storedResourcePathKey]);
 
   return (
     <div className="custom-container min-h-screen flex items-center justify-center">
       <div className="max-w-md w-full text-center">
-        {/* Loading State */}
         {status === "loading" && (
           <div className="space-y-6">
             <div className="flex justify-center">
@@ -152,7 +146,6 @@ const PaymentResult: React.FC = () => {
           </div>
         )}
 
-        {/* Success State (briefly shown before redirect) */}
         {status === "success" && (
           <div className="space-y-6">
             <div className="flex justify-center">
@@ -162,7 +155,7 @@ const PaymentResult: React.FC = () => {
             </div>
             <div>
               <h1 className="heading-3 text-[#2E1B4D] mb-2">
-                Payment Verified!
+                Payment Verified
               </h1>
               <p className="text-[#6F5D9E]">
                 Redirecting you to your booking confirmation...
@@ -171,7 +164,6 @@ const PaymentResult: React.FC = () => {
           </div>
         )}
 
-        {/* Failed State */}
         {status === "failed" && (
           <div className="space-y-6">
             <div className="flex justify-center">
@@ -183,67 +175,33 @@ const PaymentResult: React.FC = () => {
               <h1 className="heading-3 text-[#2E1B4D] mb-2">
                 Payment Failed
               </h1>
-              <p className="text-[#6F5D9E] mb-6 whitespace-pre-line">{errorMessage}</p>
-              
-              {/* Debug information - only in development */}
-              {import.meta.env.DEV && errorDetails && (
+              <p className="text-[#6F5D9E] mb-6 whitespace-pre-line">
+                {errorMessage}
+              </p>
+
+              {import.meta.env.DEV && (
                 <details className="text-left bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
                   <summary className="cursor-pointer text-sm font-semibold text-red-800 mb-2">
-                    🔍 Debug Information (Dev Only)
+                    Debug Information
                   </summary>
                   <div className="text-xs font-mono text-red-700 space-y-2">
                     <div>
-                      <strong>Error Code:</strong> {errorDetails.resultCode || 'N/A'}
+                      <strong>Error Code:</strong> {errorDetails?.resultCode || "N/A"}
                     </div>
                     <div>
-                      <strong>Description:</strong> {errorDetails.resultDescription || 'N/A'}
+                      <strong>Description:</strong> {errorDetails?.resultDescription || "N/A"}
                     </div>
                     <div>
-                      <strong>Booking ID:</strong> {errorDetails.bookingId || bookingId}
+                      <strong>Booking ID:</strong> {errorDetails?.bookingId || bookingId}
                     </div>
                     <div>
-                      <strong>Resource Path:</strong> {resourcePath || '❌ MISSING'}
+                      <strong>Resource Path:</strong> {resolvedResourcePath || "missing"}
                     </div>
                     <div>
                       <strong>Frontend HyperPay URL:</strong> {import.meta.env.VITE_HYPERPAY_URL}
                     </div>
                     <div>
                       <strong>API Base URL:</strong> {import.meta.env.VITE_API_BASE_URL}
-                    </div>
-                    {!resourcePath && (
-                      <div className="p-2 bg-yellow-100 border border-yellow-300 rounded">
-                        <strong>⚠️ Warning:</strong> resourcePath is missing from HyperPay redirect. 
-                        This usually means the payment form redirect is not configured correctly.
-                      </div>
-                    )}
-                    <div className="mt-3 p-2 bg-red-100 rounded">
-                      <strong>Likely Cause:</strong>
-                      <ul className="list-disc pl-5 mt-1">
-                        {errorDetails.resultCode === '800.100.156' && (
-                          <>
-                            <li><strong>Format Error during PA transaction</strong></li>
-                            <li>Card doesn't support Pre-Authorization (PA)</li>
-                            <li>Entity ID not configured for PA with HyperPay</li>
-                            <li>Missing or incorrect recurringType parameter</li>
-                            <li><strong>Solution:</strong> Use VISA (4200000000000000) or Mastercard (5453010000059780) test cards</li>
-                            <li><strong>Backend:</strong> Verify entity ID supports PA with HyperPay support</li>
-                          </>
-                        )}
-                        {errorDetails.resultCode === '200.300.404' && (
-                          <>
-                            <li>Backend using different HyperPay environment (test vs prod)</li>
-                            <li>Backend not using resourcePath from HyperPay redirect</li>
-                            <li>Backend credentials don't match environment</li>
-                          </>
-                        )}
-                        {errorDetails.resultCode === '100.390.111' && (
-                          <>
-                            <li>Backend 3D Secure configuration issue</li>
-                            <li>Backend contacting wrong 3DS server</li>
-                            <li>Backend using wrong HyperPay environment</li>
-                          </>
-                        )}
-                      </ul>
                     </div>
                   </div>
                 </details>
@@ -255,10 +213,7 @@ const PaymentResult: React.FC = () => {
                 variant="primary"
                 size="large"
                 className="w-full !h-14"
-                onClick={() => {
-                  // Navigate back — the booking page still has the booking, user can retry
-                  navigate(-1);
-                }}
+                onClick={() => navigate(-1)}
               >
                 Try Again
               </Button>
@@ -271,16 +226,6 @@ const PaymentResult: React.FC = () => {
                 Return Home
               </Button>
             </div>
-
-            <p className="text-sm text-[#6F5D9E] mt-4">
-              Need help?{" "}
-              <a
-                href="mailto:support@singerlia.com"
-                className="text-primary hover:underline font-medium"
-              >
-                Contact Support
-              </a>
-            </p>
           </div>
         )}
       </div>

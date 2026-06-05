@@ -14,6 +14,9 @@ export interface PaymentStatusResponse {
   message: string;
   paymentStatus: string;
   bookingId: string;
+  retryable?: boolean;
+  retryAfterMs?: number;
+  lookupStrategy?: string;
   amount?: string;
   paymentId?: string;
   paymentBrand?: string;

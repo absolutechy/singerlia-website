@@ -102,13 +102,22 @@ const BookingSinger: React.FC = () => {
     defaultValues: {
       eventDate: state?.preFilledEventDate || "",
       timeSlot:
-        (state?.preFilledTimeSlot as "morning" | "afternoon" | "evening") ||
-        undefined,
+        ((state?.preFilledTimeSlot as "morning" | "afternoon" | "evening") ||
+        "") as BookingFormData["timeSlot"],
+      eventType: "",
+      venueName: "",
+      venueAddress: "",
+      city: "",
+      postalCode: "",
+      venueType: "" as BookingFormData["venueType"],
+      numberOfGuests: "",
       fullName: currentUser?.name || "",
       email: "",
       phoneNumber: "",
       messageToSinger: "",
       specialSongRequests: "",
+      equipment: "" as BookingFormData["equipment"],
+      promoCode: "",
       agreeToTerms: false,
     },
   });
@@ -248,7 +257,7 @@ const BookingSinger: React.FC = () => {
     if (formValues.eventDate && formValues.timeSlot) {
       const unavailableSlots = getUnavailableSlotsForDate(formValues.eventDate);
       if (unavailableSlots.includes(formValues.timeSlot)) {
-        setValue('timeSlot', undefined as any);
+        setValue('timeSlot', "" as BookingFormData["timeSlot"]);
       }
     }
   }, [formValues.eventDate, unavailability, formValues.timeSlot, setValue]);
