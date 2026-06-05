@@ -113,8 +113,14 @@ const HyperPayWidget: React.FC<HyperPayWidgetProps> = ({
     };
   }, [checkoutId, integrity, nonce, hyperPayUrl]);
 
-  const appUrl = import.meta.env.VITE_APP_URL || window.location.origin;
-  const shopperResultUrl = `${appUrl}/payment/result?bookingId=${bookingId}`;
+  // Must point to the frontend SPA route (not backend API host).
+  // Optional override: VITE_FRONTEND_URL (public frontend URL for payment redirects)
+  const frontendBaseUrl = (
+    import.meta.env.VITE_FRONTEND_URL ||
+    import.meta.env.VITE_APP_URL ||
+    window.location.origin
+  ).replace(/\/+$/, "");
+  const shopperResultUrl = `${frontendBaseUrl}/payment/result?bookingId=${bookingId}`;
   console.log("[HyperPay] Shopper result URL:", shopperResultUrl);
 
   if (scriptError) {

@@ -35,20 +35,20 @@ const bookingSchema = z.object({
   }),
 
   // Section 2: Event Details
-  eventType: z.string().min(1, "Event type is required"),
-  venueName: z.string().min(1, "Venue name is required"),
-  venueAddress: z.string().min(1, "Venue address is required"),
-  city: z.string().min(1, "City is required"),
-  postalCode: z.string().min(1, "Postal code is required"),
+  eventType: z.string().trim().min(1, "Event type is required"),
+  venueName: z.string().trim().min(1, "Venue name is required").max(100, "Venue name must be 100 characters or less"),
+  venueAddress: z.string().trim().min(1, "Venue address is required").max(100, "Venue address must be 100 characters or less"),
+  city: z.string().trim().min(1, "City is required").max(50, "City must be 50 characters or less"),
+  postalCode: z.string().trim().min(1, "Postal code is required").max(16, "Postal code must be 16 characters or less"),
   venueType: z.enum(["indoor", "outdoor"], {
     message: "Please select venue type",
   }),
   numberOfGuests: z.string().min(1, "Number of guests is required"),
 
   // Section 3: Your Information
-  fullName: z.string().min(2, "Full name is required"),
-  email: z.string().email("Invalid email address"),
-  phoneNumber: z.string().min(10, "Valid phone number is required"),
+  fullName: z.string().trim().min(2, "Full name is required").max(100, "Full name must be 100 characters or less"),
+  email: z.string().trim().max(100, "Email must be 100 characters or less").email("Invalid email address"),
+  phoneNumber: z.string().trim().min(10, "Valid phone number is required").max(30, "Phone number must be 30 characters or less"),
 
   // Section 4: Special Requirements & Message
   messageToSinger: z.string(),

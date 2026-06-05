@@ -50,10 +50,10 @@ const InstagramIcon = () => (
         y2="3.98086"
         gradientUnits="userSpaceOnUse"
       >
-        <stop stop-color="#FAAD4F" />
-        <stop offset="0.35" stop-color="#DD2A7B" />
-        <stop offset="0.62" stop-color="#9537B0" />
-        <stop offset="1" stop-color="#515BD4" />
+        <stop stopColor="#FAAD4F" />
+        <stop offset="0.35" stopColor="#DD2A7B" />
+        <stop offset="0.62" stopColor="#9537B0" />
+        <stop offset="1" stopColor="#515BD4" />
       </linearGradient>
       <linearGradient
         id="paint1_linear_273_5061"
@@ -63,10 +63,10 @@ const InstagramIcon = () => (
         y2="6.82585"
         gradientUnits="userSpaceOnUse"
       >
-        <stop stop-color="#FAAD4F" />
-        <stop offset="0.35" stop-color="#DD2A7B" />
-        <stop offset="0.62" stop-color="#9537B0" />
-        <stop offset="1" stop-color="#515BD4" />
+        <stop stopColor="#FAAD4F" />
+        <stop offset="0.35" stopColor="#DD2A7B" />
+        <stop offset="0.62" stopColor="#9537B0" />
+        <stop offset="1" stopColor="#515BD4" />
       </linearGradient>
       <linearGradient
         id="paint2_linear_273_5061"
@@ -76,10 +76,10 @@ const InstagramIcon = () => (
         y2="10.9127"
         gradientUnits="userSpaceOnUse"
       >
-        <stop stop-color="#FAAD4F" />
-        <stop offset="0.35" stop-color="#DD2A7B" />
-        <stop offset="0.62" stop-color="#9537B0" />
-        <stop offset="1" stop-color="#515BD4" />
+        <stop stopColor="#FAAD4F" />
+        <stop offset="0.35" stopColor="#DD2A7B" />
+        <stop offset="0.62" stopColor="#9537B0" />
+        <stop offset="1" stopColor="#515BD4" />
       </linearGradient>
       <linearGradient
         id="paint3_linear_273_5061"
@@ -89,10 +89,10 @@ const InstagramIcon = () => (
         y2="8.67101"
         gradientUnits="userSpaceOnUse"
       >
-        <stop stop-color="#FAAD4F" />
-        <stop offset="0.35" stop-color="#DD2A7B" />
-        <stop offset="0.62" stop-color="#9537B0" />
-        <stop offset="1" stop-color="#515BD4" />
+        <stop stopColor="#FAAD4F" />
+        <stop offset="0.35" stopColor="#DD2A7B" />
+        <stop offset="0.62" stopColor="#9537B0" />
+        <stop offset="1" stopColor="#515BD4" />
       </linearGradient>
     </defs>
   </svg>
@@ -138,8 +138,8 @@ const PinterestIcon = () => (
       fill="#FF0000"
     />
     <path
-      fill-rule="evenodd"
-      clip-rule="evenodd"
+      fillRule="evenodd"
+      clipRule="evenodd"
       d="M12.8023 17.1755C12.7867 17.2298 12.772 17.2758 12.76 17.3218C12.0658 20.0424 11.9886 20.6467 11.2751 21.9104C10.9349 22.511 10.5515 23.0803 10.1276 23.6248C10.0798 23.6864 10.0347 23.7655 9.93907 23.7462C9.83425 23.7242 9.82598 23.6294 9.81494 23.5457C9.70093 22.7189 9.63748 21.8902 9.66507 21.055C9.70093 19.9679 9.83517 19.5945 11.2365 13.7007C11.2567 13.6106 11.2337 13.5361 11.2043 13.4551C10.8687 12.5501 10.8025 11.6313 11.0958 10.7005C11.7302 8.68988 14.0087 8.53629 14.4068 10.1946C14.6523 11.2201 14.0032 12.563 13.5048 14.5478C13.092 16.1849 15.0192 17.3493 16.666 16.1537C18.185 15.0518 18.7744 12.4103 18.6622 10.5377C18.4415 6.80439 14.3489 5.99776 11.7532 7.19988C8.77685 8.57675 8.10011 12.2668 9.4444 13.9536C9.6145 14.1679 9.9354 14.2994 9.87931 14.5165C9.79288 14.8541 9.71656 15.1944 9.62277 15.5301C9.55289 15.7802 9.15476 15.8713 8.9019 15.7683C8.4063 15.5678 7.99345 15.2523 7.65876 14.8366C6.51768 13.4229 6.19127 10.6269 7.70014 8.25944C9.37175 5.63722 12.4814 4.57582 15.3208 4.89774C18.7119 5.28311 20.8552 7.6009 21.2561 10.2305C21.439 11.428 21.3076 14.3813 19.6267 16.4691C17.6931 18.8679 14.5586 19.027 13.1122 17.5545C13.0009 17.4413 12.9118 17.3098 12.8023 17.1746V17.1755Z"
       fill="#FF0000"
     />
@@ -190,10 +190,10 @@ const ThreadsIcon = () => (
         y2="13.5866"
         gradientUnits="userSpaceOnUse"
       >
-        <stop stop-color="#FAAD4F" />
-        <stop offset="0.35" stop-color="#DD2A7B" />
-        <stop offset="0.62" stop-color="#9537B0" />
-        <stop offset="1" stop-color="#515BD4" />
+        <stop stopColor="#FAAD4F" />
+        <stop offset="0.35" stopColor="#DD2A7B" />
+        <stop offset="0.62" stopColor="#9537B0" />
+        <stop offset="1" stopColor="#515BD4" />
       </linearGradient>
       <linearGradient
         id="paint1_linear_273_5082"
@@ -203,10 +203,10 @@ const ThreadsIcon = () => (
         y2="13.4726"
         gradientUnits="userSpaceOnUse"
       >
-        <stop stop-color="#FAAD4F" />
-        <stop offset="0.35" stop-color="#DD2A7B" />
-        <stop offset="0.62" stop-color="#9537B0" />
-        <stop offset="1" stop-color="#515BD4" />
+        <stop stopColor="#FAAD4F" />
+        <stop offset="0.35" stopColor="#DD2A7B" />
+        <stop offset="0.62" stopColor="#9537B0" />
+        <stop offset="1" stopColor="#515BD4" />
       </linearGradient>
     </defs>
   </svg>
