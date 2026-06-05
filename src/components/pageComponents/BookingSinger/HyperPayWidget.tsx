@@ -113,7 +113,8 @@ const HyperPayWidget: React.FC<HyperPayWidgetProps> = ({
     };
   }, [checkoutId, integrity, nonce, hyperPayUrl]);
 
-  const shopperResultUrl = `${import.meta.env.VITE_APP_URL}/payment/result?bookingId=${bookingId}`;
+  const appUrl = import.meta.env.VITE_APP_URL || window.location.origin;
+  const shopperResultUrl = `${appUrl}/payment/result?bookingId=${bookingId}`;
   console.log("[HyperPay] Shopper result URL:", shopperResultUrl);
 
   if (scriptError) {

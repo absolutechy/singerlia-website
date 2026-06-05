@@ -1,85 +1,56 @@
-import axiosInstance from '../axiosInstance';
+import axiosInstance from "../axiosInstance";
 
-// ============================================================================
-// TYPE DEFINITIONS
-// ============================================================================
-
-export interface CreateCheckoutResponse {
+export interface PrepareCheckoutResponse {
+  message: string;
   checkoutId: string;
-  amount: number | string;
+  amount: string;
   currency: string;
-  integrity: string; // SRI hash for PCI DSS 4.x compliance
-  message?: string;
+  integrity?: string;
   expiresIn?: number;
 }
 
 export interface PaymentStatusResponse {
   message: string;
-  paymentStatus: 'paid' | 'pending' | 'failed' | 'checkout_prepared' | 'pre_authorized' | 'authorized' | 'captured' | 'voided' | 'void_failed' | 'refunded' | 'refund_pending' | 'capture_failed';
+  paymentStatus: string;
   bookingId: string;
-  amount: string;
+  amount?: string;
   paymentId?: string;
   paymentBrand?: string;
+  requiresCapture?: boolean;
   resultCode?: string;
   resultDescription?: string;
-  requiresCapture?: boolean; // For PA transactions
 }
 
-export interface CapturePaymentResponse {
+export interface CaptureResponse {
   message: string;
   paymentStatus: string;
   bookingId: string;
-  capturedAmount: number;
+  capturedAmount?: string;
   captureId?: string;
   paymentId?: string;
   resultCode?: string;
   resultDescription?: string;
 }
 
-// ============================================================================
-// PAYMENT SERVICE
-// ============================================================================
-
 const paymentService = {
-  /**
-   * Create a HyperPay checkout session for a booking.
-   * Returns the checkoutId needed to load the payment widget.
-   */
-  createCheckout: async (bookingId: string): Promise<CreateCheckoutResponse> => {
-    const response = await axiosInstance.post<CreateCheckoutResponse>(
-      '/payment/checkouts',
-      { bookingId }
-    );
+  prepareCheckout: async (bookingId: string): Promise<PrepareCheckoutResponse> => {
+    const response = await axiosInstance.post<PrepareCheckoutResponse>("/payment/checkouts", {
+      bookingId,
+    });
     return response.data;
   },
 
-  /**
-   * Get the payment status for a booking after HyperPay redirect.
-   * @param bookingId - The booking ID
-   * @param resourcePath - Optional resourcePath from HyperPay redirect (required for proper verification)
-   */
   getPaymentStatus: async (bookingId: string, resourcePath?: string): Promise<PaymentStatusResponse> => {
-    const params = new URLSearchParams();
-    if (resourcePath) {
-      params.append('resourcePath', resourcePath);
-    }
-    
-    const url = `/payment/status/${bookingId}${params.toString() ? `?${params.toString()}` : ''}`;
-    
-    const response = await axiosInstance.get<PaymentStatusResponse>(url);
+    const response = await axiosInstance.get<PaymentStatusResponse>(`/payment/status/${bookingId}`, {
+      params: resourcePath ? { resourcePath } : undefined,
+    });
     return response.data;
   },
 
-  /**
-   * Capture a pre-authorized payment.
-   * @param bookingId - The booking ID
-   * @param amount - Optional custom amount to capture (if not provided, captures full pre-authorized amount)
-   */
-  capturePayment: async (bookingId: string, amount?: number): Promise<CapturePaymentResponse> => {
-    const response = await axiosInstance.post<CapturePaymentResponse>(
-      `/payment/capture/${bookingId}`,
-      amount ? { amount } : {}
-    );
+  capturePayment: async (bookingId: string, amount?: string): Promise<CaptureResponse> => {
+    const response = await axiosInstance.post<CaptureResponse>(`/payment/capture/${bookingId}`, {
+      amount,
+    });
     return response.data;
   },
 };

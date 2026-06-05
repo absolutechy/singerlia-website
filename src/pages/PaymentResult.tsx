@@ -47,17 +47,23 @@ const PaymentResult: React.FC = () => {
         const result = await paymentService.getPaymentStatus(bookingId, resourcePath || undefined);
         console.log("[PaymentResult] Payment status result:", result);
 
-        // With the new flow, we DO NOT capture the payment here.
-        // The payment is authorized (PA) and the artist must accept the booking within 24h to capture it.
         if (result.paymentStatus === "pre_authorized" || result.paymentStatus === "authorized") {
-          console.log("[PaymentResult] Payment authorized, waiting for artist confirmation...");
-          setStatus("success");
-          setTimeout(() => {
-            navigate("/booking/success", {
-              state: { bookingId, totalAmount: result.amount, paymentStatus: result.paymentStatus },
-              replace: true,
-            });
-          }, 1500);
+          // Backend should auto-capture PA. If a PA still appears, force capture to ensure settlement.
+          console.log("[PaymentResult] Payment authorized. Triggering capture to settle to merchant.");
+          const capture = await paymentService.capturePayment(bookingId, result.amount);
+
+          if (capture.paymentStatus === "paid") {
+            setStatus("success");
+            setTimeout(() => {
+              navigate("/booking/success", {
+                state: { bookingId, totalAmount: capture.capturedAmount || result.amount, paymentStatus: "paid" },
+                replace: true,
+              });
+            }, 1500);
+          } else {
+            setStatus("failed");
+            setErrorMessage(capture.resultDescription || capture.message || "Payment capture failed.");
+          }
         } else if (result.paymentStatus === "paid" || result.paymentStatus === "captured") {
           // Payment already captured/paid
           console.log("[PaymentResult] Payment already captured");

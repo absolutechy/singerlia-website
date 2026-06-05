@@ -81,13 +81,13 @@ const BookingSinger: React.FC = () => {
   const [error, setError] = useState("");
   const [bookingId, setBookingId] = useState<string>("");
   const [unavailability, setUnavailability] = useState<UnavailabilityRecord[]>([]);
-  const [checkoutId, setCheckoutId] = useState<string | null>(null);
   const [integrity, setIntegrity] = useState<string | null>(null); // SRI hash for PCI DSS 4.x
   const [, setPaymentLoading] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [singer, setSinger] = useState<Singer | null>(null);
   const [bookingTotalAmount, setBookingTotalAmount] = useState<number | null>(null);
   const [priceConfirmed, setPriceConfirmed] = useState(false);
+  const [checkoutId, setCheckoutId] = useState<string>("");
 
   const currentUser = authService.getCurrentUser();
 
@@ -280,12 +280,12 @@ const BookingSinger: React.FC = () => {
     const fetchCheckout = async () => {
       setPaymentLoading(true);
       setPaymentError(null);
-      setCheckoutId(null);
+      setCheckoutId("");
       setIntegrity(null);
 
       try {
         console.log("[Payment] Requesting checkout for bookingId:", bookingId);
-        const response = await paymentService.createCheckout(bookingId);
+        const response = await paymentService.prepareCheckout(bookingId);
         console.log("[Payment] Checkout response:", response);
 
         if (cancelled) return;
@@ -327,12 +327,12 @@ const BookingSinger: React.FC = () => {
     if (!bookingId) return;
     setPaymentLoading(true);
     setPaymentError(null);
-    setCheckoutId(null);
+    setCheckoutId("");
     setIntegrity(null);
 
     try {
       console.log("[Payment] Retrying checkout for bookingId:", bookingId);
-      const response = await paymentService.createCheckout(bookingId);
+      const response = await paymentService.prepareCheckout(bookingId);
       console.log("[Payment] Retry response:", response);
 
       if (response?.checkoutId && response?.integrity) {
