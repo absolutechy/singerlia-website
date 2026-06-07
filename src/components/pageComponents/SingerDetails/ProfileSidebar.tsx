@@ -146,16 +146,22 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, pricing, city, isVerified, 
               <span className="text-sm text-[#6F5D9E]">Base Price</span>
               <span className="text-lg font-bold text-[#2E1B4D]">SAR {pricing.base_price}</span>
             </div>
+            {/* Extra-hour pricing disabled; events use base price only. */}
+            {/*
             <div className="flex justify-between items-center">
               <span className="text-sm text-[#6F5D9E]">Extra Hour</span>
               <span className="text-sm font-semibold text-[#2E1B4D]">SAR {pricing.extra_hour_price}</span>
             </div>
+            */}
+            {/* Location surcharge disabled; events use base price only. */}
+            {/*
             {pricing.location_surcharge > 0 && (
               <div className="flex justify-between items-center">
                 <span className="text-sm text-[#6F5D9E]">Location Surcharge</span>
                 <span className="text-sm font-semibold text-[#2E1B4D]">SAR {pricing.location_surcharge}</span>
               </div>
             )}
+            */}
           </div>
         )}
         

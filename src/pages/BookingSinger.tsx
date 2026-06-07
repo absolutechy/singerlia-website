@@ -262,7 +262,7 @@ const BookingSinger: React.FC = () => {
     }
   }, [formValues.eventDate, unavailability, formValues.timeSlot, setValue]);
 
-  // Calculate pricing matching backend calculateAmount() logic
+  // Base price only. Hourly and location surcharge pricing are disabled.
   const slotDurationMap: Record<string, number> = {
     morning: 4,   // 8:00 AM - 12:00 PM
     afternoon: 6, // 12:00 PM - 6:00 PM
@@ -272,8 +272,8 @@ const BookingSinger: React.FC = () => {
   // const extraHours = Math.max(0, duration - 1);
   const baseFee = singer?.pricing?.base_price || 0;
   // const extraFee = extraHours * (singer?.pricing?.extra_hour_price || 0);
-  const surcharge = singer?.pricing?.location_surcharge || 0;
-  const totalPrice = baseFee + /* extraFee + */ surcharge;
+  // const surcharge = singer?.pricing?.location_surcharge || 0;
+  const totalPrice = baseFee;
 
   // Fetch HyperPay checkout when summary is shown
   useEffect(() => {
@@ -641,11 +641,11 @@ const BookingSinger: React.FC = () => {
               {singer?.pricing ? (
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-[#6F5D9E]">Duration:</span>
+                    <span className="text-[#6F5D9E]">Selected Time Slot:</span>
                     <span className="text-[#2E1B4D] font-medium">{duration} hour{duration !== 1 ? 's' : ''}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#6F5D9E]">Base Price (1st hour):</span>
+                    <span className="text-[#6F5D9E]">Base Price:</span>
                     <span className="text-[#2E1B4D] font-medium">SAR {baseFee.toLocaleString()}</span>
                   </div>
                   {/* Extra hour charges disabled
@@ -656,12 +656,14 @@ const BookingSinger: React.FC = () => {
                     </div>
                   )}
                   */}
+                  {/* Location surcharge disabled
                   {surcharge > 0 && (
                     <div className="flex justify-between">
                       <span className="text-[#6F5D9E]">Location Surcharge:</span>
                       <span className="text-[#2E1B4D] font-medium">SAR {surcharge.toLocaleString()}</span>
                     </div>
                   )}
+                  */}
                   {formValues.promoCode && (
                     <div className="flex justify-between text-green-600">
                       <span>Promo Code Applied:</span>
@@ -1041,11 +1043,11 @@ const BookingSinger: React.FC = () => {
               {singer?.pricing ? (
                 <div className="bg-[#F9F7FF] rounded-2xl p-6 space-y-3">
                   <div className="flex justify-between text-sm">
-                    <span className="text-[#6F5D9E]">Duration:</span>
+                    <span className="text-[#6F5D9E]">Selected Time Slot:</span>
                     <span className="text-[#2E1B4D] font-semibold">{duration} hour{duration !== 1 ? 's' : ''}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-[#6F5D9E]">Base Price (1st hour):</span>
+                    <span className="text-[#6F5D9E]">Base Price:</span>
                     <span className="text-[#2E1B4D] font-semibold">SAR {baseFee.toLocaleString()}</span>
                   </div>
                   {/* Extra hour charges disabled
@@ -1056,12 +1058,14 @@ const BookingSinger: React.FC = () => {
                     </div>
                   )}
                   */}
+                  {/* Location surcharge disabled
                   {surcharge > 0 && (
                     <div className="flex justify-between text-sm">
                       <span className="text-[#6F5D9E]">Location Surcharge:</span>
                       <span className="text-[#2E1B4D] font-semibold">SAR {surcharge.toLocaleString()}</span>
                     </div>
                   )}
+                  */}
                   <div className="h-px bg-[#E7DEFF]" />
                   <div className="flex justify-between text-lg">
                     <span className="text-[#2E1B4D] font-bold">Total Price:</span>
