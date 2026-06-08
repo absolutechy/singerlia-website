@@ -21,8 +21,10 @@ export interface PaymentStatusResponse {
   paymentId?: string;
   paymentBrand?: string;
   requiresCapture?: boolean;
+  capturePending?: boolean;
   resultCode?: string;
   resultDescription?: string;
+  capturePending?: boolean;
   payoutStatus?: string | null;
   payoutTransferId?: string | null;
   payout?: unknown;

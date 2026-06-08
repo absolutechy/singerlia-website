@@ -55,6 +55,13 @@ const BookingSuccess: React.FC = () => {
               "Payment captured successfully and saved to merchant account."
             );
             toast.success("Payment captured successfully");
+          } else if (capture.paymentStatus === "pre_authorized" && capture.requiresCapture) {
+            setIsSuccess(true);
+            setMessage(
+              capture.message ||
+                "Payment authorized. Capture is temporarily pending and will be retried by Singerlia."
+            );
+            toast.success("Payment authorized");
           } else {
             setMessage(capture.message || "Payment capture failed.");
           }
