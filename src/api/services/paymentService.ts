@@ -12,7 +12,7 @@ export interface PrepareCheckoutResponse {
 
 export interface PaymentStatusResponse {
   message: string;
-  paymentStatus: string;
+  paymentStatus: 'paid' | 'pending' | 'failed' | 'checkout_prepared' | 'pre_authorized' | 'authorized' | 'captured' | 'voided' | 'void_failed' | 'refunded' | 'refund_pending' | 'capture_failed';
   bookingId: string;
   retryable?: boolean;
   retryAfterMs?: number;
@@ -24,7 +24,6 @@ export interface PaymentStatusResponse {
   capturePending?: boolean;
   resultCode?: string;
   resultDescription?: string;
-  capturePending?: boolean;
   payoutStatus?: string | null;
   payoutTransferId?: string | null;
   payout?: unknown;
