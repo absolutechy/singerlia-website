@@ -38,6 +38,7 @@ export interface CaptureResponse {
   paymentId?: string;
   resultCode?: string;
   resultDescription?: string;
+  requiresCapture?: boolean;
   payoutStatus?: string | null;
   payoutTransferId?: string | null;
   payout?: unknown;
