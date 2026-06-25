@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import AuthModalLayout from "@/components/auth/AuthModalLayout";
 import { Button, Input } from "@/components/common";
 import authService from "@/api/services/authService";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  // Where to return after login (e.g. a deep-linked checkout page). Defaults to home.
+  const from = (location.state as { from?: string } | null)?.from || "/";
   const [formData, setFormData] = useState({
     identifier: "", // Can be phone or email
     password: "",
@@ -22,7 +25,7 @@ const Login: React.FC = () => {
         try {
           await authService.checkAuth();
           console.log("Hello");
-          navigate("/"); // Redirect to home if already logged in
+          navigate(from); // Redirect to return path (or home) if already logged in
         } catch (err) {
           // Token invalid, continue with login
           authService.logout();
@@ -67,13 +70,8 @@ const Login: React.FC = () => {
       // Success! Token is already stored by authService
       console.log("Login successful:", response.user_metadata);
       
-      // Navigate based on user role
-      if (response.user_metadata.role === "singer") {
-        navigate("/")
-        // navigate("/dashboard/singer");
-      } else {
-        navigate("/");
-      }
+      // Navigate to the return path (or home) after successful login
+      navigate(from);
     } catch (err: any) {
       setError(err.response?.data?.message || "Login failed. Please check your credentials.");
     } finally {

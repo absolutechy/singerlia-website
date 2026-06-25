@@ -119,6 +119,26 @@ export const subscribeToAuthChanges = (callback: () => void) => {
   };
 };
 
+/**
+ * Consume an auth token handed off from the portal via the URL fragment
+ * (e.g. `…/payment/resume/:id#auth_token=<jwt>`). Reusing the portal's existing token
+ * avoids a second login on the website, which would rotate the single server-side token
+ * and log the portal out. Must run before the app renders so no component sees an
+ * unauthenticated state. The fragment is stripped immediately so the token does not linger
+ * in browser history or the address bar.
+ *
+ * @returns true if a token was ingested.
+ */
+export const consumeAuthHandoffFromUrl = (): boolean => {
+  const match = window.location.hash.match(/auth_token=([^&]+)/);
+  if (!match) return false;
+
+  localStorage.setItem('authToken', decodeURIComponent(match[1]));
+  history.replaceState(null, '', window.location.pathname + window.location.search);
+  dispatchAuthEvent();
+  return true;
+};
+
 // Auth Service Functions
 const authService = { 
   /**

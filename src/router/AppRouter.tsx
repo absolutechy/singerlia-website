@@ -4,6 +4,7 @@ import {
   BookingSinger,
   BookingSuccess,
   PaymentResult,
+  PaymentResume,
   SearchResults,
   SingerDetails,
   SingerProfile,
@@ -52,6 +53,7 @@ const AppRouter = () => {
       <Route path="/booking/singer/:id" element={<BookingSinger />} />
       <Route path="/booking/success" element={<BookingSuccess />} />
       <Route path="/payment/result" element={<PaymentResult />} />
+      <Route path="/payment/resume/:bookingId" element={<PaymentResume />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />

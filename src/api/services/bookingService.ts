@@ -38,6 +38,7 @@ export interface CreateBookingResponse {
 export interface BookingDetails {
   bookingId: string;
   singerId: string;
+  singerName?: string;
   userId: string;
   eventDate: string;
   timeSlot: string;
@@ -113,6 +114,11 @@ export interface CancelBookingResponse {
 export interface GetAllBookingsResponse {
   bookings: BookingDetails[];
   total: number;
+}
+
+// Get Booking By ID Response
+export interface GetBookingByIdResponse {
+  booking: BookingDetails;
 }
 
 // ============================================================================
@@ -260,6 +266,21 @@ const bookingService = {
   getAllBookings: async (): Promise<GetAllBookingsResponse> => {
     const response = await axiosInstance.get<GetAllBookingsResponse>(
       '/booking/all'
+    );
+    return response.data;
+  },
+
+  /**
+   * Get a single booking by ID (owner only)
+   * POST /api/booking/get-booking
+   *
+   * @param bookingId - ID of the booking to retrieve
+   * @returns Booking details
+   */
+  getBookingById: async (bookingId: string): Promise<GetBookingByIdResponse> => {
+    const response = await axiosInstance.post<GetBookingByIdResponse>(
+      '/booking/get-booking',
+      { bookingId }
     );
     return response.data;
   },

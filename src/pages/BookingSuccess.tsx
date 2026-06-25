@@ -15,7 +15,12 @@ const BookingSuccess: React.FC = () => {
   const [paymentId, setPaymentId] = useState("");
 
   const searchParams = new URLSearchParams(location.search);
+  // Prefer the bookingId handed over by PaymentResult (the booking it just verified).
+  // Fall back to the URL query, then to localStorage — the latter can be stale when the
+  // customer resumed an older booking, so it must be the lowest priority.
+  const stateBookingId = (location.state as { bookingId?: string } | null)?.bookingId;
   const bookingId =
+    stateBookingId ||
     searchParams.get("bookingId") ||
     localStorage.getItem("currentBookingId") ||
     "";

@@ -171,16 +171,31 @@ try {
 async function chooseEventDate(page) {
   const explicitDate = process.env.BOOKING_EVENT_DATE;
   const date = explicitDate ? new Date(`${explicitDate}T12:00:00`) : daysFromNow(14);
-  const day = String(date.getDate());
 
   await clickText(page, /Select event date/i);
-  const calendar = page.locator("[data-radix-popper-content-wrapper], [role='dialog']").last();
+  const calendar = page.locator("[data-radix-popper-content-wrapper]").last();
   await calendar.waitFor({ state: "visible" });
-  await calendar
-    .locator("button:not([disabled])")
-    .filter({ hasText: new RegExp(`^${day}$`) })
-    .first()
-    .click();
+
+  // The calendar (react-day-picker v9) hides outside-month days and stamps each day button
+  // with a locale-formatted `data-day` (e.g. "7/9/2026"). Compute that string in the browser
+  // so it matches regardless of locale, then page forward to the target month before clicking.
+  const targetDataDay = await page.evaluate(
+    ({ y, m, d }) => new Date(y, m, d).toLocaleDateString(),
+    { y: date.getFullYear(), m: date.getMonth(), d: date.getDate() }
+  );
+
+  const dayCell = calendar.locator(
+    `button[data-day="${targetDataDay}"]:not([disabled])`
+  );
+  const nextMonth = calendar.locator(".rdp-button_next");
+
+  for (let i = 0; i < 12; i += 1) {
+    if (await dayCell.count()) break;
+    await nextMonth.click();
+    await page.waitForTimeout(150);
+  }
+
+  await dayCell.first().click({ timeout: 10000 });
 }
 
 async function login(page) {

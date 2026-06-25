@@ -1110,16 +1110,16 @@ const BookingSinger: React.FC = () => {
           </div>
 
           {/* Submit Button */}
-          <div className="flex gap-4">
-            <Button
+          <div className="flex justify-end gap-4">
+            {/* <Button
               type="button"
               variant="default"
-              className="flex-1"
+              className="flex-1 hidden bg-black"
               onClick={() => navigate(-1)}
               disabled={loading}
             >
               Cancel
-            </Button>
+            </Button> */}
             <Button
               type="submit"
               variant="primary"
