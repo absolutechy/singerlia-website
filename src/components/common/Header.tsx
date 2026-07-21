@@ -133,6 +133,20 @@ const Header: React.FC = () => {
     }
   }, [dropdownOpen]);
 
+  // Open the portal dashboard while keeping the user signed in there: the portal is a separate
+  // origin with its own localStorage, so the current session's token is handed off via a URL
+  // fragment (never sent to servers/Referer) and consumed by the portal's SSO landing page.
+  // Without this, opening the portal always dropped the user back to its login screen.
+  const goToPortalDashboard = (newTab: boolean) => {
+    const url = authService.getPortalDashboardUrl();
+
+    if (newTab) {
+      window.open(url, "_blank", "noopener,noreferrer");
+    } else {
+      window.location.href = url;
+    }
+  };
+
   const handleLogout = async () => {
     if (isLoggingOut) return; // Prevent multiple clicks
     
@@ -301,18 +315,17 @@ const Header: React.FC = () => {
                   transition={{ duration: 0.2 }}
                   className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg overflow-hidden z-50"
                 >
-                  <a 
-                    href="https://portal.singerlia.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    type="button"
                     onClick={() => {
                       setDropdownOpen(false);
+                      goToPortalDashboard(true);
                     }}
                     className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
                   >
                     <LayoutDashboard size={18} />
                     <span className="font-medium">Dashboard</span>
-                  </a>
+                  </button>
                   <div className="border-t border-gray-200"></div>
                   <button
                     onClick={handleLogout}
@@ -434,7 +447,7 @@ const Header: React.FC = () => {
                     size="medium"
                     onClick={() => {
                       setMobileMenuOpen(false);
-                      navigate("/dashboard");
+                      goToPortalDashboard(false);
                     }}
                     className="w-full flex items-center justify-center gap-2 cursor-pointer"
                   >

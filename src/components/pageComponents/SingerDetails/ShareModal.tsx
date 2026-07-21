@@ -9,6 +9,7 @@ import {
   Star,
   X,
 } from "lucide-react";
+import { toast } from "sonner";
 import singer1 from "@/assets/images/singer/singer-detail-1.png";
 const WhatsApp = () => {
   return (
@@ -34,17 +35,76 @@ type Props = {
   onClose: () => void;
   name: string;
   profileUrl?: string;
+  averageRating?: number;
+  reviewCount?: number;
 };
 
-const ShareModal: React.FC<Props> = ({ open, onClose, name, profileUrl }) => {
+const ShareModal: React.FC<Props> = ({ open, onClose, name, profileUrl, averageRating = 0, reviewCount = 0 }) => {
   const [copied, setCopied] = useState(false);
   const link = useMemo(() => profileUrl || window.location.href, [profileUrl]);
 
+  // Short pre-filled context so the recipient knows what they're clicking, not a bare link.
+  const shareTitle = `${name} on Singerlia`;
+  const shareMessage = `Check out ${name} on Singerlia — book them for your next event!`;
+  const shareText = `${shareMessage} ${link}`;
+
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(link);
+      await navigator.clipboard.writeText(shareText);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleEmail = () => {
+    const subject = encodeURIComponent(shareTitle);
+    const body = encodeURIComponent(`${shareMessage}\n\n${link}`);
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+  };
+
+  const handleWhatsApp = () => {
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(shareText)}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  };
+
+  const handleFacebook = () => {
+    const url = encodeURIComponent(link);
+    const quote = encodeURIComponent(shareMessage);
+    window.open(
+      `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${quote}`,
+      "_blank",
+      "noopener,noreferrer,width=600,height=520"
+    );
+  };
+
+  // There's no app-id-free web URL for SMS/Messenger, so prefer the OS share sheet (lets the
+  // user pick the exact app) and fall back to a channel-appropriate action when it's unavailable.
+  // AbortError (user cancelled the sheet) is treated as handled — it must not trigger the fallback.
+  const tryNativeShare = async (): Promise<boolean> => {
+    if (!navigator.share) return false;
+    try {
+      await navigator.share({ title: shareTitle, text: shareMessage, url: link });
+      return true;
+    } catch (err) {
+      return (err as DOMException)?.name === "AbortError";
+    }
+  };
+
+  const handleMessages = async () => {
+    if (await tryNativeShare()) return;
+    window.location.href = `sms:?body=${encodeURIComponent(shareText)}`;
+  };
+
+  const handleMessenger = async () => {
+    if (await tryNativeShare()) return;
+    try {
+      await navigator.clipboard.writeText(shareText);
+      toast.info("Link copied — paste it into Messenger");
     } catch {
       // ignore
     }
@@ -93,11 +153,12 @@ const ShareModal: React.FC<Props> = ({ open, onClose, name, profileUrl }) => {
           </div>
           <div className="flex items-center gap-2 text-white/90">
             <Star size={16} className="text-yellow-400 fill-yellow-400" />
-            <span>5.0</span>
-            <span>Reviews</span>
-            <a className="underline" href="#">
-              3 reviews
-            </a>
+            <span>{reviewCount > 0 ? averageRating.toFixed(1) : "New"}</span>
+            {reviewCount > 0 && (
+              <span>
+                · {reviewCount} review{reviewCount === 1 ? "" : "s"}
+              </span>
+            )}
           </div>
         </div>
 
@@ -116,11 +177,11 @@ const ShareModal: React.FC<Props> = ({ open, onClose, name, profileUrl }) => {
               </div>
             )}
           </div>
-          <ActionBtn icon={<Mail size={18} />} label="Email" />
-          <ActionBtn icon={<WhatsApp />} label="WhatsApp" />
-          <ActionBtn icon={<Facebook size={18} />} label="Facebook" />
-          <ActionBtn icon={<MessageSquare size={18} />} label="Messages" />
-          <ActionBtn icon={<MessageCircle size={18} />} label="Messenger" />
+          <ActionBtn icon={<Mail size={18} />} label="Email" onClick={handleEmail} />
+          <ActionBtn icon={<WhatsApp />} label="WhatsApp" onClick={handleWhatsApp} />
+          <ActionBtn icon={<Facebook size={18} />} label="Facebook" onClick={handleFacebook} />
+          <ActionBtn icon={<MessageSquare size={18} />} label="Messages" onClick={handleMessages} />
+          <ActionBtn icon={<MessageCircle size={18} />} label="Messenger" onClick={handleMessenger} />
         </div>
       </div>
     </Modal>

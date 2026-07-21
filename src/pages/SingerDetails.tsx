@@ -125,7 +125,15 @@ const SingerDetails: React.FC = () => {
   }
 
   const name = singer.name || "Artist";
-  
+
+  // Single source of truth for the rating badge shown in the Share modal, the reviews preview,
+  // and the "all reviews" modal — they must not each compute/hardcode their own number.
+  const reviewCount = singer.reviews?.length || 0;
+  const averageRating =
+    reviewCount > 0
+      ? singer.reviews!.reduce((sum, r) => sum + (parseFloat(r.rating) || 0), 0) / reviewCount
+      : 0;
+
   // Get social links
   const socialLinks = singer.singerProfile?.social_links || {};
   
@@ -157,13 +165,15 @@ const SingerDetails: React.FC = () => {
     <div className="custom-container pb-16">
       <div className="grid gap-8 lg:grid-cols-[0.4fr_1fr] ">
         {/* Left fixed column */}
-        <ProfileSidebar 
-          id={singer.userId} 
+        <ProfileSidebar
+          id={singer.userId}
           name={name}
           pricing={singer.pricing}
           city={singer.city}
           isVerified={singer.isVerified}
           unavailability={unavailability}
+          averageRating={averageRating}
+          reviewCount={reviewCount}
         />
 
         {/* Right content */}
@@ -258,6 +268,8 @@ const SingerDetails: React.FC = () => {
           {reviewsPreviewData.length > 0 && (
             <ReviewsPreview
               items={reviewsPreviewData}
+              averageRating={averageRating}
+              reviewCount={reviewCount}
               onShowAll={() => setReviewsOpen(true)}
             />
           )}
@@ -283,6 +295,8 @@ const SingerDetails: React.FC = () => {
           open={reviewsOpen}
           onClose={() => setReviewsOpen(false)}
           reviews={allReviews}
+          averageRating={averageRating}
+          reviewCount={reviewCount}
         />
       </div>
       

@@ -321,6 +321,26 @@ const authService = {
   },
 
   /**
+   * Get the raw auth token from localStorage
+   */
+  getToken: (): string | null => {
+    return localStorage.getItem('authToken');
+  },
+
+  /**
+   * URL for the portal dashboard, carrying the current session's token in the URL fragment
+   * (never sent to servers/Referer) so the portal's SSO landing page can sign the user in
+   * without a second login. Falls back to the portal's own login page when signed out here.
+   */
+  getPortalDashboardUrl: (): string => {
+    const token = localStorage.getItem('authToken');
+    const portalUrl = import.meta.env.VITE_PORTAL_URL;
+    return token
+      ? `${portalUrl}/auth/sso#auth_token=${encodeURIComponent(token)}`
+      : `${portalUrl}/auth/login`;
+  },
+
+  /**
    * Check if user is authenticated
    */
   isAuthenticated: (): boolean => {

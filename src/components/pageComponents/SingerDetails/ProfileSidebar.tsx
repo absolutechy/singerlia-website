@@ -22,16 +22,27 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Button as UIButton } from "@/components/ui/button";
 import type { Pricing } from "@/api/services/singerService";
 
-type Props = { 
-  name: string; 
-  id: string; 
+type Props = {
+  name: string;
+  id: string;
   pricing?: Pricing;
   city?: string;
   isVerified?: boolean;
   unavailability?: UnavailabilityRecord[];
+  averageRating?: number;
+  reviewCount?: number;
 };
 
-const ProfileSidebar: React.FC<Props> = ({ name, id, pricing, city, isVerified, unavailability = [] }) => {
+// Backend endpoint that serves Open Graph/Twitter Card meta tags to link-preview crawlers
+// (WhatsApp, Facebook, iMessage, Slack, etc.) for this artist, then 302-redirects real visitors
+// straight to the SPA profile page. Sharing the raw SPA route instead would only ever show a
+// bare link, since crawlers don't execute JS and the SPA's index.html has no per-artist tags.
+const buildShareUrl = (singerId: string) => {
+  const apiOrigin = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
+  return `${apiOrigin}/singer/share/${singerId}`;
+};
+
+const ProfileSidebar: React.FC<Props> = ({ name, id, pricing, city, isVerified, unavailability = [], averageRating = 0, reviewCount = 0 }) => {
   const [shareOpen, setShareOpen] = useState(false);
   const [eventDate, setEventDate] = useState<Date | undefined>();
   const [timeSlot, setTimeSlot] = useState("");
@@ -247,6 +258,9 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, pricing, city, isVerified, 
         open={shareOpen}
         onClose={() => setShareOpen(false)}
         name={name}
+        profileUrl={buildShareUrl(id)}
+        averageRating={averageRating}
+        reviewCount={reviewCount}
       />
     </aside>
   );

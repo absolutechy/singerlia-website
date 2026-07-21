@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router";
 import { CheckCircle2, LayoutDashboard, Home, AlertCircle } from "lucide-react";
 import Button from "@/components/common/Button";
 import paymentService from "@/api/services/paymentService";
+import authService from "@/api/services/authService";
 import { toast } from "sonner";
 
 const BookingSuccess: React.FC = () => {
@@ -134,7 +135,7 @@ const BookingSuccess: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-4 mb-8">
             <a
               className="px-10 py-4 !text-lg h-14 flex-1 flex justify-center items-center rounded-lg bg-gradient-to-b from-secondary to-secondary-dark text-[#2e2e2e] hover:from-[#ffed4e] hover:to-[#d4a04a] shadow-md hover:shadow-lg"
-              href="https://portal.singerlia.com/"
+              href={authService.getPortalDashboardUrl()}
             >
               <LayoutDashboard className="w-5 h-5 mr-2" />
               Visit Dashboard

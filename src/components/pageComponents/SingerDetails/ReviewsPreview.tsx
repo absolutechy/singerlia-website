@@ -12,18 +12,22 @@ type PreviewReview = {
 
 type Props = {
   items: PreviewReview[];
+  averageRating: number;
+  reviewCount: number;
   onShowAll: () => void;
 };
 
-const ReviewsPreview: React.FC<Props> = ({ items, onShowAll }) => {
+const ReviewsPreview: React.FC<Props> = ({ items, averageRating, reviewCount, onShowAll }) => {
   return (
     <div className="pt-2">
       <div className="h-px bg-[#E7DEFF] my-4" />
       <div className="flex items-center gap-2 text-[#2E1B4D] font-medium">
         <Star size={18} className="text-yellow-500 fill-yellow-500" />
-        <span className="text-base">4.97</span>
+        <span className="text-base">{averageRating.toFixed(1)}</span>
         <span className="inline-block w-1 h-1 rounded-full bg-gray-300"></span>
-        <span className="text-base">29 reviews</span>
+        <span className="text-base">
+          {reviewCount} review{reviewCount === 1 ? "" : "s"}
+        </span>
       </div>
 
       <div className="mt-3 divide-y divide-[#E7DEFF]">
