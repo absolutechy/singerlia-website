@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import Button from '@/components/common/Button';
 import PriceRange from '@/components/common/PriceRange';
+import { SAUDI_CITIES } from '@/constants/cities';
 
 interface FilterSidebarProps {
   isOpen: boolean;
@@ -54,14 +55,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     "Traditional Performances",
   ];
 
-  const cityOptions = [
-    "Riyadh",
-    "Jeddah",
-    "Dammam",
-    "Khobar",
-    "Abha",
-    "Taif",
-  ];
+  const cityOptions = SAUDI_CITIES;
 
   const ratingOptions = [
     { label: "4.5+ Stars", value: 4.5 },
@@ -296,16 +290,19 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
             </div>
             <div className="flex flex-wrap gap-2">
               {cityOptions.map((city) => {
-                const selected = tCities.includes(city);
+                // Stored/compared by the lowercase slug (matches how a singer's city is
+                // actually saved at signup, see SingerSignup.tsx) — not the display label —
+                // so this filter actually matches singers instead of silently matching nothing.
+                const selected = tCities.includes(city.value);
                 return (
                   <button
-                    key={city}
+                    key={city.value}
                     type="button"
                     onClick={() =>
                       setTCities((prev) =>
-                        prev.includes(city)
-                          ? prev.filter((x) => x !== city)
-                          : [...prev, city]
+                        prev.includes(city.value)
+                          ? prev.filter((x) => x !== city.value)
+                          : [...prev, city.value]
                       )
                     }
                     className={`px-3 py-1.5 rounded-full text-xs border transition-colors ${
@@ -314,7 +311,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                         : "bg-white text-[#2E1B4D] border-[#E3D8FF]"
                     }`}
                   >
-                    {city}
+                    {city.label}
                   </button>
                 );
               })}

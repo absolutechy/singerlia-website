@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import AuthModalLayout from "@/components/auth/AuthModalLayout";
 import { Button, Input, Select } from "@/components/common";
 import authService from "@/api/services/authService";
+import { SAUDI_CITIES } from "@/constants/cities";
 
 const genderOptions = [
   { value: "male", label: "Male" },
@@ -10,27 +11,7 @@ const genderOptions = [
   { value: "other", label: "Other" },
 ];
 
-const cityOptions = [
-  { value: "riyadh", label: "Riyadh" },
-  { value: "jeddah", label: "Jeddah" },
-  { value: "mecca", label: "Mecca" },
-  { value: "medina", label: "Medina" },
-  { value: "dammam", label: "Dammam" },
-  { value: "khobar", label: "Khobar" },
-  { value: "dhahran", label: "Dhahran" },
-  { value: "taif", label: "Taif" },
-  { value: "buraidah", label: "Buraidah" },
-  { value: "tabuk", label: "Tabuk" },
-  { value: "khamis-mushait", label: "Khamis Mushait" },
-  { value: "hail", label: "Hail" },
-  { value: "najran", label: "Najran" },
-  { value: "jubail", label: "Jubail" },
-  { value: "abha", label: "Abha" },
-  { value: "yanbu", label: "Yanbu" },
-  { value: "al-qatif", label: "Al Qatif" },
-  { value: "al-mubarraz", label: "Al Mubarraz" },
-  { value: "al-ahsa", label: "Al Ahsa" },
-];
+const cityOptions = SAUDI_CITIES;
 
 const selects = [
     { id: "gender", label: "Select Gender", options: genderOptions },
