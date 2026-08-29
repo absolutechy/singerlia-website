@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { CheckCircle2, LayoutDashboard, Home, AlertCircle } from "lucide-react";
 import Button from "@/components/common/Button";
@@ -27,6 +27,14 @@ const BookingSuccess: React.FC = () => {
     "";
   const resourcePath = searchParams.get("resourcePath") || "";
 
+  // Guards against this effect actually running its network calls twice for the same
+  // booking+resourcePath — React 19 StrictMode double-invokes effects in dev (mount → cleanup →
+  // mount), and with no guard that fired getPaymentStatus/capturePayment twice back-to-back,
+  // which could race against itself at HyperPay (one of the two capture calls would get
+  // rejected, e.g. "PA value exceeded, PA reverted") even though the backend's own idempotency
+  // layer (withIdempotency, keyed per booking) ultimately still prevented any double-charge.
+  const verifiedKeyRef = useRef<string | null>(null);
+
   useEffect(() => {
     const verifyAndCapture = async () => {
       if (!bookingId) {
@@ -34,6 +42,10 @@ const BookingSuccess: React.FC = () => {
         setLoading(false);
         return;
       }
+
+      const key = `${bookingId}:${resourcePath}`;
+      if (verifiedKeyRef.current === key) return;
+      verifiedKeyRef.current = key;
 
       try {
         const status = await paymentService.getPaymentStatus(
