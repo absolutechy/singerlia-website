@@ -1,8 +1,48 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import {
+  Music,
+  Music2,
+  Music3,
+  Music4,
+  Mic,
+  Mic2,
+  Guitar,
+  Radio,
+  Disc,
+  Disc2,
+  Disc3,
+  Headphones,
+  Drum,
+  PartyPopper,
+  type LucideIcon,
+} from "lucide-react";
 import GenreCard from "@/components/common/GenreCard";
 import genreService, { type Genre as GenreType } from "@/api/services/genreService";
 import singerService from "@/api/services/singerService";
+
+// A distinct icon per genre card. Cycles by position rather than being keyed to specific genre
+// names/ids, so a new genre added later from the admin panel (no deploy) automatically gets a
+// sensible icon with no code change needed.
+const GENRE_ICONS: LucideIcon[] = [
+  Music,
+  Mic,
+  Guitar,
+  Disc,
+  Headphones,
+  Radio,
+  Drum,
+  Music2,
+  Mic2,
+  Disc2,
+  PartyPopper,
+  Music3,
+  Disc3,
+  Music4,
+];
+
+// The homepage section only ever shows a handful of genres, however many are configured.
+const MAX_DISPLAYED_GENRES = 7;
 
 const Genre: React.FC = () => {
   const navigate = useNavigate();
@@ -12,7 +52,7 @@ const Genre: React.FC = () => {
   useEffect(() => {
     genreService
       .getAllGenres()
-      .then((res) => setGenres(res.genres || []))
+      .then((res) => setGenres((res.genres || []).slice(0, MAX_DISPLAYED_GENRES)))
       .catch((err) => console.error("Failed to fetch genres:", err));
   }, []);
 
@@ -47,14 +87,16 @@ const Genre: React.FC = () => {
       <p className="text-[#666666] text-center">
         Find the perfect sound for your event across all musical styles.
       </p>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-y-20 gap-x-12 mt-14">
-        {genres.map((genre) => (
-          <GenreCard
-            key={genre.genreId}
-            label={genre.label}
-            count={counts[genre.genreId]}
-            onClick={() => navigate(`/search?genre=${genre.genreId}`)}
-          />
+      <div className="flex flex-wrap justify-center gap-y-20 gap-x-12 mt-14">
+        {genres.map((genre, index) => (
+          <div key={genre.genreId} className="w-[calc(50%-1.5rem)] sm:w-[calc(33.333%-2rem)] lg:w-[150px]">
+            <GenreCard
+              label={genre.label}
+              count={counts[genre.genreId]}
+              icon={GENRE_ICONS[index % GENRE_ICONS.length]}
+              onClick={() => navigate(`/search?genre=${genre.genreId}`)}
+            />
+          </div>
         ))}
       </div>
     </div>
