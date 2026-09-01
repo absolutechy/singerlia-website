@@ -813,9 +813,9 @@ const BookingSinger: React.FC = () => {
                 />
                 {formValues.eventDate && availableTimeSlotOptions.length < 3 && (
                   <p className="text-xs text-orange-600 mt-2">
-                    {availableTimeSlotOptions.length === 0 
-                      ? "No time slots available for this date. Please select another date." 
-                      : `${3 - availableTimeSlotOptions.length} time slot(s) unavailable for this date.`}
+                    {availableTimeSlotOptions.length === 0
+                      ? "No time slots available for this date. Please select another date."
+                      : `${availableTimeSlotOptions.length} time slot(s) available for this date.`}
                   </p>
                 )}
               </div>

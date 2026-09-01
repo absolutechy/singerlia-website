@@ -238,9 +238,9 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, pricing, city, isVerified, 
           </Select>
           {eventDate && unavailableSlots.length > 0 && (
             <p className="text-xs text-orange-600 mt-1">
-              {unavailableSlots.length === 3 
-                ? "No time slots available for this date" 
-                : `${unavailableSlots.length} slot(s) unavailable`}
+              {unavailableSlots.length === 3
+                ? "No time slots available for this date"
+                : `${availableTimeSlots.length} slot(s) available`}
             </p>
           )}
         </div>
