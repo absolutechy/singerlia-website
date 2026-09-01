@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import AuthModalLayout from "@/components/auth/AuthModalLayout";
 import { Button, Input, Select } from "@/components/common";
 import authService from "@/api/services/authService";
+import genreService, { type Genre } from "@/api/services/genreService";
 import { SAUDI_CITIES } from "@/constants/cities";
 
 const genderOptions = [
@@ -50,6 +51,21 @@ const SingerSignup: React.FC = () => {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [genres, setGenres] = useState<Genre[]>([]);
+  const [selectedGenreIds, setSelectedGenreIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    genreService
+      .getAllGenres()
+      .then((res) => setGenres(res.genres || []))
+      .catch((err) => console.error("Failed to fetch genres:", err));
+  }, []);
+
+  const toggleGenre = (genreId: string) => {
+    setSelectedGenreIds((prev) =>
+      prev.includes(genreId) ? prev.filter((id) => id !== genreId) : [...prev, genreId]
+    );
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -134,6 +150,7 @@ const SingerSignup: React.FC = () => {
         address: formData.location,
         DOB: formData.dateOfBirth,
         iqama_number: formData.iqamaNumber,
+        genreIds: selectedGenreIds,
       });
 
       // Store userId and phone for verification page
@@ -205,6 +222,33 @@ const SingerSignup: React.FC = () => {
             />
           ))}
         </div>
+
+        {genres.length > 0 && (
+          <div className="mb-6">
+            <p className="text-sm font-medium text-[#2E1B4D] mb-2">
+              Genres <span className="text-[#6F5D9E] font-normal">(select all that apply)</span>
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {genres.map((genre) => {
+                const selected = selectedGenreIds.includes(genre.genreId);
+                return (
+                  <button
+                    key={genre.genreId}
+                    type="button"
+                    onClick={() => toggleGenre(genre.genreId)}
+                    className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
+                      selected
+                        ? "bg-primary text-white border-primary"
+                        : "bg-white text-[#2E1B4D] border-[#D4D7E3]"
+                    }`}
+                  >
+                    {genre.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         <label className="flex items-center gap-3 text-sm text-[#6F5D9E] mb-10">
           <input

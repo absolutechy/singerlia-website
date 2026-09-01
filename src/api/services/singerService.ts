@@ -2,6 +2,7 @@ import axiosInstance from '../axiosInstance';
 
 // Types
 export interface SingerSearchParams {
+  // Comma-separated genreIds, e.g. "pop,classical" — OR-matched.
   genre?: string;
   city?: string;
   address?: string;
@@ -42,7 +43,6 @@ export interface SingerProfile {
   userId: string;
   bio: string;
   experience: string;
-  genres: string[];
   social_links: SocialLinks;
   photos: PhotoFile[];
   youtube_links: string[];
@@ -53,7 +53,8 @@ export interface Singer {
   name: string;
   phonenumber: string;
   email: string;
-  genre: string | null;
+  // Stable genre slugs (see genreService.ts) — replaces the old free-text genre string.
+  genreIds: string[];
   intro_vid_link: string | null;
   city: string;
   address: string | null;

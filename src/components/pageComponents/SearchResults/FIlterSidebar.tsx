@@ -4,6 +4,7 @@ import Button from '@/components/common/Button';
 import PriceRange from '@/components/common/PriceRange';
 import { SAUDI_CITIES } from '@/constants/cities';
 import eventCategoryService, { type EventCategory } from '@/api/services/eventCategoryService';
+import genreService, { type Genre } from '@/api/services/genreService';
 
 interface FilterSidebarProps {
   isOpen: boolean;
@@ -17,6 +18,9 @@ export interface FilterState {
   // Holds at most one categoryId — a singer's price (and their appearance in results at all) is
   // category-specific, so unlike the other filters below this one is effectively single-select.
   eventTypes: string[];
+  // Genre has no such constraint (unlike eventTypes above) — a customer can browse multiple
+  // genres at once, matched OR-style against a singer's own genre selection.
+  genres: string[];
   artistTypes: string[];
   cities: string[];
   minRating: number;
@@ -32,6 +36,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   // Draft filters (sidebar-only until Apply)
   const [tPriceRange, setTPriceRange] = useState({ min: 0, max: 75000 });
   const [tEventTypes, setTEventTypes] = useState<string[]>([]);
+  const [tGenres, setTGenres] = useState<string[]>([]);
   const [tArtistTypes, setTArtistTypes] = useState<string[]>([]);
   const [tCities, setTCities] = useState<string[]>([]);
   const [tMinRating, setTMinRating] = useState<number>(0);
@@ -40,12 +45,20 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   const buttons = ["Today", "Tomorrow", "This Week", "Custom Dates"];
 
   const [eventCategories, setEventCategories] = useState<EventCategory[]>([]);
+  const [genres, setGenres] = useState<Genre[]>([]);
 
   useEffect(() => {
     eventCategoryService
       .getAllEventCategories()
       .then((res) => setEventCategories(res.categories || []))
       .catch((err) => console.error("Failed to fetch event categories:", err));
+  }, []);
+
+  useEffect(() => {
+    genreService
+      .getAllGenres()
+      .then((res) => setGenres(res.genres || []))
+      .catch((err) => console.error("Failed to fetch genres:", err));
   }, []);
 
   const artistTypeOptions = [
@@ -77,6 +90,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     if (isOpen) {
       setTPriceRange(currentFilters.priceRange);
       setTEventTypes(currentFilters.eventTypes);
+      setTGenres(currentFilters.genres);
       setTArtistTypes(currentFilters.artistTypes);
       setTCities(currentFilters.cities);
       setTMinRating(currentFilters.minRating);
@@ -88,6 +102,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     onApplyFilters({
       priceRange: tPriceRange,
       eventTypes: tEventTypes,
+      genres: tGenres,
       artistTypes: tArtistTypes,
       cities: tCities,
       minRating: tMinRating,
@@ -100,6 +115,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     const clearedFilters = {
       priceRange: { min: 0, max: 75000 },
       eventTypes: [],
+      genres: [],
       artistTypes: [],
       cities: [],
       minRating: 0,
@@ -109,6 +125,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     // Update local state
     setTPriceRange(clearedFilters.priceRange);
     setTEventTypes(clearedFilters.eventTypes);
+    setTGenres(clearedFilters.genres);
     setTArtistTypes(clearedFilters.artistTypes);
     setTCities(clearedFilters.cities);
     setTMinRating(clearedFilters.minRating);
@@ -122,6 +139,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     tPriceRange.min !== 0 ||
     tPriceRange.max !== 75000 ||
     tEventTypes.length > 0 ||
+    tGenres.length > 0 ||
     tArtistTypes.length > 0 ||
     tCities.length > 0 ||
     tMinRating > 0 ||
@@ -232,6 +250,46 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                     }`}
                   >
                     {category.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Genre */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-lg font-bold text-[#1C1C1C]">Genre</p>
+              {tGenres.length > 0 && (
+                <button
+                  onClick={() => setTGenres([])}
+                  className="text-xs text-primary hover:underline"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {genres.map((genre) => {
+                const selected = tGenres.includes(genre.genreId);
+                return (
+                  <button
+                    key={genre.genreId}
+                    type="button"
+                    onClick={() =>
+                      setTGenres((prev) =>
+                        prev.includes(genre.genreId)
+                          ? prev.filter((x) => x !== genre.genreId)
+                          : [...prev, genre.genreId]
+                      )
+                    }
+                    className={`px-3 py-1.5 rounded-full text-xs border transition-colors ${
+                      selected
+                        ? "bg-primary text-white border-primary"
+                        : "bg-white text-[#2E1B4D] border-[#E3D8FF]"
+                    }`}
+                  >
+                    {genre.label}
                   </button>
                 );
               })}

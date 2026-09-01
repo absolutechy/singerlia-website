@@ -13,6 +13,8 @@ export interface RegisterUserData {
   password: string;
   DOB?: string;
   iqama_number?: string;
+  // Selected genreIds — singer signup only (see genreService.ts). Ignored for customer registration.
+  genreIds?: string[];
 }
 
 export interface RegisterResponse {

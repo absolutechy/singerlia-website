@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import singerService, { type Singer } from "@/api/services/singerService";
+import genreService, { type Genre } from "@/api/services/genreService";
 import authService from "@/api/services/authService";
 import { getViewFile } from "@/api/services/getViewFile";
 import unavailabilityService, { type UnavailabilityRecord } from "@/api/services/unavailabilityService";
@@ -48,6 +49,18 @@ const SingerDetails: React.FC = () => {
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
   const [photosLoading, setPhotosLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [genres, setGenres] = useState<Genre[]>([]);
+
+  useEffect(() => {
+    genreService
+      .getAllGenres()
+      .then((res) => setGenres(res.genres || []))
+      .catch((err) => console.error("Failed to fetch genres:", err));
+  }, []);
+
+  const genreLabels = (singer?.genreIds || [])
+    .map((id) => genres.find((g) => g.genreId === id)?.label || id)
+    .join(", ");
   const [unavailability, setUnavailability] = useState<UnavailabilityRecord[]>([]);
 
   useEffect(() => {
@@ -235,7 +248,7 @@ const SingerDetails: React.FC = () => {
               <li>
                 <p className="font-semibold">Genre</p>
                 <p className="text-[#6F5D9E]">
-                  {singer.singerProfile?.genres?.join(", ") || singer.genre || "Various genres"}
+                  {genreLabels || "Various genres"}
                 </p>
               </li>
               <li>

@@ -2,6 +2,7 @@ import SingerCard from "@/components/common/SingerCard";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import singerService, { type Singer } from "@/api/services/singerService";
+import genreService, { type Genre } from "@/api/services/genreService";
 
 const Artists: React.FC = () => {
   const navigate = useNavigate();
@@ -10,11 +11,19 @@ const Artists: React.FC = () => {
   const [error, setError] = useState("");
   const [visibleCount, setVisibleCount] = useState(9);
   const [wishlist, setWishlist] = useState<string[]>([]);
+  const [genres, setGenres] = useState<Genre[]>([]);
 
   useEffect(() => {
     fetchFeaturedSingers();
     fetchWishlist();
+    genreService
+      .getAllGenres()
+      .then((res) => setGenres(res.genres || []))
+      .catch((err) => console.error("Failed to fetch genres:", err));
   }, []);
+
+  const getGenreLabels = (singer: Singer) =>
+    (singer.genreIds || []).map((id) => genres.find((g) => g.genreId === id)?.label || id).join(", ");
 
   const fetchWishlist = async () => {
     try {
@@ -68,7 +77,7 @@ const Artists: React.FC = () => {
           <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 my-14">
             {displayedSingers.map((singer) => {
               const name = singer.name || "Artist";
-              const genre = singer.genre || "Artist";
+              const genre = getGenreLabels(singer) || "Artist";
               // For now, use placeholder images since API doesn't return profile images yet
               const images: string[] = [];
               

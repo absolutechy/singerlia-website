@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Filter } from "lucide-react";
 import singerService from "@/api/services/singerService";
+import genreService, { type Genre } from "@/api/services/genreService";
 import Button from "@/components/common/Button";
 import SingerCard from "@/components/common/SingerCard";
 import { SearchBar } from "@/components/common";
@@ -17,6 +18,7 @@ const SearchResults: React.FC = () => {
   const [filters, setFilters] = useState<FilterState>({
     priceRange: { min: 0, max: 75000 },
     eventTypes: [],
+    genres: [],
     artistTypes: [],
     cities: [],
     minRating: 0,
@@ -33,6 +35,17 @@ const SearchResults: React.FC = () => {
   const [apiSingers, setApiSingers] = useState<Singer[]>([]);
   const [loading, setLoading] = useState(false);
   const [wishlist, setWishlist] = useState<string[]>([]);
+  const [genres, setGenres] = useState<Genre[]>([]);
+
+  useEffect(() => {
+    genreService
+      .getAllGenres()
+      .then((res) => setGenres(res.genres || []))
+      .catch((err) => console.error("Failed to fetch genres:", err));
+  }, []);
+
+  const getGenreLabels = (singer: Singer) =>
+    (singer.genreIds || []).map((id) => genres.find((g) => g.genreId === id)?.label || id).join(", ");
 
   // Fetch wishlist on mount
   useEffect(() => {
@@ -53,7 +66,7 @@ const SearchResults: React.FC = () => {
   useEffect(() => {
     fetchSingers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query.singerName, filters.cities, filters.eventTypes]);
+  }, [query.singerName, filters.cities, filters.eventTypes, filters.genres]);
 
   const fetchSingers = async () => {
     try {
@@ -64,6 +77,8 @@ const SearchResults: React.FC = () => {
         // A singer who doesn't offer this category is excluded from the response entirely (see
         // getAllSingersHandler) — not just deprioritized — so no client-side filtering is needed.
         eventCategory: filters.eventTypes.length > 0 ? filters.eventTypes[0] : undefined,
+        // Comma-separated genreIds, OR-matched — a singer with ANY selected genre is included.
+        genre: filters.genres.length > 0 ? filters.genres.join(",") : undefined,
         limit: 50, // Fetch more results since we're doing client-side filtering
       });
       setApiSingers(response.singers || []);
@@ -108,9 +123,8 @@ const SearchResults: React.FC = () => {
       const meetsRating = avgRating >= filters.minRating;
       
       const name = it.name || "";
-      const genre = it.genre || "";
       const matchesSearch = query.singerName
-        ? (name + " " + genre)
+        ? (name + " " + getGenreLabels(it))
             .toLowerCase()
             .includes(query.singerName.toLowerCase())
         : true;
@@ -140,11 +154,16 @@ const SearchResults: React.FC = () => {
     const sp = new URLSearchParams(location.search);
     const s = sp.get("s") || "";
     const date = sp.get("date") || "";
+    const genreParam = sp.get("genre") || "";
     if (s || date) {
       setQuery({ singerName: s, date });
       if (date) {
         setFilters((prev) => ({ ...prev, active: "Custom Dates" }));
       }
+    }
+    // Pre-selects the genre filter when arriving from the Home page's "Browse by Genre" cards.
+    if (genreParam) {
+      setFilters((prev) => ({ ...prev, genres: [genreParam] }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
@@ -158,6 +177,7 @@ const SearchResults: React.FC = () => {
     let count = 0;
     if (filters.priceRange.min !== 0 || filters.priceRange.max !== 75000) count++;
     if (filters.eventTypes.length > 0) count++;
+    if (filters.genres.length > 0) count++;
     if (filters.artistTypes.length > 0) count++;
     if (filters.cities.length > 0) count++;
     if (filters.minRating > 0) count++;
@@ -220,7 +240,7 @@ const SearchResults: React.FC = () => {
             <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredItems.slice(0, visibleCount).map((it) => {
                 const name = it.name || "Artist";
-                const genre = it.genre || "Artist";
+                const genre = getGenreLabels(it) || "Artist";
                 // For now, use placeholder images since API doesn't return profile images yet
                 const images: string[] = [];
                 
