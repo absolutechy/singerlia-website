@@ -9,6 +9,7 @@ export interface SingerSearchParams {
   limit?: number;
   page?: number;
   highlight?: 'featured' | '';
+  eventCategory?: string;
 }
 
 export interface Review {
@@ -20,11 +21,9 @@ export interface Review {
   createdAt: string;
 }
 
-export interface Pricing {
-  base_price: number;
-  extra_hour_price: number;
-  location_surcharge: number;
-}
+// Per-event-category prices, e.g. { weddings: { price: 3500 } }. Absent key = singer doesn't
+// offer/price that category. Replaces the old flat base_price/extra_hour_price/location_surcharge.
+export type CategoryPricing = Record<string, { price: number; updatedAt?: string }>;
 
 export interface PhotoFile {
   fileName: string;
@@ -60,7 +59,9 @@ export interface Singer {
   address: string | null;
   joinedAt: string;
   isVerified: boolean;
-  pricing: Pricing;
+  categoryPricing: CategoryPricing;
+  // Only present when a `?eventCategory=` filter was applied to the search.
+  matchedCategoryPrice?: number | null;
   reviews: Review[];
   highlight: string;
   isSingerApproved: boolean;
@@ -90,6 +91,7 @@ const singerService = {
     if (params.limit) queryParams.append('limit', params.limit.toString());
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.highlight) queryParams.append('highlight', params.highlight);
+    if (params.eventCategory) queryParams.append('eventCategory', params.eventCategory);
 
     const response = await axiosInstance.get<SingerSearchResponse>(
       `/singer?${queryParams.toString()}`

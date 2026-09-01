@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import Button from '@/components/common/Button';
 import PriceRange from '@/components/common/PriceRange';
 import { SAUDI_CITIES } from '@/constants/cities';
+import eventCategoryService, { type EventCategory } from '@/api/services/eventCategoryService';
 
 interface FilterSidebarProps {
   isOpen: boolean;
@@ -13,6 +14,8 @@ interface FilterSidebarProps {
 
 export interface FilterState {
   priceRange: { min: number; max: number };
+  // Holds at most one categoryId — a singer's price (and their appearance in results at all) is
+  // category-specific, so unlike the other filters below this one is effectively single-select.
   eventTypes: string[];
   artistTypes: string[];
   cities: string[];
@@ -36,14 +39,14 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 
   const buttons = ["Today", "Tomorrow", "This Week", "Custom Dates"];
 
-  const eventTypeOptions = [
-    "Private Gathering",
-    "Wedding",
-    "Corporate Event",
-    "Cultural Night",
-    "Festival / Public Events",
-    "Restaurant Events",
-  ];
+  const [eventCategories, setEventCategories] = useState<EventCategory[]>([]);
+
+  useEffect(() => {
+    eventCategoryService
+      .getAllEventCategories()
+      .then((res) => setEventCategories(res.categories || []))
+      .catch((err) => console.error("Failed to fetch event categories:", err));
+  }, []);
 
   const artistTypeOptions = [
     "Singers",
@@ -209,17 +212,17 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
               )}
             </div>
             <div className="flex flex-wrap gap-2">
-              {eventTypeOptions.map((eventType) => {
-                const selected = tEventTypes.includes(eventType);
+              {eventCategories.map((category) => {
+                const selected = tEventTypes.includes(category.categoryId);
                 return (
                   <button
-                    key={eventType}
+                    key={category.categoryId}
                     type="button"
+                    // Single-select: a singer's price (and whether they show up at all) is
+                    // category-specific, so only one category can be filtered on at a time.
                     onClick={() =>
                       setTEventTypes((prev) =>
-                        prev.includes(eventType)
-                          ? prev.filter((x) => x !== eventType)
-                          : [...prev, eventType]
+                        prev.includes(category.categoryId) ? [] : [category.categoryId]
                       )
                     }
                     className={`px-3 py-1.5 rounded-full text-xs border transition-colors ${
@@ -228,7 +231,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                         : "bg-white text-[#2E1B4D] border-[#E3D8FF]"
                     }`}
                   >
-                    {eventType}
+                    {category.label}
                   </button>
                 );
               })}

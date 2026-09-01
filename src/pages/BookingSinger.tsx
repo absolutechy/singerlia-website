@@ -23,6 +23,7 @@ import bookingService from "@/api/services/bookingService";
 import paymentService from "@/api/services/paymentService";
 import unavailabilityService, { type UnavailabilityRecord } from "@/api/services/unavailabilityService";
 import singerService, { type Singer } from "@/api/services/singerService";
+import eventCategoryService, { type EventCategory } from "@/api/services/eventCategoryService";
 import HyperPayWidget from "@/components/pageComponents/BookingSinger/HyperPayWidget";
 import { toast } from "sonner";
 
@@ -35,6 +36,7 @@ const bookingSchema = z.object({
   }),
 
   // Section 2: Event Details
+  // Holds the selected event category's categoryId (e.g. "weddings") — see eventCategoryService.
   eventType: z.string().trim().min(1, "Event type is required"),
   venueName: z.string().trim().min(1, "Venue name is required").max(100, "Venue name must be 100 characters or less"),
   venueAddress: z.string().trim().min(1, "Venue address is required").max(100, "Venue address must be 100 characters or less"),
@@ -69,6 +71,7 @@ type BookingFormData = z.infer<typeof bookingSchema>;
 interface LocationState {
   preFilledEventDate?: string;
   preFilledTimeSlot?: string;
+  preFilledEventCategory?: string;
   singerId?: string;
 }
 
@@ -85,6 +88,7 @@ const BookingSinger: React.FC = () => {
   const [, setPaymentLoading] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [singer, setSinger] = useState<Singer | null>(null);
+  const [eventCategories, setEventCategories] = useState<EventCategory[]>([]);
   const [bookingTotalAmount, setBookingTotalAmount] = useState<number | null>(null);
   const [priceConfirmed, setPriceConfirmed] = useState(false);
   const [checkoutId, setCheckoutId] = useState<string>("");
@@ -104,7 +108,7 @@ const BookingSinger: React.FC = () => {
       timeSlot:
         ((state?.preFilledTimeSlot as "morning" | "afternoon" | "evening") ||
         "") as BookingFormData["timeSlot"],
-      eventType: "",
+      eventType: state?.preFilledEventCategory || "",
       venueName: "",
       venueAddress: "",
       city: "",
@@ -151,6 +155,15 @@ const BookingSinger: React.FC = () => {
     };
     fetchSingerData();
   }, [state?.singerId]);
+
+  // Fetch the admin-managed event category list (used to render the Event Type dropdown with
+  // real labels instead of the old hardcoded options).
+  useEffect(() => {
+    eventCategoryService
+      .getAllEventCategories()
+      .then((res) => setEventCategories(res.categories || []))
+      .catch((err) => console.error("Failed to fetch event categories:", err));
+  }, []);
 
   // Fetch user profile to get email and phone number
   useEffect(() => {
@@ -262,17 +275,16 @@ const BookingSinger: React.FC = () => {
     }
   }, [formValues.eventDate, unavailability, formValues.timeSlot, setValue]);
 
-  // Base price only. Hourly and location surcharge pricing are disabled.
   const slotDurationMap: Record<string, number> = {
     morning: 4,   // 8:00 AM - 12:00 PM
     afternoon: 6, // 12:00 PM - 6:00 PM
     evening: 6,   // 6:00 PM - 12:00 AM
   };
   const duration = slotDurationMap[formValues.timeSlot] || 1;
-  // const extraHours = Math.max(0, duration - 1);
-  const baseFee = singer?.pricing?.base_price || 0;
-  // const extraFee = extraHours * (singer?.pricing?.extra_hour_price || 0);
-  // const surcharge = singer?.pricing?.location_surcharge || 0;
+  // Price is category-specific, not a flat base price — reactive to the selected Event Type
+  // (formValues.eventType holds the category's categoryId; see eventCategoryOptions below).
+  const selectedCategory = eventCategories.find((c) => c.categoryId === formValues.eventType);
+  const baseFee = (formValues.eventType && singer?.categoryPricing?.[formValues.eventType]?.price) || 0;
   const totalPrice = baseFee;
 
   // Fetch HyperPay checkout when summary is shown
@@ -394,7 +406,9 @@ const BookingSinger: React.FC = () => {
         singerId,
         eventDate: data.eventDate,
         timeSlot: convertTimeSlotToAPI(data.timeSlot),
-        eventType: data.eventType.charAt(0).toUpperCase() + data.eventType.slice(1),
+        // data.eventType holds the selected category's categoryId (see eventCategoryOptions) —
+        // the backend resolves and locks the singer's price for it at submission time.
+        eventCategory: data.eventType,
         venueName: data.venueName,
         venueAddress: data.venueAddress,
         city: data.city,
@@ -445,13 +459,11 @@ const BookingSinger: React.FC = () => {
     }
   };
 
-  const eventTypeOptions = [
-    { value: "wedding", label: "Wedding" },
-    { value: "corporate", label: "Corporate Event" },
-    { value: "birthday", label: "Birthday Party" },
-    { value: "virtual", label: "Virtual Event" },
-    { value: "other", label: "Other" },
-  ];
+  // Only offer event categories this singer has actually priced — otherwise the price couldn't
+  // be resolved at booking-request submission (see createBookingHandler on the backend).
+  const eventTypeOptions = eventCategories
+    .filter((category) => singer?.categoryPricing?.[category.categoryId]?.price)
+    .map((category) => ({ value: category.categoryId, label: category.label }));
 
   const guestOptions = [
     { value: "0-50", label: "0-50 guests" },
@@ -638,14 +650,14 @@ const BookingSinger: React.FC = () => {
                 <CreditCard className="h-5 w-5 text-primary" />
                 Payment Summary
               </h3>
-              {singer?.pricing ? (
+              {baseFee > 0 ? (
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-[#6F5D9E]">Selected Time Slot:</span>
                     <span className="text-[#2E1B4D] font-medium">{duration} hour{duration !== 1 ? 's' : ''}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#6F5D9E]">Base Price:</span>
+                    <span className="text-[#6F5D9E]">{selectedCategory?.label || "Price"}:</span>
                     <span className="text-[#2E1B4D] font-medium">SAR {baseFee.toLocaleString()}</span>
                   </div>
                   {/* Extra hour charges disabled
@@ -1040,14 +1052,14 @@ const BookingSinger: React.FC = () => {
             </h2>
             <div className="space-y-6">
               {/* Pricing Summary */}
-              {singer?.pricing ? (
+              {baseFee > 0 ? (
                 <div className="bg-[#F9F7FF] rounded-2xl p-6 space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-[#6F5D9E]">Selected Time Slot:</span>
                     <span className="text-[#2E1B4D] font-semibold">{duration} hour{duration !== 1 ? 's' : ''}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-[#6F5D9E]">Base Price:</span>
+                    <span className="text-[#6F5D9E]">{selectedCategory?.label || "Price"}:</span>
                     <span className="text-[#2E1B4D] font-semibold">SAR {baseFee.toLocaleString()}</span>
                   </div>
                   {/* Extra hour charges disabled

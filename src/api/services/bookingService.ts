@@ -9,7 +9,9 @@ export interface CreateBookingData {
   singerId: string;
   eventDate: string;
   timeSlot: string;
-  eventType: string;
+  // The event category's categoryId (e.g. "weddings") — the backend resolves and locks the
+  // singer's price for this category at booking-request submission (see createBookingHandler).
+  eventCategory: string;
   venueName: string;
   venueAddress: string;
   city: string;
@@ -42,7 +44,13 @@ export interface BookingDetails {
   userId: string;
   eventDate: string;
   timeSlot: string;
+  // Frozen snapshot of the category's *label* at booking time (see createBookingHandler) —
+  // stays accurate even if the category is later renamed.
   eventType: string;
+  eventCategoryId?: string;
+  // The locked price for this booking's event category, resolved at request-submission time.
+  // Never affected by the singer changing their category pricing afterward.
+  categoryPriceAtBooking?: number;
   venueName: string;
   venueAddress: string;
   city: string;

@@ -52,7 +52,8 @@ const SearchResults: React.FC = () => {
   // Fetch singers from API
   useEffect(() => {
     fetchSingers();
-  }, [query.singerName, filters.cities]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query.singerName, filters.cities, filters.eventTypes]);
 
   const fetchSingers = async () => {
     try {
@@ -60,6 +61,9 @@ const SearchResults: React.FC = () => {
       const response = await singerService.searchSingers({
         name: query.singerName || undefined,
         city: filters.cities.length > 0 ? filters.cities[0] : undefined,
+        // A singer who doesn't offer this category is excluded from the response entirely (see
+        // getAllSingersHandler) — not just deprioritized — so no client-side filtering is needed.
+        eventCategory: filters.eventTypes.length > 0 ? filters.eventTypes[0] : undefined,
         limit: 50, // Fetch more results since we're doing client-side filtering
       });
       setApiSingers(response.singers || []);
@@ -74,9 +78,20 @@ const SearchResults: React.FC = () => {
   // Use only API results
   const allSingers = apiSingers;
 
+  // A singer's cheapest priced category — used as their "starting from" price when no category
+  // filter is active. When a category filter *is* active, the backend already returns that
+  // category's specific price as matchedCategoryPrice (see getMinCategoryPrice fallback below).
+  const getMinCategoryPrice = (it: Singer): number => {
+    const prices = Object.values(it.categoryPricing || {}).map((entry) => entry.price);
+    return prices.length > 0 ? Math.min(...prices) : 0;
+  };
+
+  const getDisplayPrice = (it: Singer): number =>
+    it.matchedCategoryPrice != null ? it.matchedCategoryPrice : getMinCategoryPrice(it);
+
   const filteredItems = useMemo(() => {
     return allSingers.filter((it) => {
-      const price = it.pricing?.base_price || 0;
+      const price = getDisplayPrice(it);
       const inPrice =
         price >= filters.priceRange.min &&
         price <= filters.priceRange.max;
@@ -218,6 +233,8 @@ const SearchResults: React.FC = () => {
                     serviceTitle={genre}
                     isInWishlist={wishlist.includes(it.userId)}
                     onViewDetails={() => navigate(`/singers/${it.userId}`)}
+                    price={getDisplayPrice(it) || undefined}
+                    isPriceForSelectedCategory={it.matchedCategoryPrice != null}
                   />
                 );
               })}

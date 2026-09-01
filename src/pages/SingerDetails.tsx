@@ -168,7 +168,7 @@ const SingerDetails: React.FC = () => {
         <ProfileSidebar
           id={singer.userId}
           name={name}
-          pricing={singer.pricing}
+          categoryPricing={singer.categoryPricing}
           city={singer.city}
           isVerified={singer.isVerified}
           unavailability={unavailability}

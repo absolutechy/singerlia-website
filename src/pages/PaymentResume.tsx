@@ -83,9 +83,11 @@ const PaymentResume: React.FC = () => {
           const singerData = await singerService.getSingerById(fetched.singerId);
           if (!cancelled && singerData) {
             setSinger(singerData);
+            // Fall back to the booking's own locked price (resolved at request-submission time),
+            // never the singer's live pricing — a later price change must not affect this booking.
             if (!fetched.totalAmount) {
-              const basePrice = singerData.pricing?.base_price;
-              setAmount(basePrice != null ? Number(basePrice) : null);
+              const lockedPrice = fetched.categoryPriceAtBooking;
+              setAmount(lockedPrice != null ? Number(lockedPrice) : null);
             }
           }
         }

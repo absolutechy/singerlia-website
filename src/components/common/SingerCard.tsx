@@ -25,9 +25,13 @@ interface SingerCardProps {
   responseTime?: string;
   singerId?: string;
   isInWishlist?: boolean;
+  // The category-specific price when a category filter is active, else a "From X SAR" minimum
+  // across the singer's offered categories. Omit when the singer has priced nothing yet.
+  price?: number;
+  isPriceForSelectedCategory?: boolean;
 }
 
-const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Artist Name here", serviceTitle, images, responseTime = "Responds within 1/hr", singerId, isInWishlist = false } ) => {
+const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Artist Name here", serviceTitle, images, responseTime = "Responds within 1/hr", singerId, isInWishlist = false, price, isPriceForSelectedCategory = false } ) => {
   const uniqueId = useId();
   const uniqueBase = useMemo(() => uniqueId.replace(/:/g, ""), [uniqueId]);
   const paginationClass = `swiper-pagination-${uniqueBase}`;
@@ -148,7 +152,14 @@ const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Artist N
           <ArrowRight className="h-5 w-5" />
         </button>
       </div>
-      {serviceTitle && <p className="text-lg font-medium text-primary py-3">{serviceTitle}</p>}
+      <div className="flex items-center justify-between py-3">
+        {serviceTitle && <p className="text-lg font-medium text-primary">{serviceTitle}</p>}
+        {price != null && price > 0 && (
+          <p className="text-sm font-semibold text-[#2E1B4D]">
+            {isPriceForSelectedCategory ? `SAR ${price.toLocaleString()}` : `From SAR ${price.toLocaleString()}`}
+          </p>
+        )}
+      </div>
       <Button
         onClick={onViewDetails}
         size="large"

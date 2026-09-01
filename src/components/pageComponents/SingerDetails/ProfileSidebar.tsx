@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Heart, Share2, Calendar, Clock } from "lucide-react";
 import singer1 from "@/assets/images/singer/singer-detail-1.png";
 import singer2 from "@/assets/images/singer/singer-detail-2.png";
@@ -20,12 +20,13 @@ import {
 } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Button as UIButton } from "@/components/ui/button";
-import type { Pricing } from "@/api/services/singerService";
+import type { CategoryPricing } from "@/api/services/singerService";
+import eventCategoryService, { type EventCategory } from "@/api/services/eventCategoryService";
 
 type Props = {
   name: string;
   id: string;
-  pricing?: Pricing;
+  categoryPricing?: CategoryPricing;
   city?: string;
   isVerified?: boolean;
   unavailability?: UnavailabilityRecord[];
@@ -42,12 +43,28 @@ const buildShareUrl = (singerId: string) => {
   return `${apiOrigin}/singer/share/${singerId}`;
 };
 
-const ProfileSidebar: React.FC<Props> = ({ name, id, pricing, city, isVerified, unavailability = [], averageRating = 0, reviewCount = 0 }) => {
+const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVerified, unavailability = [], averageRating = 0, reviewCount = 0 }) => {
   const [shareOpen, setShareOpen] = useState(false);
   const [eventDate, setEventDate] = useState<Date | undefined>();
   const [timeSlot, setTimeSlot] = useState("");
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [eventCategories, setEventCategories] = useState<EventCategory[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    eventCategoryService
+      .getAllEventCategories()
+      .then((res) => setEventCategories(res.categories || []))
+      .catch((err) => console.error("Failed to fetch event categories:", err));
+  }, []);
+
+  // Only the categories this singer has actually priced — a category they don't offer can't be
+  // selected here at all (matches the search-side exclusion rule).
+  const offeredCategories = eventCategories.filter(
+    (category) => categoryPricing?.[category.categoryId]?.price
+  );
+  const selectedPrice = selectedCategory ? categoryPricing?.[selectedCategory]?.price : undefined;
 
   const timeSlotOptions = [
     { value: "morning", label: "Morning (8:00 AM onwards)" },
@@ -94,6 +111,7 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, pricing, city, isVerified, 
       state: {
         preFilledEventDate: dateString,
         preFilledTimeSlot: timeSlot,
+        preFilledEventCategory: selectedCategory,
         singerId: id,
       },
     });
@@ -150,32 +168,32 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, pricing, city, isVerified, 
 
       {/* Pricing & Booking card */}
       <div className="rounded-2xl bg-white px-2.5 sm:px-5 py-6 shadow border border-[#EBE4FF] space-y-4">
-        {/* Pricing Info */}
-        {pricing && (
-          <div className="space-y-2 pb-4 border-b border-[#E7DEFF]">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-[#6F5D9E]">Base Price</span>
-              <span className="text-lg font-bold text-[#2E1B4D]">SAR {pricing.base_price}</span>
-            </div>
-            {/* Extra-hour pricing disabled; events use base price only. */}
-            {/*
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-[#6F5D9E]">Extra Hour</span>
-              <span className="text-sm font-semibold text-[#2E1B4D]">SAR {pricing.extra_hour_price}</span>
-            </div>
-            */}
-            {/* Location surcharge disabled; events use base price only. */}
-            {/*
-            {pricing.location_surcharge > 0 && (
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-[#6F5D9E]">Location Surcharge</span>
-                <span className="text-sm font-semibold text-[#2E1B4D]">SAR {pricing.location_surcharge}</span>
+        {/* Event Category Selector — price is category-specific, so nothing is shown until one is picked */}
+        {offeredCategories.length > 0 && (
+          <div className="pb-4 border-b border-[#E7DEFF]">
+            <label className="text-sm font-semibold text-[#1C1C1C] mb-2 block">Event Type</label>
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="w-full border border-[#E7DEFF] rounded-lg text-[#2E1B4D]">
+                <SelectValue placeholder="Select event type" />
+              </SelectTrigger>
+              <SelectContent className="bg-white">
+                {offeredCategories.map((category) => (
+                  <SelectItem key={category.categoryId} value={category.categoryId}>
+                    {category.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {selectedPrice !== undefined && (
+              <div className="flex justify-between items-center mt-3">
+                <span className="text-sm text-[#6F5D9E]">Price</span>
+                <span className="text-lg font-bold text-[#2E1B4D]">SAR {selectedPrice}</span>
               </div>
             )}
-            */}
           </div>
         )}
-        
+
         {/* Event Date Selector */}
         <div>
           <label className="text-sm font-semibold text-[#1C1C1C] flex items-center gap-2 mb-2">
