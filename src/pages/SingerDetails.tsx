@@ -187,6 +187,7 @@ const SingerDetails: React.FC = () => {
           unavailability={unavailability}
           averageRating={averageRating}
           reviewCount={reviewCount}
+          responseTimeHours={singer.responseTimeHours}
         />
 
         {/* Right content */}

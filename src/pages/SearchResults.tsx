@@ -252,6 +252,7 @@ const SearchResults: React.FC = () => {
                     name={name}
                     serviceTitle={genre}
                     isInWishlist={wishlist.includes(it.userId)}
+                    responseTimeHours={it.responseTimeHours}
                     onViewDetails={() => navigate(`/singers/${it.userId}`)}
                     price={getDisplayPrice(it) || undefined}
                     isPriceForSelectedCategory={it.matchedCategoryPrice != null}

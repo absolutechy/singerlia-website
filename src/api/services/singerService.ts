@@ -67,6 +67,10 @@ export interface Singer {
   highlight: string;
   isSingerApproved: boolean;
   singerProfile?: SingerProfile;
+  // Average time this singer has taken to reply to a customer's first message, in whole hours.
+  // null — not 0 — until they've actually replied to at least one message; render nothing for
+  // null rather than claiming a response time with no evidence behind it.
+  responseTimeHours: number | null;
 }
 
 export interface SingerSearchResponse {

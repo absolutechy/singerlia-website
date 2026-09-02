@@ -24,7 +24,9 @@ interface SingerCardProps {
   name?: string;
   serviceTitle?: string;
   images?: string[];
-  responseTime?: string;
+  // Average reply time in whole hours. null/undefined — no evidence yet — renders nothing,
+  // rather than claiming a response time the singer hasn't earned.
+  responseTimeHours?: number | null;
   singerId?: string;
   isInWishlist?: boolean;
   // The category-specific price when a category filter is active, else a "From X SAR" minimum
@@ -33,7 +35,7 @@ interface SingerCardProps {
   isPriceForSelectedCategory?: boolean;
 }
 
-const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Artist Name here", serviceTitle, images, responseTime = "Responds within 1/hr", singerId, isInWishlist = false, price, isPriceForSelectedCategory = false } ) => {
+const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Artist Name here", serviceTitle, images, responseTimeHours, singerId, isInWishlist = false, price, isPriceForSelectedCategory = false } ) => {
   const uniqueId = useId();
   const uniqueBase = useMemo(() => uniqueId.replace(/:/g, ""), [uniqueId]);
   const paginationClass = `swiper-pagination-${uniqueBase}`;
@@ -107,7 +109,9 @@ const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Artist N
           <div className="grid grid-cols-2 items-center justify-between gap-4">
             <div>
               <p className="text-base font-medium">{name}</p>
-              <p className="text-xs">{responseTime}</p>
+              {responseTimeHours != null && (
+                <p className="text-xs">Responds within {responseTimeHours}hr</p>
+              )}
             </div>
             <div className={`${paginationClass} flex items-center justify-end gap-1.5`}></div>
           </div>

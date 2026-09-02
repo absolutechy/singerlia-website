@@ -34,6 +34,8 @@ type Props = {
   unavailability?: UnavailabilityRecord[];
   averageRating?: number;
   reviewCount?: number;
+  // Average reply time in whole hours. null/undefined — no evidence yet — renders nothing.
+  responseTimeHours?: number | null;
 };
 
 // Backend endpoint that serves Open Graph/Twitter Card meta tags to link-preview crawlers
@@ -45,7 +47,7 @@ const buildShareUrl = (singerId: string) => {
   return `${apiOrigin}/singer/share/${singerId}`;
 };
 
-const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVerified, unavailability = [], averageRating = 0, reviewCount = 0 }) => {
+const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVerified, unavailability = [], averageRating = 0, reviewCount = 0, responseTimeHours }) => {
   const [shareOpen, setShareOpen] = useState(false);
   const [eventDate, setEventDate] = useState<Date | undefined>();
   const [timeSlot, setTimeSlot] = useState("");
@@ -183,7 +185,8 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVe
                 )}
               </div>
               <p className="text-sm text-[#6F5D9E]">
-                {city || "Saudi Arabia"} • Responds within 1/hr
+                {city || "Saudi Arabia"}
+                {responseTimeHours != null && ` • Responds within ${responseTimeHours}hr`}
               </p>
             </div>
 

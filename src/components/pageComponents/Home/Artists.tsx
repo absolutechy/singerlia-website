@@ -89,6 +89,7 @@ const Artists: React.FC = () => {
                   serviceTitle={genre}
                   images={images}
                   isInWishlist={wishlist.includes(singer.userId)}
+                  responseTimeHours={singer.responseTimeHours}
                   onViewDetails={() => navigate(`/singers/${singer.userId}`)}
                 />
               );
