@@ -76,6 +76,10 @@ export interface Singer {
   // null — not 0 — until they've actually replied to at least one message; render nothing for
   // null rather than claiming a response time with no evidence behind it.
   responseTimeHours: number | null;
+  // Up to 3 presigned, publicly-loadable portfolio photo thumbnails for the search-card
+  // carousel. Empty when the singer hasn't uploaded any portfolio photos yet — fall back to the
+  // card's own default images rather than rendering an empty carousel.
+  photoUrls: string[];
 }
 
 export interface SingerSearchResponse {

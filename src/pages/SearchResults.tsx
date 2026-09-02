@@ -241,14 +241,12 @@ const SearchResults: React.FC = () => {
               {filteredItems.slice(0, visibleCount).map((it) => {
                 const name = it.name || "Artist";
                 const genre = getGenreLabels(it) || "Artist";
-                // For now, use placeholder images since API doesn't return profile images yet
-                const images: string[] = [];
-                
+
                 return (
                   <SingerCard
                     key={it.userId}
                     singerId={it.userId}
-                    images={images}
+                    images={it.photoUrls?.length > 0 ? it.photoUrls : undefined}
                     name={name}
                     serviceTitle={genre}
                     isInWishlist={wishlist.includes(it.userId)}

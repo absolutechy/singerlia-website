@@ -78,16 +78,14 @@ const Artists: React.FC = () => {
             {displayedSingers.map((singer) => {
               const name = singer.name || "Artist";
               const genre = getGenreLabels(singer) || "Artist";
-              // For now, use placeholder images since API doesn't return profile images yet
-              const images: string[] = [];
-              
+
               return (
                 <SingerCard
                   key={singer.userId}
                   singerId={singer.userId}
                   name={name}
                   serviceTitle={genre}
-                  images={images}
+                  images={singer.photoUrls?.length > 0 ? singer.photoUrls : undefined}
                   isInWishlist={wishlist.includes(singer.userId)}
                   responseTimeHours={singer.responseTimeHours}
                   onViewDetails={() => navigate(`/singers/${singer.userId}`)}
