@@ -50,11 +50,28 @@ const ShareModal: React.FC<Props> = ({ open, onClose, name, profileUrl, averageR
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(shareText);
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareText);
+      } else {
+        // Clipboard API is unavailable (non-secure context, unsupported browser, or blocked by a
+        // Permissions Policy) — fall back to the legacy execCommand approach instead of doing
+        // nothing, which is what made this button look completely unresponsive.
+        const textarea = document.createElement("textarea");
+        textarea.value = shareText;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        const succeeded = document.execCommand("copy");
+        document.body.removeChild(textarea);
+        if (!succeeded) throw new Error("execCommand copy failed");
+      }
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
-    } catch {
-      // ignore
+    } catch (error) {
+      console.error("Failed to copy link:", error);
+      toast.error("Failed to copy link. Please copy it manually.");
     }
   };
 
@@ -116,6 +133,7 @@ const ShareModal: React.FC<Props> = ({ open, onClose, name, profileUrl, averageR
     onClick?: () => void;
   }> = ({ icon, label, onClick }) => (
     <button
+      type="button"
       onClick={onClick}
       className="flex items-center justify-center gap-2 rounded-xl border border-[#000] bg-white px-4 py-3 text-[#1C1C1C] shadow-sm hover:bg-gray-50"
     >

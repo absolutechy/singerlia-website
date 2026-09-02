@@ -20,8 +20,10 @@ import {
 } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Button as UIButton } from "@/components/ui/button";
-import type { CategoryPricing } from "@/api/services/singerService";
+import singerService, { type CategoryPricing } from "@/api/services/singerService";
 import eventCategoryService, { type EventCategory } from "@/api/services/eventCategoryService";
+import authService from "@/api/services/authService";
+import { toast } from "sonner";
 
 type Props = {
   name: string;
@@ -50,6 +52,8 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVe
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [eventCategories, setEventCategories] = useState<EventCategory[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -58,6 +62,39 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVe
       .then((res) => setEventCategories(res.categories || []))
       .catch((err) => console.error("Failed to fetch event categories:", err));
   }, []);
+
+  useEffect(() => {
+    if (!authService.isAuthenticated()) return;
+    singerService
+      .getWishlist()
+      .then((wishlist) => setIsWishlisted(wishlist.includes(id)))
+      .catch((err) => console.error("Failed to fetch wishlist:", err));
+  }, [id]);
+
+  const handleWishlistClick = async () => {
+    if (!authService.isAuthenticated()) {
+      toast.error("Please log in to save singers to your wishlist.");
+      return;
+    }
+
+    setWishlistLoading(true);
+    try {
+      if (isWishlisted) {
+        await singerService.removeFromWishlist(id);
+        setIsWishlisted(false);
+        toast.success("Removed from wishlist.");
+      } else {
+        await singerService.addToWishlist(id);
+        setIsWishlisted(true);
+        toast.success("Added to wishlist!");
+      }
+    } catch (error) {
+      console.error("Wishlist error:", error);
+      toast.error("Failed to update wishlist. Please try again.");
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
 
   // Only the categories this singer has actually priced — a category they don't offer can't be
   // selected here at all (matches the search-side exclusion rule).
@@ -157,8 +194,16 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVe
             >
               <Share2 size={18} className="text-[#6F5D9E]" />
             </button>
-            <button className="h-10 w-10 rounded-full border border-[#E7DEFF] bg-white flex items-center justify-center">
-              <Heart size={18} className="text-[#6F5D9E]" />
+            <button
+              onClick={handleWishlistClick}
+              disabled={wishlistLoading}
+              aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+              className="h-10 w-10 rounded-full border border-[#E7DEFF] bg-white flex items-center justify-center disabled:opacity-50"
+            >
+              <Heart
+                size={18}
+                className={isWishlisted ? "text-red-500 fill-red-500" : "text-[#6F5D9E]"}
+              />
             </button>
           </div>
           </div>

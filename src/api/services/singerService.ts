@@ -151,6 +151,17 @@ const singerService = {
     const response = await axiosInstance.get<{ message: string; wishlist: string[] }>('/singer/user/get-wishlist');
     return response.data.wishlist || [];
   },
+
+  /**
+   * Remove singer from wishlist
+   * @param singerId - The ID of the singer to remove from wishlist
+   */
+  removeFromWishlist: async (singerId: string): Promise<{ message: string }> => {
+    const response = await axiosInstance.delete('/singer/remove-from-wishlist', {
+      data: { singerId },
+    });
+    return response.data;
+  },
 };
 
 export default singerService;
