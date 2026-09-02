@@ -6,6 +6,8 @@ import 'swiper/swiper-bundle.css';
 import type { Swiper as SwiperInstance } from 'swiper';
 import logo from "@/assets/images/common/artise-card.png";
 import singerperson from "@/assets/images/singer/singerperson.png";
+import profileThumbnail01 from "@/assets/images/singer/profile_thumbnail01.png";
+import profileThumbnail02 from "@/assets/images/singer/profile_thumbnail02.png";
 import Button from "./Button";
 import { toast } from "sonner";
 import singerService from "@/api/services/singerService";
@@ -13,8 +15,8 @@ import singerService from "@/api/services/singerService";
 // Default images used when none are provided
 const defaultSingerImages = [
   singerperson,
-  singerperson,
-  singerperson,
+  profileThumbnail01,
+  profileThumbnail02,
 ];
 
 interface SingerCardProps {
@@ -125,10 +127,10 @@ const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Artist N
           onSlideChange={updateNavState}
           className="w-full h-64 rounded-xl"
         >
-          {imgs.map((_image, index) => (
+          {imgs.map((image, index) => (
             <SwiperSlide key={`singer-slide-${index}`}>
-              <img 
-                src={singerperson}
+              <img
+                src={image}
                 alt={`Singer ${index + 1}`}
                 className="w-full h-64 object-cover rounded-xl"
               />
