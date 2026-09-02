@@ -301,6 +301,7 @@ const SingerDetails: React.FC = () => {
           open={messageOpen}
           onClose={() => setMessageOpen(false)}
           name={name}
+          singerId={singer.userId}
         />
         
         {/* Reviews Modal */}
