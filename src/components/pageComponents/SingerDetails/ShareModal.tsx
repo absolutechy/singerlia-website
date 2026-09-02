@@ -135,7 +135,7 @@ const ShareModal: React.FC<Props> = ({ open, onClose, name, profileUrl, averageR
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center justify-center gap-2 rounded-xl border border-[#000] bg-white px-4 py-3 text-[#1C1C1C] shadow-sm hover:bg-gray-50"
+      className="w-full flex items-center justify-center gap-2 rounded-xl border border-[#000] bg-white px-4 py-3 text-[#1C1C1C] shadow-sm hover:bg-gray-50"
     >
       {icon}
       <span className="font-medium text-base">{label}</span>
