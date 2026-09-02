@@ -32,7 +32,7 @@ const MessageModal: React.FC<Props> = ({ open, onClose, name }) => {
           <textarea
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
-            // onChange={(e) => setMessageText(e.target.value.slice(0, 100))}
+            maxLength={100}
             placeholder={
               'Example" Hi! I\'m planning a my birthday and was wondering if you\'re available the weekend of January 01 for 200 people ready to experience your singing.'
             }
@@ -40,12 +40,12 @@ const MessageModal: React.FC<Props> = ({ open, onClose, name }) => {
           />
         </div>
         <div className="mt-1 text-right text-xs text-[#6F5D9E]">
-          {messageText.length} out of 100 required characters
+          {messageText.length} / 100 characters
         </div>
       </div>
 
       <div className="mt-6">
-        <Button variant="primary" className="w-full" disabled={messageText.length < 100}>
+        <Button variant="primary" className="w-full" disabled={messageText.trim().length === 0}>
           Send message
         </Button>
       </div>
