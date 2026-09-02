@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Heart, Share2, Calendar, Clock } from "lucide-react";
-import singer1 from "@/assets/images/singer/singer-detail-1.png";
-import singer2 from "@/assets/images/singer/singer-detail-2.png";
+import singer2 from "@/assets/images/singer/singer-detail-3.png";
+import singeravatar from "@/assets/images/singer/singer_avatar.jpg"
 import ShareModal from "@/components/pageComponents/SingerDetails/ShareModal";
 import { Button } from "@/components/common";
 import { useNavigate } from "react-router";
@@ -129,7 +129,7 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVe
           />
           {/* small avatar */}
           <img
-            src={singer1}
+            src={singeravatar}
             alt="avatar"
             className="h-14 w-14 z-10 rounded-full object-cover absolute -bottom-7 left-4 border-4 border-white"
           />
@@ -194,73 +194,74 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVe
           </div>
         )}
 
-        {/* Event Date Selector */}
-        <div>
-          <label className="text-sm font-semibold text-[#1C1C1C] flex items-center gap-2 mb-2">
-            <Calendar className="h-4 w-4 text-primary" />
-            Event Date
-          </label>
-          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-            <PopoverTrigger asChild>
-              <UIButton
-                variant="outline"
-                className="w-full justify-start text-left font-normal border border-[#E7DEFF] rounded-lg text-[#2E1B4D]"
-              >
-                {eventDate ? eventDate.toLocaleDateString() : "Pick a date"}
-              </UIButton>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 bg-white!" align="start">
-              <CalendarComponent
-                mode="single"
-                selected={eventDate}
-                onSelect={(date) => {
-                  setEventDate(date);
-                  setTimeSlot(""); // Reset time slot when date changes
-                  setCalendarOpen(false);
-                }}
-                disabled={(date) => {
-                  // Disable past dates
-                  const today = new Date();
-                  today.setHours(0, 0, 0, 0);
-                  if (date < today) return true;
-                  
-                  // Disable dates where all time slots are unavailable
-                  return isDateFullyUnavailable(date);
-                }}
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
+        {/* Event Date + Time Slot Selectors — side by side on desktop, stacked on mobile */}
+        <div className="lg:flex lg:gap-3">
+          <div className="lg:flex-1 lg:min-w-0">
+            <label className="text-sm font-semibold text-[#1C1C1C] flex items-center gap-2 mb-2">
+              <Calendar className="h-4 w-4 text-primary" />
+              Event Date
+            </label>
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+              <PopoverTrigger asChild>
+                <UIButton
+                  variant="outline"
+                  className="w-full justify-start text-left font-normal border border-[#E7DEFF] rounded-lg text-[#2E1B4D]"
+                >
+                  {eventDate ? eventDate.toLocaleDateString() : "Pick a date"}
+                </UIButton>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 bg-white!" align="start">
+                <CalendarComponent
+                  mode="single"
+                  selected={eventDate}
+                  onSelect={(date) => {
+                    setEventDate(date);
+                    setTimeSlot(""); // Reset time slot when date changes
+                    setCalendarOpen(false);
+                  }}
+                  disabled={(date) => {
+                    // Disable past dates
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    if (date < today) return true;
 
-        {/* Time Slot Selector */}
-        <div>
-          <label className="text-sm font-semibold text-[#1C1C1C] flex items-center gap-2 mb-2">
-            <Clock className="h-4 w-4 text-primary" />
-            Time Slot
-          </label>
-          <Select 
-            value={timeSlot}  
-            onValueChange={setTimeSlot}
-            disabled={!eventDate || availableTimeSlots.length === 0}
-          >
-            <SelectTrigger className="w-full border border-[#E7DEFF] rounded-lg text-[#2E1B4D]">
-              <SelectValue placeholder={!eventDate ? "Select a date first" : "Select time slot"} />
-            </SelectTrigger>
-            <SelectContent className="bg-white">
-              {availableTimeSlots.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {eventDate && unavailableSlots.length > 0 && (
-            <p className="text-xs text-orange-600 mt-1">
-              {unavailableSlots.length === 3
-                ? "No time slots available for this date"
-                : `${availableTimeSlots.length} slot(s) available`}
-            </p>
-          )}
+                    // Disable dates where all time slots are unavailable
+                    return isDateFullyUnavailable(date);
+                  }}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <div className="mt-4 lg:mt-0 lg:flex-1 lg:min-w-0">
+            <label className="text-sm font-semibold text-[#1C1C1C] flex items-center gap-2 mb-2">
+              <Clock className="h-4 w-4 text-primary" />
+              Time Slot
+            </label>
+            <Select
+              value={timeSlot}
+              onValueChange={setTimeSlot}
+              disabled={!eventDate || availableTimeSlots.length === 0}
+            >
+              <SelectTrigger className="w-full border border-[#E7DEFF] rounded-lg text-[#2E1B4D]">
+                <SelectValue placeholder={!eventDate ? "Select a date first" : "Select time slot"} />
+              </SelectTrigger>
+              <SelectContent className="bg-white">
+                {availableTimeSlots.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {eventDate && unavailableSlots.length > 0 && (
+              <p className="text-xs text-orange-600 mt-1">
+                {unavailableSlots.length === 3
+                  ? "No time slots available for this date"
+                  : `${availableTimeSlots.length} slot(s) available`}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Book Artist Button */}
