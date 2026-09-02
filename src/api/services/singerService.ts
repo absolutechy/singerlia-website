@@ -46,6 +46,11 @@ export interface SingerProfile {
   social_links: SocialLinks;
   photos: PhotoFile[];
   youtube_links: string[];
+  // Presigned, publicly-loadable URLs — set by the backend only when the singer has actually
+  // uploaded one (see the singer portal's Profile Photos section). null/undefined otherwise;
+  // callers should fall back to a default image rather than rendering a broken <img>.
+  avatarPhotoUrl?: string | null;
+  coverPhotoUrl?: string | null;
 }
 
 export interface Singer {

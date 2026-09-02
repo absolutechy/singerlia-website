@@ -188,6 +188,8 @@ const SingerDetails: React.FC = () => {
           averageRating={averageRating}
           reviewCount={reviewCount}
           responseTimeHours={singer.responseTimeHours}
+          avatarUrl={singer.singerProfile?.avatarPhotoUrl}
+          coverUrl={singer.singerProfile?.coverPhotoUrl}
         />
 
         {/* Right content */}

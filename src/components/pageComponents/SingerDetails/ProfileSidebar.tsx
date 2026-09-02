@@ -36,6 +36,10 @@ type Props = {
   reviewCount?: number;
   // Average reply time in whole hours. null/undefined — no evidence yet — renders nothing.
   responseTimeHours?: number | null;
+  // Set from the singer portal's Profile Photos section. Falls back to the default images below
+  // when the singer hasn't uploaded their own yet.
+  avatarUrl?: string | null;
+  coverUrl?: string | null;
 };
 
 // Backend endpoint that serves Open Graph/Twitter Card meta tags to link-preview crawlers
@@ -47,7 +51,7 @@ const buildShareUrl = (singerId: string) => {
   return `${apiOrigin}/singer/share/${singerId}`;
 };
 
-const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVerified, unavailability = [], averageRating = 0, reviewCount = 0, responseTimeHours }) => {
+const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVerified, unavailability = [], averageRating = 0, reviewCount = 0, responseTimeHours, avatarUrl, coverUrl }) => {
   const [shareOpen, setShareOpen] = useState(false);
   const [eventDate, setEventDate] = useState<Date | undefined>();
   const [timeSlot, setTimeSlot] = useState("");
@@ -162,13 +166,13 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVe
       <div className="rounded-3xl bg-white p-2 sm:p-4">
         <div className="relative">
           <img
-            src={singer2}
+            src={coverUrl || singer2}
             alt="cover"
             className="w-full rounded-2xl h-52 object-cover overflow-hidden"
           />
           {/* small avatar */}
           <img
-            src={singeravatar}
+            src={avatarUrl || singeravatar}
             alt="avatar"
             className="h-14 w-14 z-10 rounded-full object-cover absolute -bottom-7 left-4 border-4 border-white"
           />
