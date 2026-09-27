@@ -3,9 +3,11 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import singerService, { type Singer } from "@/api/services/singerService";
 import genreService, { type Genre } from "@/api/services/genreService";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const Artists: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [singers, setSingers] = useState<Singer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -43,7 +45,7 @@ const Artists: React.FC = () => {
       setError("");
     } catch (err: any) {
       console.error("Failed to fetch featured singers:", err);
-      setError("Failed to load featured artists");
+      setError(t("home.featuredError"));
     } finally {
       setLoading(false);
     }
@@ -55,9 +57,9 @@ const Artists: React.FC = () => {
 
   return (
     <div className="py-10 !px-4 w-full custom-container">
-      <h1 className="font-bold text-4xl lg:text-6xl text-primary text-center">Featured Artists</h1>
+      <h1 className="font-bold text-4xl lg:text-6xl text-primary text-center">{t("home.featuredArtists")}</h1>
       <p className="text-[#666666] text-center">
-        Discover top-rated musicians ready to make your event unforgettable
+        {t("home.featuredSubtitle")}
       </p>
       
       {loading && (
@@ -76,8 +78,8 @@ const Artists: React.FC = () => {
         <>
           <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 my-14">
             {displayedSingers.map((singer) => {
-              const name = singer.name || "Artist";
-              const genre = getGenreLabels(singer) || "Artist";
+              const name = singer.name || t("common.artist");
+              const genre = getGenreLabels(singer) || t("common.artist");
 
               return (
                 <SingerCard
@@ -99,7 +101,7 @@ const Artists: React.FC = () => {
                 onClick={() => setVisibleCount(prev => Math.min(singers.length, prev + 6))}
                 className="text-lg font-medium text-white bg-primary px-5 py-3 rounded-full cursor-pointer shadow-2xl hover:bg-primary/90 transition-colors"
               >
-                Show more
+                {t("common.showMore")}
               </button>
             </div>
           )}

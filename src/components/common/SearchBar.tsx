@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Input from "./Input";
 import Button from "./Button";
 import DatePicker from "./DatePicker";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface SearchBarProps {
   onSearch?: (data: SearchData) => void;
@@ -16,6 +17,7 @@ export interface SearchData {
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
+  const { t } = useLanguage();
   const [searchData, setSearchData] = useState<SearchData>({
     singerName: "",
     city: "",
@@ -60,7 +62,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
         <div className="flex-1 md:border-r-2 md:border-[#CDCDCD] md:pr-4">
           <Input
             type="text"
-            placeholder="Select Artist, Event Type, and Artist Type"
+            placeholder={t("search.placeholder")}
             value={searchData.singerName}
             onChange={(e) => handleInputChange("singerName", e.target.value)}
           />
@@ -69,7 +71,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
         {/* Select Date */}
         <div className="w-full md:w-48">
           <DatePicker
-            placeholder="Event Date"
+            placeholder={t("search.eventDate")}
             value={searchData.date}
             onChange={(value) => handleInputChange("date", value)}
             disabled={disablePastDates}
@@ -84,7 +86,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
           size="large"
           className="flex items-center justify-center gap-2 w-full md:w-auto md:min-w-[140px]"
         >
-          Search
+          {t("common.search")}
         </Button>
       </div>
     </div>

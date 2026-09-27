@@ -13,6 +13,7 @@ import MediaGrid from "@/components/pageComponents/SingerDetails/MediaGrid";
 import IconBubble from "@/components/pageComponents/SingerDetails/IconBubble";
 import ReviewsPreview from "@/components/pageComponents/SingerDetails/ReviewsPreview";
 import FAQSection from "@/components/pageComponents/SingerDetails/FAQSection";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 // FAQ data with dummy answers (UI shows questions only to match design)
 const faqs = [
@@ -39,6 +40,7 @@ const faqs = [
 ];
 
 const SingerDetails: React.FC = () => {
+  const { language, t } = useLanguage();
   const { id } = useParams<{ id: string }>();
   const [singer, setSinger] = useState<Singer | null>(null);
   const [loading, setLoading] = useState(true);
@@ -96,7 +98,7 @@ const SingerDetails: React.FC = () => {
       }
     } catch (err: any) {
       console.error("Failed to fetch singer details:", err);
-      setError("Failed to load singer details");
+      setError(t("singerDetails.loadError"));
     } finally {
       setLoading(false);
     }
@@ -131,13 +133,13 @@ const SingerDetails: React.FC = () => {
     return (
       <div className="custom-container pb-16 flex justify-center items-center min-h-screen">
         <div className="text-center">
-          <p className="text-red-600 text-lg">{error || "Singer not found"}</p>
+          <p className="text-red-600 text-lg">{error || t("singerDetails.notFound")}</p>
         </div>
       </div>
     );
   }
 
-  const name = singer.name || "Artist";
+  const name = singer.name || t("common.artist");
 
   // Single source of truth for the rating badge shown in the Share modal, the reviews preview,
   // and the "all reviews" modal — they must not each compute/hardcode their own number.
@@ -157,20 +159,20 @@ const SingerDetails: React.FC = () => {
   const reviewsPreviewData = singer.reviews?.slice(0, 3).map((review, index) => ({
     id: index + 1,
     name: review.userName,
-    location: "Saudi Arabia", // API doesn't provide location
+    location: t("singerDetails.defaultLocation"), // API doesn't provide location
     avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(review.userName)}&background=random`,
     rating: parseFloat(review.rating) || 0,
-    timeAgo: new Date(review.createdAt).toLocaleDateString(),
+    timeAgo: new Date(review.createdAt).toLocaleDateString(language === "ar" ? "ar-SA" : "en-US"),
   })) || [];
 
   // Transform reviews for modal
   const allReviews = singer.reviews?.map((review, index) => ({
     id: index + 1,
     name: review.userName,
-    location: "Saudi Arabia",
+    location: t("singerDetails.defaultLocation"),
     avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(review.userName)}&background=random`,
     rating: parseFloat(review.rating) || 0,
-    timeAgo: new Date(review.createdAt).toLocaleDateString(),
+    timeAgo: new Date(review.createdAt).toLocaleDateString(language === "ar" ? "ar-SA" : "en-US"),
     text: review.comment,
   })) || [];
 
@@ -211,7 +213,7 @@ const SingerDetails: React.FC = () => {
                 {!isAuthenticated && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-2xl">
                     <div className="bg-white px-6 py-3 rounded-lg shadow-lg">
-                      <p className="text-[#2E1B4D] font-semibold">Please log in to view photos</p>
+                      <p className="text-[#2E1B4D] font-semibold">{t("singerDetails.loginToViewPhotos")}</p>
                     </div>
                   </div>
                 )}
@@ -222,7 +224,7 @@ const SingerDetails: React.FC = () => {
           {/* My Experience header aligned with social icons */}
           <div className="flex items-center justify-between pt-2">
             <h3 className="text-lg lg:text-2xl font-bold text-[#1C1C1C]">
-              About {name.split(" ")[0]}
+              {t("singerDetails.about", { name: name.split(" ")[0] })}
             </h3>
             <div className="flex gap-3">
               {socialLinks.instagram && <IconBubble type="instagram" url={socialLinks.instagram} />}
@@ -236,32 +238,32 @@ const SingerDetails: React.FC = () => {
           <div>
             {singer.singerProfile?.bio && (
               <div className="mb-4">
-                <p className="font-semibold text-[#2F1C4E]">Bio</p>
+                <p className="font-semibold text-[#2F1C4E]">{t("singerDetails.bio")}</p>
                 <p className="text-[#6F5D9E] mt-2">{singer.singerProfile.bio}</p>
               </div>
             )}
             {singer.singerProfile?.experience && (
               <div className="mb-4">
-                <p className="font-semibold text-[#2F1C4E]">Experience</p>
+                <p className="font-semibold text-[#2F1C4E]">{t("singerDetails.experience")}</p>
                 <p className="text-[#6F5D9E] mt-2">{singer.singerProfile.experience}</p>
               </div>
             )}
             <div className="h-px bg-[#E7DEFF] my-4" />
             <ul className="space-y-6 text-[#2F1C4E]">
               <li>
-                <p className="font-semibold">Genre</p>
+                <p className="font-semibold">{t("singerDetails.genre")}</p>
                 <p className="text-[#6F5D9E]">
-                  {genreLabels || "Various genres"}
+                  {genreLabels || t("singerDetails.variousGenres")}
                 </p>
               </li>
               <li>
-                <p className="font-semibold">Location</p>
+                <p className="font-semibold">{t("singerDetails.location")}</p>
                 <p className="text-[#6F5D9E]">{singer.city}{singer.address ? `, ${singer.address}` : ""}</p>
               </li>
               <li>
-                <p className="font-semibold">Member since</p>
+                <p className="font-semibold">{t("singerDetails.memberSince")}</p>
                 <p className="text-[#6F5D9E]">
-                  {new Date(singer.joinedAt).toLocaleDateString('en-US', { 
+                  {new Date(singer.joinedAt).toLocaleDateString(language === "ar" ? "ar-SA" : "en-US", { 
                     year: 'numeric', 
                     month: 'long' 
                   })}
@@ -276,7 +278,7 @@ const SingerDetails: React.FC = () => {
               onClick={() => setMessageOpen(true)}
               className="w-full h-12 rounded-xl border border-[#E7DEFF] bg-white text-[#2E1B4D] font-semibold"
             >
-              Message {name.split(" ")[0]}
+              {t("singerDetails.message", { name: name.split(" ")[0] })}
             </button>
           </div>
 

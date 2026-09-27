@@ -24,6 +24,7 @@ import singerService, { type CategoryPricing } from "@/api/services/singerServic
 import eventCategoryService, { type EventCategory } from "@/api/services/eventCategoryService";
 import authService from "@/api/services/authService";
 import { toast } from "sonner";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 type Props = {
   name: string;
@@ -52,6 +53,7 @@ const buildShareUrl = (singerId: string) => {
 };
 
 const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVerified, unavailability = [], averageRating = 0, reviewCount = 0, responseTimeHours, avatarUrl, coverUrl }) => {
+  const { language, t } = useLanguage();
   const [shareOpen, setShareOpen] = useState(false);
   const [eventDate, setEventDate] = useState<Date | undefined>();
   const [timeSlot, setTimeSlot] = useState("");
@@ -79,7 +81,7 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVe
 
   const handleWishlistClick = async () => {
     if (!authService.isAuthenticated()) {
-      toast.error("Please log in to save singers to your wishlist.");
+      toast.error(t("singerDetails.wishlistLogin"));
       return;
     }
 
@@ -88,15 +90,15 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVe
       if (isWishlisted) {
         await singerService.removeFromWishlist(id);
         setIsWishlisted(false);
-        toast.success("Removed from wishlist.");
+        toast.success(t("singerDetails.wishlistRemoved"));
       } else {
         await singerService.addToWishlist(id);
         setIsWishlisted(true);
-        toast.success("Added to wishlist!");
+        toast.success(t("singerDetails.wishlistUpdated"));
       }
     } catch (error) {
       console.error("Wishlist error:", error);
-      toast.error("Failed to update wishlist. Please try again.");
+      toast.error(t("singerDetails.wishlistUpdateFailed"));
     } finally {
       setWishlistLoading(false);
     }
@@ -110,9 +112,9 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVe
   const selectedPrice = selectedCategory ? categoryPricing?.[selectedCategory]?.price : undefined;
 
   const timeSlotOptions = [
-    { value: "morning", label: "Morning (8:00 AM onwards)" },
-    { value: "afternoon", label: "Afternoon (12:00 PM onwards)" },
-    { value: "evening", label: "Evening (6:00 PM onwards)" },
+    { value: "morning", label: t("booking.morning") },
+    { value: "afternoon", label: t("booking.afternoon") },
+    { value: "evening", label: t("booking.evening") },
   ];
 
   // Helper to format date to YYYY-MM-DD
@@ -189,8 +191,8 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVe
                 )}
               </div>
               <p className="text-sm text-[#6F5D9E]">
-                {city || "Saudi Arabia"}
-                {responseTimeHours != null && ` • Responds within ${responseTimeHours}hr`}
+                {city || t("singerDetails.defaultLocation")}
+                {responseTimeHours != null && ` • ${t("singerDetails.respondsWithin", { hours: responseTimeHours })}`}
               </p>
             </div>
 
@@ -204,7 +206,7 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVe
             <button
               onClick={handleWishlistClick}
               disabled={wishlistLoading}
-              aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+              aria-label={isWishlisted ? t("singerDetails.removeWishlist") : t("singerDetails.addWishlist")}
               className="h-10 w-10 rounded-full border border-[#E7DEFF] bg-white flex items-center justify-center disabled:opacity-50"
             >
               <Heart
@@ -223,10 +225,10 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVe
         {/* Event Category Selector — price is category-specific, so nothing is shown until one is picked */}
         {offeredCategories.length > 0 && (
           <div className="pb-4 border-b border-[#E7DEFF]">
-            <label className="text-sm font-semibold text-[#1C1C1C] mb-2 block">Event Type</label>
+            <label className="text-sm font-semibold text-[#1C1C1C] mb-2 block">{t("booking.eventType")}</label>
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
               <SelectTrigger className="w-full border border-[#E7DEFF] rounded-lg text-[#2E1B4D]">
-                <SelectValue placeholder="Select event type" />
+                <SelectValue placeholder={t("booking.selectEventType")} />
               </SelectTrigger>
               <SelectContent className="bg-white">
                 {offeredCategories.map((category) => (
@@ -239,8 +241,8 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVe
 
             {selectedPrice !== undefined && (
               <div className="flex justify-between items-center mt-3">
-                <span className="text-sm text-[#6F5D9E]">Price</span>
-                <span className="text-lg font-bold text-[#2E1B4D]">SAR {selectedPrice}</span>
+                <span className="text-sm text-[#6F5D9E]">{t("common.price")}</span>
+                <span className="text-lg font-bold text-[#2E1B4D]">{t("singerDetails.priceSar", { price: selectedPrice })}</span>
               </div>
             )}
           </div>
@@ -251,7 +253,7 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVe
           <div className="lg:flex-1 lg:min-w-0">
             <label className="text-sm font-semibold text-[#1C1C1C] flex items-center gap-2 mb-2">
               <Calendar className="h-4 w-4 text-primary" />
-              Event Date
+              {t("booking.eventDate")}
             </label>
             <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
               <PopoverTrigger asChild>
@@ -259,7 +261,7 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVe
                   variant="outline"
                   className="w-full justify-start text-left font-normal border border-[#E7DEFF] rounded-lg text-[#2E1B4D]"
                 >
-                  {eventDate ? eventDate.toLocaleDateString() : "Pick a date"}
+                  {eventDate ? eventDate.toLocaleDateString(language === "ar" ? "ar-SA" : "en-US") : t("singerDetails.pickDate")}
                 </UIButton>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 bg-white!" align="start">
@@ -288,7 +290,7 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVe
           <div className="mt-4 lg:mt-0 lg:flex-1 lg:min-w-0">
             <label className="text-sm font-semibold text-[#1C1C1C] flex items-center gap-2 mb-2">
               <Clock className="h-4 w-4 text-primary" />
-              Time Slot
+              {t("booking.timeSlot")}
             </label>
             <Select
               value={timeSlot}
@@ -296,7 +298,7 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVe
               disabled={!eventDate || availableTimeSlots.length === 0}
             >
               <SelectTrigger className="w-full border border-[#E7DEFF] rounded-lg text-[#2E1B4D]">
-                <SelectValue placeholder={!eventDate ? "Select a date first" : "Select time slot"} />
+                <SelectValue placeholder={!eventDate ? t("singerDetails.selectDateFirst") : t("singerDetails.selectTimeSlot")} />
               </SelectTrigger>
               <SelectContent className="bg-white">
                 {availableTimeSlots.map((option) => (
@@ -309,8 +311,8 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVe
             {eventDate && unavailableSlots.length > 0 && (
               <p className="text-xs text-orange-600 mt-1">
                 {unavailableSlots.length === 3
-                  ? "No time slots available for this date"
-                  : `${availableTimeSlots.length} slot(s) available`}
+                  ? t("singerDetails.noSlotsShort")
+                  : t("singerDetails.slotsAvailableShort", { count: availableTimeSlots.length })}
               </p>
             )}
           </div>
@@ -322,7 +324,7 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVe
           onClick={nav}
           className="w-full h-10 rounded-lg bg-gradient-to-b from-secondary to-secondary-dark text-[#1C1C1C] font-semibold shadow text-sm"
         >
-          Book Artist
+          {t("singerDetails.bookArtist")}
         </Button>
       </div>
       <ShareModal

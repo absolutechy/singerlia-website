@@ -9,26 +9,28 @@ import {
   Pin,
 } from "lucide-react";
 import logo from "@/assets/images/common/logolia.png";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const quickLinks = [
-  { label: "Home", href: "/" },
-  { label: "Artists listing", href: "/search" },
-  { label: "About Us", href: "/#about" },
-  { label: "Contact Us", href: "/contact" },
-  { label: "Testimonials", href: "/#reviews" },
+  { key: "header.home", href: "/" },
+  { key: "header.artistsListing", href: "/search" },
+  { key: "footer.aboutUs", href: "/#about" },
+  { key: "footer.contactUs", href: "/contact" },
+  { key: "footer.testimonials", href: "/#reviews" },
 ];
 const artistLinks = [
-  { label: "Join Platform", href: "/auth/singer-signup" },
-  { label: "Success Stories", href: "/#artists" },
+  { key: "footer.joinPlatform", href: "/auth/singer-signup" },
+  { key: "footer.successStories", href: "/#artists" },
 ];
 const supportLinks = [
-  { label: "Help Center", href: "/contact" },
-  { label: "Contact Support", href: "/contact" },
-  { label: "Terms", href: "/terms-and-conditions" },
-  { label: "Policy", href: "/privacy-policy" },
+  { key: "footer.helpCenter", href: "/contact" },
+  { key: "footer.contactSupport", href: "/contact" },
+  { key: "footer.terms", href: "/terms-and-conditions" },
+  { key: "footer.policy", href: "/privacy-policy" },
 ];
 
 const Footer: React.FC = () => {
+  const { t } = useLanguage();
   return (
     <footer className="mt-24 w-full bg-primary text-white">
       <div className="custom-container px-6 py-20 lg:px-24">
@@ -45,10 +47,10 @@ const Footer: React.FC = () => {
                 ))}
                 <span className="ml-2 font-semibold">4.9 / 5</span>
               </div>
-              <span className="text-xs">| 34,000+ Reviews</span>
+              <span className="text-xs">{t("footer.ratingReviews")}</span>
             </div>
             <h2 className="max-w-2xl text-2xl font-semibold text-[#FFD700] md:text-3xl">
-              Getting Started Singerlia in Easy Steps With Osm Experiences
+              {t("footer.heading")}
             </h2>
           </div>
           <div className="flex w-full flex-col gap-4 md:max-w-lg">
@@ -63,18 +65,18 @@ const Footer: React.FC = () => {
                 ))}
                 <span className="ml-2 font-semibold">4.9 / 5</span>
               </div>
-              <span className="text-xs">| 34,000+ Reviews</span>
+              <span className="text-xs">{t("footer.ratingReviews")}</span>
             </div>
             <div className="flex flex-col lg:flex-row items-center gap-2 rounded-2xl lg:border border-white/20 lg:bg-white/40 p-1 pr-1 lg:shadow-sm">
               <input
                 className="h-12 flex-1 my-3 rounded-2xl bg-transparent py-6 px-10 text-sm text-white border border-white/20 lg:border-none placeholder:text-white/40 focus:outline-none"
                 type="email"
-                placeholder="Enter your email"
-                aria-label="Enter your email"
+                placeholder={t("footer.emailPlaceholder")}
+                aria-label={t("footer.emailPlaceholder")}
               />
               <Button variant="primary" size="large" type="button">
                 <p className="font-normal text-base normal-case">
-                  Subscribe News Letter
+                  {t("footer.subscribe")}
                 </p>
               </Button>
             </div>
@@ -95,8 +97,7 @@ const Footer: React.FC = () => {
             </div>
             <p>Lia Premier Real Estate & Creative Investments <br></br> ليابريمييرر للاستثمارات العقارية والإبداعية </p>
             <p className="max-w-sm text-sm text-white/70">
-              Professional live music booking made simple, secure, and
-              memorable.
+              {t("footer.description")}
             </p>
             <div className="flex flex-wrap items-center gap-3 text-white/70">
               <a
@@ -137,36 +138,36 @@ const Footer: React.FC = () => {
             </div>
           </div>
           <div className="space-y-4">
-            <p className="text-base font-semibold text-white">Quick Links</p>
+            <p className="text-base font-semibold text-white">{t("footer.quickLinks")}</p>
             <ul className="space-y-3">
               {quickLinks.map((link) => (
-                <li key={link.label}>
+                <li key={link.key}>
                   <a className="transition hover:text-[#FFD700]" href={link.href}>
-                    {link.label}
+                    {t(link.key as any)}
                   </a>
                 </li>
               ))}
             </ul>
           </div>
           <div className="space-y-4">
-            <p className="text-base font-semibold text-white">For Artists</p>
+            <p className="text-base font-semibold text-white">{t("footer.forArtists")}</p>
             <ul className="space-y-3">
               {artistLinks.map((link) => (
-                <li key={link.label}>
+                <li key={link.key}>
                   <a className="transition hover:text-[#FFD700]" href={link.href}>
-                    {link.label}
+                    {t(link.key as any)}
                   </a>
                 </li>
               ))}
             </ul>
           </div>
           <div className="space-y-4">
-            <p className="text-base font-semibold text-white">Help & Support</p>
+            <p className="text-base font-semibold text-white">{t("footer.helpSupport")}</p>
             <ul className="space-y-3">
               {supportLinks.map((link) => (
-                <li key={link.label}>
+                <li key={link.key}>
                   <a className="transition hover:text-[#FFD700]" href={link.href}>
-                    {link.label}
+                    {t(link.key as any)}
                   </a>
                 </li>
               ))}
@@ -175,7 +176,7 @@ const Footer: React.FC = () => {
         </div>
 
         <p className="mt-12 border-t border-white/15 pt-6 text-center text-xs text-white/60">
-          © {new Date().getFullYear()} Lia Premier Real Estate & Creative Investments &nbsp; <br className="block sm:hidden" /> ليابريمييرر للاستثمارات العقارية والإبداعية All rights reserved.
+          {t("footer.copyright", { year: new Date().getFullYear() })} &nbsp; <br className="block sm:hidden" /> ليابريمييرر للاستثمارات العقارية والإبداعية
         </p>
       </div>
     </footer>

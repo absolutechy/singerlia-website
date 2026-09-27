@@ -3,19 +3,21 @@ import { useNavigate } from "react-router";
 import AuthModalLayout from "@/components/auth/AuthModalLayout";
 import { Button, Input } from "@/components/common";
 import authService from "@/api/services/authService";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const fields = [
-  { id: "firstName", label: "First Name", type: "text", required: true },
-  { id: "lastName", label: "Last Name", type: "text", required: true },
-  { id: "phone", label: "Phone Number", type: "tel", required: true },
-  { id: "email", label: "Email", type: "email", required: true },
-  { id: "dateOfBirth", label: "Date of Birth", type: "date", required: true },
-  { id: "iqamaNumber", label: "ID / Iqama Number", type: "text", required: true },
-  { id: "password", label: "Password", type: "password", required: true },
-  { id: "confirmPassword", label: "Re-Enter Password", type: "password", required: true },
+  { id: "firstName", labelKey: "auth.firstName", type: "text", required: true },
+  { id: "lastName", labelKey: "auth.lastName", type: "text", required: true },
+  { id: "phone", labelKey: "auth.phone", type: "tel", required: true },
+  { id: "email", labelKey: "auth.email", type: "email", required: true },
+  { id: "dateOfBirth", labelKey: "auth.dateOfBirth", type: "date", required: true },
+  { id: "iqamaNumber", labelKey: "auth.iqama", type: "text", required: true },
+  { id: "password", labelKey: "auth.password", type: "password", required: true },
+  { id: "confirmPassword", labelKey: "auth.confirmPassword", type: "password", required: true },
 ];
 
 const Signup: React.FC = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: "",
@@ -142,17 +144,17 @@ const Signup: React.FC = () => {
     <AuthModalLayout
       footerNote={
         <p className="text-center text-sm text-[#6F5D9E]">
-          Don't have an account?{" "}
+          {t("auth.haveAccount")}{" "}
           <button
             type="button"
             className="font-semibold cursor-pointer text-primary underline-offset-4 hover:underline"
             onClick={() => navigate("/auth/login")}
           >
-            Log In
+            {t("auth.login")}
           </button>
         </p>
       }
-      title="Welcome to SingerLia Sign Up"
+      title={t("auth.signupTitle")}
       size="lg"
     >
       <div className="space-y-4 pt-[430px] lg:pt-0">
@@ -167,9 +169,9 @@ const Signup: React.FC = () => {
             <Input 
               key={field.id}
               id={field.id}
-              label={field.label}
+              label={t(field.labelKey as any)}
               type={field.type}
-              placeholder="Type here"
+              placeholder={t("auth.typeHere")}
               className="bg-[#F7FBFF] border border-[#D4D7E3] !pl-2 !py-6"
               value={formData[field.id as keyof typeof formData]}
               onChange={handleInputChange}
@@ -188,23 +190,23 @@ const Signup: React.FC = () => {
             onChange={(e) => setAgreedToTerms(e.target.checked)}
           />
           <h6>
-            I agree to the{" "}
+            {t("auth.agreePrefix")}{" "}
             <a
               href="/terms-and-conditions"
               target="_blank"
               rel="noopener noreferrer"
               className="font-semibold text-primary underline hover:text-primary/80"
             >
-              Terms of Service
+              {t("auth.termsService")}
             </a>
-            {" "}and{" "}
+            {" "}{t("auth.and")}{" "}
             <a
               href="/privacy-policy"
               target="_blank"
               rel="noopener noreferrer"
               className="font-semibold text-primary underline hover:text-primary/80"
             >
-              Privacy Policy
+              {t("auth.privacyPolicy")}
             </a>
             .
           </h6>
@@ -216,7 +218,7 @@ const Signup: React.FC = () => {
           onClick={handleSignup}
           disabled={loading}
         >
-          <span className="font-semibold">{loading ? "Signing Up..." : "Sign Up"}</span>
+          <span className="font-semibold">{loading ? t("auth.signingUp") : t("auth.signup")}</span>
         </Button>
         {/* <div className="grid gap-3 md:grid-cols-2">
           <SocialButton

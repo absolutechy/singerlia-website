@@ -20,6 +20,7 @@ import {
 import GenreCard from "@/components/common/GenreCard";
 import genreService, { type Genre as GenreType } from "@/api/services/genreService";
 import singerService from "@/api/services/singerService";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 // A distinct icon per genre card. Cycles by position rather than being keyed to specific genre
 // names/ids, so a new genre added later from the admin panel (no deploy) automatically gets a
@@ -46,6 +47,7 @@ const MAX_DISPLAYED_GENRES = 7;
 
 const Genre: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [genres, setGenres] = useState<GenreType[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({});
 
@@ -83,9 +85,9 @@ const Genre: React.FC = () => {
 
   return (
     <div className="pt-10 pb-20 px-5 custom-container">
-      <h1 className="font-bold text-4xl lg:text-6xl text-primary text-center">Browse by Genre</h1>
+      <h1 className="font-bold text-4xl lg:text-6xl text-primary text-center">{t("home.browseByGenre")}</h1>
       <p className="text-[#666666] text-center">
-        Find the perfect sound for your event across all musical styles.
+        {t("home.genreSubtitle")}
       </p>
       <div className="flex flex-wrap justify-center gap-y-20 gap-x-12 mt-14">
         {genres.map((genre, index) => (

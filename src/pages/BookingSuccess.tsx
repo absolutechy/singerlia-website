@@ -5,14 +5,16 @@ import Button from "@/components/common/Button";
 import paymentService from "@/api/services/paymentService";
 import authService from "@/api/services/authService";
 import { toast } from "sonner";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const BookingSuccess: React.FC = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
 
   const [loading, setLoading] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [message, setMessage] = useState("Verifying your payment...");
+  const [message, setMessage] = useState(t("payment.verifyingShort"));
   const [paymentId, setPaymentId] = useState("");
 
   const searchParams = new URLSearchParams(location.search);
@@ -38,7 +40,7 @@ const BookingSuccess: React.FC = () => {
   useEffect(() => {
     const verifyAndCapture = async () => {
       if (!bookingId) {
-        setMessage("Booking ID is missing. Please contact support.");
+        setMessage(t("payment.bookingMissing"));
         setLoading(false);
         return;
       }
@@ -57,8 +59,8 @@ const BookingSuccess: React.FC = () => {
 
         if (status.paymentStatus === "paid") {
           setIsSuccess(true);
-          setMessage("Payment confirmed and saved to merchant account.");
-          toast.success("Payment verified successfully");
+          setMessage(t("payment.confirmedMerchant"));
+          toast.success(t("payment.verifiedToast"));
         } else if (
           status.paymentStatus === "pre_authorized" ||
           status.requiresCapture
@@ -70,27 +72,27 @@ const BookingSuccess: React.FC = () => {
           if (capture.paymentStatus === "paid") {
             setIsSuccess(true);
             setMessage(
-              "Payment captured successfully and saved to merchant account."
+              t("payment.capturedMerchant")
             );
-            toast.success("Payment captured successfully");
+            toast.success(t("payment.capturedToast"));
           } else if (capture.paymentStatus === "pre_authorized" && capture.requiresCapture) {
             setIsSuccess(true);
             setMessage(
               capture.message ||
-                "Payment authorized. Capture is temporarily pending and will be retried by Singerlia."
+                t("payment.authorizedPending")
             );
-            toast.success("Payment authorized");
+            toast.success(t("payment.authorizedToast"));
           } else {
-            setMessage(capture.message || "Payment capture failed.");
+            setMessage(capture.message || t("payment.captureFailed"));
           }
         } else {
-          setMessage(status.message || "Payment failed or pending.");
+          setMessage(status.message || t("payment.failedOrPending"));
         }
       } catch (error: any) {
         setMessage(
           error.response?.data?.message ||
             error.message ||
-            "Payment verification failed."
+            t("payment.verificationFailed")
         );
       } finally {
         localStorage.removeItem("currentBookingId");
@@ -99,7 +101,7 @@ const BookingSuccess: React.FC = () => {
     };
 
     verifyAndCapture();
-  }, [bookingId, resourcePath]);
+  }, [bookingId, resourcePath, t]);
 
   return (
     <div className="custom-container min-h-screen flex items-center justify-center ">
@@ -125,20 +127,20 @@ const BookingSuccess: React.FC = () => {
         <div className="text-center mb-8">
           <h1 className="text-3xl lg:text-5xl font-bold text-[#2E1B4D] mb-4">
             {loading
-              ? "Processing payment..."
+              ? t("payment.processing")
               : isSuccess
-                ? "Payment completed"
-                : "Payment not completed"}
+                ? t("payment.completed")
+                : t("payment.notCompleted")}
           </h1>
           <p className="text-[#6F5D9E] text-lg">{message}</p>
           {bookingId && (
             <p className="text-sm text-[#6F5D9E] mt-2">
-              Booking ID: <span className="font-mono">{bookingId}</span>
+              {t("payment.bookingId")} <span className="font-mono">{bookingId}</span>
             </p>
           )}
           {paymentId && (
             <p className="text-sm text-[#6F5D9E]">
-              Payment ID: <span className="font-mono">{paymentId}</span>
+              {t("payment.paymentId")} <span className="font-mono">{paymentId}</span>
             </p>
           )}
         </div>
@@ -150,7 +152,7 @@ const BookingSuccess: React.FC = () => {
               href={authService.getPortalDashboardUrl()}
             >
               <LayoutDashboard className="w-5 h-5 mr-2" />
-              Visit Dashboard
+              {t("payment.visitDashboard")}
             </a>
             <Button
               variant="default"
@@ -159,7 +161,7 @@ const BookingSuccess: React.FC = () => {
               onClick={() => navigate("/")}
             >
               <Home className="w-5 h-5 mr-2" />
-              Continue to Home
+              {t("payment.continueHome")}
             </Button>
           </div>
         )}

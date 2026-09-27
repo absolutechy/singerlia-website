@@ -3,6 +3,7 @@ import Modal from "@/components/common/Modal";
 import "swiper/css";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Button } from "@/components/common";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 type Props = {
   open: boolean;
@@ -12,6 +13,7 @@ type Props = {
 };
 
 const MediaModal: React.FC<Props> = ({ open, onClose, photos, youtubeLinks }) => {
+  const { t } = useLanguage();
   const [mediaTab, setMediaTab] = useState<"videos" | "photos">("videos");
   const [activeSlide, setActiveSlide] = useState(0);
 
@@ -92,11 +94,11 @@ const MediaModal: React.FC<Props> = ({ open, onClose, photos, youtubeLinks }) =>
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl sm:text-2xl font-bold text-[#1C1C1C]">
-          My portfolio events videos & photos
+          {t("singerDetails.mediaTitle")}
         </h2>
         <button
           onClick={onClose}
-          aria-label="Close"
+          aria-label={t("singerDetails.close")}
           className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200"
         >
           <X size={16} />
@@ -118,7 +120,7 @@ const MediaModal: React.FC<Props> = ({ open, onClose, photos, youtubeLinks }) =>
                 mediaTab === tab ? "!text-white !bg-primary" : "!text-black"
               }`}
             >
-              {tab === "videos" ? "Videos" : "Photos"}
+              {tab === "videos" ? t("singerDetails.videos") : t("singerDetails.photos")}
             </Button>
           ))}
         </div>
@@ -132,7 +134,7 @@ const MediaModal: React.FC<Props> = ({ open, onClose, photos, youtubeLinks }) =>
             <button
               onClick={handlePrev}
               className="absolute left-0 top-1/2 -translate-y-1/2 z-30 h-9 w-9 rounded-full border border-purple-200 bg-white shadow-lg flex items-center justify-center hover:bg-gray-50"
-              aria-label="Previous"
+              aria-label={t("singerDetails.previous")}
             >
               <ChevronLeft size={18} className="text-purple-900" />
             </button>
@@ -140,7 +142,7 @@ const MediaModal: React.FC<Props> = ({ open, onClose, photos, youtubeLinks }) =>
             <button
               onClick={handleNext}
               className="absolute right-0 top-1/2 -translate-y-1/2 z-30 h-9 w-9 rounded-full border border-purple-200 bg-white shadow-lg flex items-center justify-center hover:bg-gray-50"
-              aria-label="Next"
+              aria-label={t("singerDetails.next")}
             >
               <ChevronRight size={18} className="text-purple-900" />
             </button>
@@ -161,7 +163,7 @@ const MediaModal: React.FC<Props> = ({ open, onClose, photos, youtubeLinks }) =>
                 {mediaTab === "photos" ? (
                   <img
                     src={item}
-                    alt={`Photo ${i + 1}`}
+                    alt={t("singerDetails.photoAlt", { count: i + 1 })}
                     className="w-full object-cover"
                     style={{ height: i === activeSlide ? '464px' : '288px' }}
                   />
@@ -175,7 +177,7 @@ const MediaModal: React.FC<Props> = ({ open, onClose, photos, youtubeLinks }) =>
                       className="w-full h-full"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
-                      title={`Video ${i + 1}`}
+                      title={t("singerDetails.videoTitle", { count: i + 1 })}
                     />
                   </div>
                 )}
@@ -188,13 +190,13 @@ const MediaModal: React.FC<Props> = ({ open, onClose, photos, youtubeLinks }) =>
       {/* Meta under slide */}
       <div className="mt-5 text-center">
         <p className="text-2xl font-extrabold text-[#1C1C1C]">
-          {mediaTab === "videos" ? "Video" : "Photo"} {activeSlide + 1}
+          {mediaTab === "videos" ? t("singerDetails.video") : t("singerDetails.photo")} {activeSlide + 1}
         </p>
       </div>
 
       {/* Counter */}
       <div className="mt-2 flex justify-end text-xs text-[#6F5D9E]">
-        {String(activeSlide + 1).padStart(2, "0")} of{" "}
+        {String(activeSlide + 1).padStart(2, "0")} {t("singerDetails.of")}{" "}
         {String(mediaData[mediaTab].length).padStart(2, "0")}
       </div>
     </Modal>

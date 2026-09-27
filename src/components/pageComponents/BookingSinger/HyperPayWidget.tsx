@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
 import { generateNonce, generateCSPContent, getHyperPayUrl } from "@/lib/hyperPayUtils";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface HyperPayWidgetProps {
   checkoutId: string;
@@ -12,6 +13,7 @@ const HyperPayWidget: React.FC<HyperPayWidgetProps> = ({
   bookingId,
   integrity,
 }) => {
+  const { t } = useLanguage();
   const [scriptLoaded, setScriptLoaded] = useState(false);
   const [scriptError, setScriptError] = useState(false);
   const scriptRef = useRef<HTMLScriptElement | null>(null);
@@ -127,18 +129,18 @@ const HyperPayWidget: React.FC<HyperPayWidgetProps> = ({
     return (
       <div className="text-center py-6">
         <p className="text-red-600 mb-2 font-semibold">
-          Failed to load payment form
+          {t("hyperpay.loadFailed")}
         </p>
         <p className="text-gray-600 text-sm mb-4">
-          Please check your connection and try again. If the problem persists, contact support.
+          {t("hyperpay.loadFailedHelp")}
         </p>
         <details className="text-left bg-gray-50 p-4 rounded-lg text-xs text-gray-700">
-          <summary className="cursor-pointer font-medium mb-2">Technical Details</summary>
+          <summary className="cursor-pointer font-medium mb-2">{t("hyperpay.technicalDetails")}</summary>
           <ul className="list-disc pl-5 space-y-1">
-            <li>Network connectivity issues</li>
-            <li>Content Security Policy (CSP) blocking</li>
-            <li>Invalid security integrity hash</li>
-            <li>Payment service temporarily unavailable</li>
+            <li>{t("hyperpay.networkIssue")}</li>
+            <li>{t("hyperpay.cspIssue")}</li>
+            <li>{t("hyperpay.integrityIssue")}</li>
+            <li>{t("hyperpay.serviceUnavailable")}</li>
           </ul>
         </details>
       </div>
@@ -150,7 +152,7 @@ const HyperPayWidget: React.FC<HyperPayWidgetProps> = ({
       {!scriptLoaded && (
         <div className="flex items-center justify-center py-8 gap-3">
           <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          <span className="text-[#6F5D9E] text-sm">Loading secure payment form...</span>
+          <span className="text-[#6F5D9E] text-sm">{t("hyperpay.loading")}</span>
         </div>
       )}
 

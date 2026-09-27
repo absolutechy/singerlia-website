@@ -6,35 +6,37 @@ import SelectableCard from "@/components/auth/SelectableCard";
 import { Button } from "@/components/common";
 import IAMSingerImage from "@/assets/images/common/iamanartist.png";
 import IAMCustomerImage from "@/assets/images/common/iamcustomer.png";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 type RoleOption = "artist" | "customer";
 
 const roleOptions = [
   {
     id: "artist" as RoleOption,
-    title: "I am an Artist",
+    titleKey: "auth.artistRole",
     icon: <img src={IAMSingerImage} alt="Artist" className="w-40 h-28 object-cover" />,
   },
   {
     id: "customer" as RoleOption,
-    title: "I am a Customer",
+    titleKey: "auth.customerRole",
     icon: <img src={IAMCustomerImage} alt="Customer" className="w-36 h-28 object-cover" />,
   },
 ];
 
 const ChooseRole: React.FC = () => {
+  const { t } = useLanguage();
   const [selectedRole, setSelectedRole] = useState<RoleOption | null>(null);
   const navigate = useNavigate();
 
   return (
-    <AuthModalLayout size="lg" title="Choose Role">
+    <AuthModalLayout size="lg" title={t("auth.chooseRole")}>
       <div className="space-y-10">
         <LogoBadge size="md" />
         <div className="flex items-center justify-center gap-6 md:gap-12">
           {roleOptions.map((option) => (
             <SelectableCard
               key={option.id}
-              title={option.title}
+              title={t(option.titleKey as any)}
               icon={option.icon}
               selected={selectedRole === option.id}
               onClick={() => {
@@ -56,7 +58,7 @@ const ChooseRole: React.FC = () => {
           }}
         >
           <span className="font-semibold">
-            {selectedRole ? "Continue" : "Continue"}
+            {t("auth.continue")}
           </span>
         </Button>
       </div>

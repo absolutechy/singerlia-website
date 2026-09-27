@@ -11,6 +11,7 @@ import profileThumbnail02 from "@/assets/images/singer/profile_thumbnail02.png";
 import Button from "./Button";
 import { toast } from "sonner";
 import singerService from "@/api/services/singerService";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 // Default images used when none are provided
 const defaultSingerImages = [
@@ -36,6 +37,7 @@ interface SingerCardProps {
 }
 
 const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Artist Name here", serviceTitle, images, responseTimeHours, singerId, isInWishlist = false, price, isPriceForSelectedCategory = false } ) => {
+  const { t } = useLanguage();
   const uniqueId = useId();
   const uniqueBase = useMemo(() => uniqueId.replace(/:/g, ""), [uniqueId]);
   const paginationClass = `swiper-pagination-${uniqueBase}`;
@@ -59,7 +61,7 @@ const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Artist N
 
   const handleWishlistClick = async () => {
     if (!singerId) {
-      toast.error("Singer ID is missing");
+      toast.error(t("singerDetails.wishlistMissing"));
       return;
     }
 
@@ -71,13 +73,13 @@ const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Artist N
       setIsAnimating(true);
       await singerService.addToWishlist(singerId);
       setIsWishlisted(true);
-      toast.success("Singer added to wishlist!");
+      toast.success(t("singerDetails.wishlistAdded"));
       
       // Reset animation after it completes
       setTimeout(() => setIsAnimating(false), 600);
     } catch (error) {
       setIsAnimating(false);
-      toast.error("Failed to add singer to wishlist");
+      toast.error(t("singerDetails.wishlistAddFailed"));
       console.error("Wishlist error:", error);
     }
   };
@@ -110,7 +112,7 @@ const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Artist N
             <div>
               <p className="text-base font-medium">{name}</p>
               {responseTimeHours != null && (
-                <p className="text-xs">Responds within {responseTimeHours}hr</p>
+                <p className="text-xs">{t("singerDetails.respondsWithin", { hours: responseTimeHours })}</p>
               )}
             </div>
             <div className={`${paginationClass} flex items-center justify-end gap-1.5`}></div>
@@ -145,7 +147,7 @@ const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Artist N
           type="button"
           disabled={isAtStart}
           className={`${prevButtonClass} absolute left-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white shadow-lg transition hover:bg-white hover:text-secondary  ${isAtStart ? "pointer-events-none opacity-30" : ""}`}
-          aria-label="Previous singer image"
+          aria-label={t("singerDetails.previousImage")}
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
@@ -153,7 +155,7 @@ const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Artist N
           type="button"
           disabled={isAtEnd}
           className={`${nextButtonClass} absolute right-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white shadow-lg transition hover:bg-white hover:text-secondary ${isAtEnd ? "pointer-events-none opacity-30" : ""}`}
-          aria-label="Next singer image"
+          aria-label={t("singerDetails.nextImage")}
         >
           <ArrowRight className="h-5 w-5" />
         </button>
@@ -162,7 +164,9 @@ const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Artist N
         {serviceTitle && <p className="text-lg font-medium text-primary">{serviceTitle}</p>}
         {price != null && price > 0 && (
           <p className="text-sm font-semibold text-[#2E1B4D]">
-            {isPriceForSelectedCategory ? `SAR ${price.toLocaleString()}` : `From SAR ${price.toLocaleString()}`}
+            {isPriceForSelectedCategory
+              ? t("singerDetails.priceSar", { price: price.toLocaleString() })
+              : t("singerDetails.fromPrice", { price: price.toLocaleString() })}
           </p>
         )}
       </div>
@@ -170,7 +174,7 @@ const SingerCard: React.FC<SingerCardProps> = ({ onViewDetails, name = "Artist N
         onClick={onViewDetails}
         size="large"
         className="text-lg !text-primary font-medium !border !border-[#CDCDCD] !group-hover:border-primary group-hover:!bg-primary group-hover:!text-white w-full rounded-lg p-2 cursor-pointer transition-all duration-500">
-        View details
+        {t("singerDetails.viewDetails")}
       </Button>
     </div>
   );

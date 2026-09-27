@@ -4,6 +4,7 @@ import SingerTwo from "@/assets/images/common/Singer2.png";
 import SingerThree from "@/assets/images/common/Singer3.png";
 import Marquee from "react-fast-marquee";
 import SingerCircle from "./SingerCircle";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const users = [
   { id: 1, src: SingerOne },
@@ -29,22 +30,24 @@ const users = [
 ];
 
 const VerifiedArtists = () => {
+  const { t } = useLanguage();
+
   return (
     <div className="flex flex-col items-center p-4 lg:p-8">
       <div className="relative flex items-center justify-center">
-        <img src={ArtistBgText} alt="Verified Artists" className="h-28 object-cover" />
+        <img src={ArtistBgText} alt={t("home.verifiedArtists")} className="h-28 object-cover" />
         <div className="absolute left-0 right-0 bottom-0 flex items-center justify-center">
           <h2 className="font-bold text-primary text-4xl sm:text-5xl lg:text-6xl">
-            Verified Artists
+            {t("home.verifiedArtists")}
           </h2>
         </div>
       </div>
       <span className="paragraph text-gray-500 mt-5">
-        The finest artists – all in one platform.
+        {t("home.verifiedArtistsSubtitle")}
       </span>
 
-      <div className="mt-10 py-2 relative -mx-20 w-full">
-        <Marquee gradient={true} speed={40} gradientWidth={50}>
+      <div className="mt-10 py-2 relative -mx-20 w-full" dir="ltr" style={{ direction: "ltr" }}>
+        <Marquee gradient={true} speed={40} gradientWidth={50} direction="left">
           {users.map((user) => (
             <div key={user.id} className="px-1 lg:px-4">
               <SingerCircle imageUrl={user.src} />

@@ -7,6 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export interface SelectOption {
   value: string;
@@ -34,6 +35,8 @@ const Select: React.FC<SelectProps> = ({
   onChange,
   disabled,
 }) => {
+  const { dir } = useLanguage();
+
   return (
     <div className="flex flex-col gap-1 w-full z-0">
       {label && (
@@ -43,21 +46,22 @@ const Select: React.FC<SelectProps> = ({
       )}
       <ShadcnSelect value={value} onValueChange={onChange} disabled={disabled}>
         <SelectTrigger
+          dir={dir}
           className={cn(
             // Match text/email input styles
-            "w-full rounded-xl border border-[#E7DEFF] bg-[#F9F7FF] z-50 px-4 py-3 pr-10 text-sm text-[#2F1C4E] shadow-inner focus:border-[#B8860B] focus:outline-none",
+            "w-full rounded-xl border border-[#E7DEFF] bg-[#F9F7FF] z-50 px-4 py-3 text-sm text-start text-[#2F1C4E] shadow-inner focus:border-[#B8860B] focus:outline-none",
             error && "border-red-500",
             className
           )}
         >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
-        <SelectContent className="z-50 bg-white">
+        <SelectContent dir={dir} className="z-50 bg-white">
           {options.map((option) => (
             <SelectItem
               key={option.value}
               value={option.value}
-              className="cursor-pointer hover:bg-gray-100 focus:bg-gray-100"
+              className="cursor-pointer text-start hover:bg-gray-100 focus:bg-gray-100"
             >
               {option.label}
             </SelectItem>

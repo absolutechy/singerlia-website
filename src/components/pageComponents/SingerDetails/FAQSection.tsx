@@ -1,16 +1,18 @@
 import React, { useState } from "react";
 import { ChevronRight } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 type Faq = { question: string; answer: string };
 
 const FAQSection: React.FC<{ faqs: Faq[] }> = ({ faqs }) => {
+  const { t } = useLanguage();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
     <div className="my-[8rem] rounded-3xl bg-[#F7F7F7] p-6 sm:p-8">
       <div className="text-center">
-        <h3 className="text-2xl sm:text-4xl font-bold text-[#000]">Frequently asked questions</h3>
-        <p className="mt-1 texl-lg sm:text-2xl font-semibold text-[#121212]">About This Singer</p>
+        <h3 className="text-2xl sm:text-4xl font-bold text-[#000]">{t("singerDetails.faqTitle")}</h3>
+        <p className="mt-1 texl-lg sm:text-2xl font-semibold text-[#121212]">{t("singerDetails.faqSubtitle")}</p>
       </div>
 
       <div className="mt-6 space-y-4 flex flex-col items-center">
@@ -25,7 +27,7 @@ const FAQSection: React.FC<{ faqs: Faq[] }> = ({ faqs }) => {
               }
             >
               <button onClick={() => setOpenIndex(active ? null : i)} className="w-full flex items-center justify-between px-5 py-8">
-                <span className={"text-lg font-medium group-hover:text-white text-left " + (active ? "text-white" : "text-[#1C1C1C]")}>
+                <span className={"text-lg font-medium group-hover:text-white text-start " + (active ? "text-white" : "text-[#1C1C1C]")}>
                   {faq.question}
                 </span>
                 <ChevronRight size={18} className={`group-hover:text-white ${active ? "text-white" : " text-[#2E1B4D] "}`} />

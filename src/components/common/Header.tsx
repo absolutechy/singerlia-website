@@ -7,6 +7,8 @@ import LogoIcon from "@/assets/images/common/logolia.png"
 import { Link, useNavigate, useLocation } from "react-router";
 import authService, { type UserMetadata, subscribeToAuthChanges } from "@/api/services/authService";
 import { toast } from "sonner";
+import { languages } from "@/i18n/translations";
+import { useLanguage, type Language } from "@/i18n/LanguageContext";
 
 interface NavItem {
   id: string;
@@ -22,13 +24,16 @@ const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [user, setUser] = useState<UserMetadata | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
+  const [languageDropdownOpen, setLanguageDropdownOpen] = useState<boolean>(false);
   const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const languageDropdownRef = useRef<HTMLDivElement>(null);
+  const { language, setLanguage, t } = useLanguage();
 
   const navItems: NavItem[] = [
-    { id: "home", label: "Home", href: "/" },
-    { id: "artists", label: "Artists listing", href: "/search" },
-    { id: "contact", label: "Contact", href: "/contact" }
+    { id: "home", label: t("header.home"), href: "/" },
+    { id: "artists", label: t("header.artistsListing"), href: "/search" },
+    { id: "contact", label: t("header.contact"), href: "/contact" }
   ];
 
   const handleNavClick = (id: string, href: string) => {
@@ -119,19 +124,28 @@ const Header: React.FC = () => {
     return unsubscribe;
   }, []);
 
-  // Close dropdown when clicking outside
+  const handleLanguageChange = (nextLanguage: Language) => {
+    setLanguage(nextLanguage);
+    setLanguageDropdownOpen(false);
+    setMobileMenuOpen(false);
+  };
+
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setDropdownOpen(false);
       }
+      if (languageDropdownRef.current && !languageDropdownRef.current.contains(event.target as Node)) {
+        setLanguageDropdownOpen(false);
+      }
     };
     
-    if (dropdownOpen) {
+    if (dropdownOpen || languageDropdownOpen) {
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
-  }, [dropdownOpen]);
+  }, [dropdownOpen, languageDropdownOpen]);
 
   // Open the portal dashboard while keeping the user signed in there: the portal is a separate
   // origin with its own localStorage, so the current session's token is handed off via a URL
@@ -260,7 +274,7 @@ const Header: React.FC = () => {
         <button
           className="md:hidden text-white hover:text-secondary transition-colors p-2"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Toggle menu"
+          aria-label={t("header.toggleMenu")}
         >
           <motion.div
             animate={{ rotate: mobileMenuOpen ? 90 : 0 }}
@@ -270,19 +284,52 @@ const Header: React.FC = () => {
           </motion.div>
         </button>
 
-        {/* Language/Globe Icon - Desktop Only */}
-        {/* <button
-          className="hidden md:block text-white hover:text-secondary transition-colors p-2"
-          aria-label="Change language"
-        >
-          <motion.div
+        {/* Language selector - Desktop Only */}
+        <div className="hidden md:block relative" ref={languageDropdownRef}>
+          <motion.button
+            type="button"
+            onClick={() => setLanguageDropdownOpen((open) => !open)}
+            className="flex items-center gap-2 text-white hover:text-secondary transition-colors p-2 rounded-full hover:bg-white/10"
+            aria-label={t("header.changeLanguage")}
             animate={{
               scale: compact ? 0.9 : 1,
             }}
           >
             <Globe size={compact ? 20 : 24} />
-          </motion.div>
-        </button> */}
+            <span className="text-sm font-medium">{languages[language].nativeLabel}</span>
+            <ChevronDown
+              size={14}
+              className={`transition-transform ${languageDropdownOpen ? "rotate-180" : ""}`}
+            />
+          </motion.button>
+
+          <AnimatePresence>
+            {languageDropdownOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-lg overflow-hidden z-50"
+              >
+                {(["en", "ar"] as Language[]).map((lang) => (
+                  <button
+                    key={lang}
+                    type="button"
+                    onClick={() => handleLanguageChange(lang)}
+                    className={`w-full px-4 py-3 text-left text-sm transition-colors ${
+                      language === lang
+                        ? "bg-primary/10 text-primary font-semibold"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                  >
+                    {languages[lang].nativeLabel}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
         {/* Authenticated User Avatar & Dropdown - Desktop Only */}
         {user ? (
@@ -324,7 +371,7 @@ const Header: React.FC = () => {
                     className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
                   >
                     <LayoutDashboard size={18} />
-                    <span className="font-medium">Dashboard</span>
+                    <span className="font-medium">{t("header.dashboard")}</span>
                   </button>
                   <div className="border-t border-gray-200"></div>
                   <button
@@ -337,7 +384,7 @@ const Header: React.FC = () => {
                     }`}
                   >
                     <LogOut size={18} />
-                    <span className="font-medium">{isLoggingOut ? 'Logging out...' : 'Logout'}</span>
+                    <span className="font-medium">{isLoggingOut ? t("header.loggingOut") : t("header.logout")}</span>
                   </button>
                 </motion.div>
               )}
@@ -359,7 +406,7 @@ const Header: React.FC = () => {
                 size={compact ? "large" : "medium"}
                 onClick={() => navigate("/auth/login")}
               >
-                Log In
+                {t("header.login")}
               </Button>
             </motion.div>
 
@@ -377,7 +424,7 @@ const Header: React.FC = () => {
                 size={compact ? "large" : "medium"}
                 onClick={() => navigate("/auth/create-account")}
               >
-                Sign Up
+                {t("header.signup")}
               </Button>
             </motion.div>
           </>
@@ -452,7 +499,7 @@ const Header: React.FC = () => {
                     className="w-full flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <LayoutDashboard size={18} />
-                    Dashboard
+                    {t("header.dashboard")}
                   </Button>
                   
                   <Button
@@ -470,7 +517,7 @@ const Header: React.FC = () => {
                     }`}
                   >
                     <LogOut size={18} />
-                    {isLoggingOut ? 'Logging out...' : 'Logout'}
+                    {isLoggingOut ? t("header.loggingOut") : t("header.logout")}
                   </Button>
                 </div>
               ) : (
@@ -501,13 +548,28 @@ const Header: React.FC = () => {
               )}
 
               {/* Language Selector in Mobile Menu */}
-              <button
-                className="flex items-center justify-center gap-2 text-white hover:text-secondary transition-colors py-2"
-                aria-label="Change language"
-              >
+              <div className="flex flex-col gap-2 border-t border-white/20 pt-4">
+              <div className="flex items-center justify-center gap-2 text-white py-2">
                 <Globe size={20} />
-                <span className="text-sm">Language</span>
-              </button>
+                <span className="text-sm">{t("common.language")}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {(["en", "ar"] as Language[]).map((lang) => (
+                  <button
+                    key={lang}
+                    type="button"
+                    onClick={() => handleLanguageChange(lang)}
+                    className={`rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+                      language === lang
+                        ? "bg-secondary text-primary"
+                        : "bg-white/10 text-white hover:bg-white/20"
+                    }`}
+                  >
+                    {languages[lang].nativeLabel}
+                  </button>
+                ))}
+              </div>
+              </div>
             </div>
           </motion.div>
         )}

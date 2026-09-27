@@ -6,6 +6,7 @@ import { Button } from "@/components/common";
 import { toast } from "sonner";
 import authService from "@/api/services/authService";
 import socketService from "@/services/socketService";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 type Props = {
   open: boolean;
@@ -23,6 +24,7 @@ type ModalStatus = "checking" | "not_authenticated" | "awaiting_reply" | "compos
 
 const MessageModal: React.FC<Props> = ({ open, onClose, name, singerId }) => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [messageText, setMessageText] = useState("");
   const [sending, setSending] = useState(false);
   const [status, setStatus] = useState<ModalStatus>("checking");
@@ -94,13 +96,13 @@ const MessageModal: React.FC<Props> = ({ open, onClose, name, singerId }) => {
       socketService.onMessageSent(() => {
         setSending(false);
         setMessageText("");
-        toast.success("Message sent!");
+        toast.success(t("singerDetails.messageSentToast"));
         onClose();
       });
       socketService.onMessageBlocked(() => {
         setSending(false);
         setStatus("awaiting_reply");
-        toast.error("You already have a message awaiting a reply from this singer.");
+        toast.error(t("singerDetails.messageBlocked"));
       });
 
       const emitSend = () =>
@@ -112,13 +114,13 @@ const MessageModal: React.FC<Props> = ({ open, onClose, name, singerId }) => {
         socket.once("connect", emitSend);
         socket.once("connect_error", () => {
           setSending(false);
-          toast.error("Failed to send message. Please try again.");
+          toast.error(t("singerDetails.messageFailed"));
         });
       }
     } catch (error) {
       console.error("Failed to send message:", error);
       setSending(false);
-      toast.error("Failed to send message. Please try again.");
+      toast.error(t("singerDetails.messageFailed"));
     }
   };
 
@@ -126,12 +128,12 @@ const MessageModal: React.FC<Props> = ({ open, onClose, name, singerId }) => {
     <Modal open={open} onClose={handleClose} panelClassName="max-w-2xl w-full p-6">
       <div className="flex items-start justify-between">
         <div>
-          <h3 className="text-xl font-bold text-[#1C1C1C]">Write a message to {name}</h3>
+          <h3 className="text-xl font-bold text-[#1C1C1C]">{t("singerDetails.writeMessageTo", { name })}</h3>
           <p className="text-sm text-[#6F5D9E] mt-1">
-            You can also add booking details for them to review.
+            {t("singerDetails.messageHint")}
           </p>
         </div>
-        <button onClick={handleClose} aria-label="Close" className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200">
+        <button onClick={handleClose} aria-label={t("singerDetails.close")} className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200">
           <X size={16} />
         </button>
       </div>
@@ -144,13 +146,13 @@ const MessageModal: React.FC<Props> = ({ open, onClose, name, singerId }) => {
 
       {status === "not_authenticated" && (
         <div className="mt-6 rounded-2xl border border-[#E7DEFF] bg-[#F9F7FF] p-6 text-center">
-          <p className="text-sm text-[#1C1C1C]">Please log in to send a message to {name}.</p>
+          <p className="text-sm text-[#1C1C1C]">{t("singerDetails.loginToMessage", { name })}</p>
           <Button
             variant="primary"
             className="w-full mt-4"
             onClick={() => navigate("/auth/login")}
           >
-            Log in
+            {t("singerDetails.login")}
           </Button>
         </div>
       )}
@@ -158,13 +160,12 @@ const MessageModal: React.FC<Props> = ({ open, onClose, name, singerId }) => {
       {status === "awaiting_reply" && (
         <div className="mt-6 rounded-2xl border border-[#E7DEFF] bg-[#F9F7FF] p-6 text-center">
           <CheckCircle2 className="h-8 w-8 text-primary mx-auto mb-2" />
-          <p className="text-sm font-semibold text-[#1C1C1C]">Message sent</p>
+          <p className="text-sm font-semibold text-[#1C1C1C]">{t("singerDetails.messageSent")}</p>
           <p className="text-sm text-[#6F5D9E] mt-1">
-            You've already sent {name} a message. We'll let you know here once they reply — you
-            can send another message after that.
+            {t("singerDetails.awaitingReplyText", { name })}
           </p>
           <Button variant="primary" className="w-full mt-4" disabled>
-            Awaiting reply
+            {t("singerDetails.awaitingReply")}
           </Button>
         </div>
       )}
@@ -172,21 +173,19 @@ const MessageModal: React.FC<Props> = ({ open, onClose, name, singerId }) => {
       {status === "composing" && (
         <>
           <div className="mt-6">
-            <label className="block text-sm font-semibold text-[#1C1C1C]">Write message</label>
+            <label className="block text-sm font-semibold text-[#1C1C1C]">{t("singerDetails.writeMessage")}</label>
             <div className="mt-2 rounded-2xl border border-[#E7DEFF] bg-white p-1 shadow-sm">
               <textarea
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
                 maxLength={100}
                 disabled={sending}
-                placeholder={
-                  'Example" Hi! I\'m planning a my birthday and was wondering if you\'re available the weekend of January 01 for 200 people ready to experience your singing.'
-                }
+                placeholder={t("singerDetails.messagePlaceholder")}
                 className="w-full min-h-40 resize-none rounded-2xl px-4 py-3 outline-none text-sm text-[#1C1C1C] placeholder:text-[#A1A1A1]"
               />
             </div>
             <div className="mt-1 text-right text-xs text-[#6F5D9E]">
-              {messageText.length} / 100 characters
+              {t("singerDetails.characters", { count: messageText.length })}
             </div>
           </div>
 
@@ -198,7 +197,7 @@ const MessageModal: React.FC<Props> = ({ open, onClose, name, singerId }) => {
               onClick={handleSend}
             >
               {sending && <Loader2 className="h-4 w-4 animate-spin" />}
-              {sending ? "Sending..." : "Send message"}
+              {sending ? t("singerDetails.sending") : t("singerDetails.sendMessage")}
             </Button>
           </div>
         </>

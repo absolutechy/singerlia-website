@@ -26,6 +26,7 @@ import singerService, { type Singer } from "@/api/services/singerService";
 import eventCategoryService, { type EventCategory } from "@/api/services/eventCategoryService";
 import HyperPayWidget from "@/components/pageComponents/BookingSinger/HyperPayWidget";
 import { toast } from "sonner";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 // Zod validation schema
 const bookingSchema = z.object({
@@ -76,6 +77,7 @@ interface LocationState {
 }
 
 const BookingSinger: React.FC = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as LocationState | undefined;
@@ -319,7 +321,7 @@ const BookingSinger: React.FC = () => {
           }
           console.log("[Payment] SRI integrity hash received (PCI DSS 4.x compliant)");
         } else {
-          setPaymentError("Invalid checkout response from server.");
+          setPaymentError(t("booking.invalidCheckout"));
         }
       } catch (err: any) {
         if (cancelled) return;
@@ -327,7 +329,7 @@ const BookingSinger: React.FC = () => {
         const message =
           err?.response?.data?.message ||
           err?.message ||
-          "Failed to initialize payment. Please try again.";
+          t("booking.paymentInitFailed");
         setPaymentError(message);
         toast.error(message);
       } finally {
@@ -364,14 +366,14 @@ const BookingSinger: React.FC = () => {
         }
         console.log("[Payment] SRI integrity hash received (PCI DSS 4.x compliant)");
       } else {
-        setPaymentError("Invalid checkout response from server.");
+        setPaymentError(t("booking.invalidCheckout"));
       }
     } catch (err: any) {
       console.error("[Payment] Retry error:", err);
       const message =
         err?.response?.data?.message ||
         err?.message ||
-        "Failed to initialize payment. Please try again.";
+        t("booking.paymentInitFailed");
       setPaymentError(message);
       toast.error(message);
     } finally {
@@ -389,8 +391,8 @@ const BookingSinger: React.FC = () => {
       const currentUser = authService.getCurrentUser();
 
       if (!currentUser) {
-        setError("User authentication failed. Please login again.");
-        toast.error("User authentication failed. Please login again.");
+        setError(t("booking.authFailed"));
+        toast.error(t("booking.authFailed"));
         setLoading(false);
         return;
       }
@@ -426,7 +428,7 @@ const BookingSinger: React.FC = () => {
       };
 
       console.log("Submitting booking:", bookingData);
-      toast.info("Creating booking...");
+      toast.info(t("booking.creating"));
 
       // Call booking API
       const response = await bookingService.createBooking(bookingData);
@@ -434,7 +436,7 @@ const BookingSinger: React.FC = () => {
       console.log("Booking created successfully:", response);
       console.log("Booking ID from response:", response.bookingId);
       console.log("Full response keys:", Object.keys(response));
-      toast.success("Booking created successfully!");
+      toast.success(t("booking.created"));
 
       // Store booking ID and confirmed total for payment processing
       setBookingId(response.bookingId);
@@ -451,7 +453,7 @@ const BookingSinger: React.FC = () => {
       const errorMessage =
         err.response?.data?.message ||
         err.message ||
-        "Failed to create booking. Please try again.";
+        t("booking.createFailed");
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -474,9 +476,9 @@ const BookingSinger: React.FC = () => {
   ];
 
   const timeSlotOptions = [
-    { value: "morning", label: "Morning (8:00 AM onwards)" },
-    { value: "afternoon", label: "Afternoon (12:00 PM onwards)" },
-    { value: "evening", label: "Evening (6:00 PM onwards)" },
+    { value: "morning", label: t("booking.morning") },
+    { value: "afternoon", label: t("booking.afternoon") },
+    { value: "evening", label: t("booking.evening") },
   ];
 
   // Filter time slots based on selected date and unavailability
@@ -490,15 +492,15 @@ const BookingSinger: React.FC = () => {
   }, [formValues.eventDate, unavailability]);
 
   const venueTypeOptions = [
-    { value: "indoor", label: "Indoor" },
-    { value: "outdoor", label: "Outdoor" },
+    { value: "indoor", label: t("booking.indoor") },
+    { value: "outdoor", label: t("booking.outdoor") },
   ];
 
   const equipmentOptions = [
-    { value: "provide", label: "I will provide a PA system (speakers, mic)" },
+    { value: "provide", label: t("booking.equipmentProvide") },
     {
       value: "singer-brings",
-      label: "The singer needs to bring their own equipment",
+      label: t("booking.equipmentSingerBrings"),
     },
   ];
 
@@ -515,12 +517,12 @@ const BookingSinger: React.FC = () => {
               <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[#E7DEFF] text-primary bg-white">
                 <ArrowLeft className="h-4 w-4" />
               </span>
-              Back to Form
+              {t("common.cancel")}
             </button>
             <div className="w-full text-center">
-              <h1 className="heading-2 text-[#2E1B4D]">Booking Summary</h1>
+              <h1 className="heading-2 text-[#2E1B4D]">{t("booking.summary")}</h1>
               <p className="text-[#6F5D9E] mt-2">
-                Review your booking details before proceeding to payment
+                {t("booking.confirmAmount")}
               </p>
             </div>
           </div>
@@ -531,7 +533,7 @@ const BookingSinger: React.FC = () => {
             <div>
               <h3 className="text-lg font-semibold text-[#2E1B4D] mb-3 flex items-center gap-2">
                 <CalendarDays className="h-5 w-5 text-primary" />
-                Event Details
+                {t("booking.eventDetails")}
               </h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
@@ -547,7 +549,7 @@ const BookingSinger: React.FC = () => {
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#6F5D9E]">Event Type:</span>
+                  <span className="text-[#6F5D9E]">{t("booking.eventType")}:</span>
                   <span className="text-[#2E1B4D] font-medium capitalize">
                     {formValues.eventType}
                   </span>
@@ -603,7 +605,7 @@ const BookingSinger: React.FC = () => {
             <div>
               <h3 className="text-lg font-semibold text-[#2E1B4D] mb-3 flex items-center gap-2">
                 <User className="h-5 w-5 text-primary" />
-                Your Information
+                {t("booking.yourInformation")}
               </h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
@@ -653,11 +655,11 @@ const BookingSinger: React.FC = () => {
               {baseFee > 0 ? (
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-[#6F5D9E]">Selected Time Slot:</span>
-                    <span className="text-[#2E1B4D] font-medium">{duration} hour{duration !== 1 ? 's' : ''}</span>
+                    <span className="text-[#6F5D9E]">{t("booking.selectedTimeSlot")}</span>
+                    <span className="text-[#2E1B4D] font-medium">{t("booking.hours", { count: duration, plural: duration !== 1 ? "s" : "" })}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#6F5D9E]">{selectedCategory?.label || "Price"}:</span>
+                    <span className="text-[#6F5D9E]">{selectedCategory?.label || t("common.price")}:</span>
                     <span className="text-[#2E1B4D] font-medium">SAR {baseFee.toLocaleString()}</span>
                   </div>
                   {/* Extra hour charges disabled
@@ -691,7 +693,7 @@ const BookingSinger: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <div className="text-sm text-[#6F5D9E]">Loading pricing...</div>
+                <div className="text-sm text-[#6F5D9E]">{t("booking.loadingPricing")}</div>
               )}
             </div>
 
@@ -705,7 +707,7 @@ const BookingSinger: React.FC = () => {
                     className="!h-12"
                     onClick={retryCheckout}
                   >
-                    Retry Payment
+                    {t("booking.retryPayment")}
                   </Button>
                 </div>
               )}
@@ -713,25 +715,22 @@ const BookingSinger: React.FC = () => {
               {!paymentError && !checkoutId && (
                 <div className="flex items-center justify-center py-8 gap-3">
                   <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                  <span className="text-[#6F5D9E] text-sm">Preparing secure payment...</span>
+                  <span className="text-[#6F5D9E] text-sm">{t("booking.preparingPayment")}</span>
                 </div>
               )}
 
               {checkoutId && integrity && !paymentError && !priceConfirmed && (
                 <div className="bg-[#F9F7FF] rounded-2xl p-5 text-center space-y-4">
                   <p className="text-[#2E1B4D] font-semibold text-base">
-                    You will be charged{" "}
-                    <span className="text-primary">
-                      SAR {(bookingTotalAmount ?? totalPrice).toFixed(2)}
-                    </span>
+                    {t("booking.chargedAmount", { amount: `SAR ${(bookingTotalAmount ?? totalPrice).toFixed(2)}` })}
                   </p>
-                  <p className="text-[#6F5D9E] text-sm">Please confirm this amount before proceeding to payment.</p>
+                  <p className="text-[#6F5D9E] text-sm">{t("booking.confirmAmount")}</p>
                   <Button
                     variant="primary"
                     className="!h-12 w-full"
                     onClick={() => setPriceConfirmed(true)}
                   >
-                    Confirm &amp; Proceed to Payment
+                    {t("booking.confirmProceed")}
                   </Button>
                 </div>
               )}
@@ -765,10 +764,10 @@ const BookingSinger: React.FC = () => {
           </button>
           <div className="text-center w-full">
             <h1 className="text-3xl lg:text-5xl font-bold text-[#2E1B4D]">
-              Book Your Artist
+              {t("booking.title")}
             </h1>
             <p className="text-[#6F5D9E] mt-2">
-              Fill in the details to complete your booking
+              {t("booking.subtitle")}
             </p>
           </div>
         </div>
@@ -785,7 +784,7 @@ const BookingSinger: React.FC = () => {
           <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-lg border border-[#E7DEFF]">
             <h2 className="text-2xl lg:text-4xl font-bold text-[#2E1B4D] mb-6 flex items-center gap-2">
               <CalendarDays className="h-6 w-6 text-primary" />
-              Event Date & Time
+              {t("booking.eventDateTime")}
             </h2>
             <div className="grid gap-6 md:grid-cols-2">
               <Controller
@@ -793,8 +792,8 @@ const BookingSinger: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <DatePicker
-                    label="Event Date"
-                    placeholder="Select event date"
+                    label={t("booking.eventDate")}
+                    placeholder={t("booking.selectEventDate")}
                     value={field.value}
                     onChange={field.onChange}
                     disabled={(date) => {
@@ -815,7 +814,7 @@ const BookingSinger: React.FC = () => {
                   control={control}
                   render={({ field }) => (
                     <RadioGroup
-                      label="Time Slot"
+                      label={t("booking.timeSlot")}
                       options={availableTimeSlotOptions}
                       value={field.value}
                       onChange={field.onChange}
@@ -826,8 +825,8 @@ const BookingSinger: React.FC = () => {
                 {formValues.eventDate && availableTimeSlotOptions.length < 3 && (
                   <p className="text-xs text-orange-600 mt-2">
                     {availableTimeSlotOptions.length === 0
-                      ? "No time slots available for this date. Please select another date."
-                      : `${availableTimeSlotOptions.length} time slot(s) available for this date.`}
+                      ? t("booking.noSlots")
+                      : t("booking.slotsAvailable", { count: availableTimeSlotOptions.length })}
                   </p>
                 )}
               </div>
@@ -838,7 +837,7 @@ const BookingSinger: React.FC = () => {
           <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-lg border border-[#E7DEFF]">
             <h2 className="text-2xl lg:text-4xl font-bold text-[#2E1B4D] mb-6 flex items-center gap-2">
               <MapPin className="h-6 w-6 text-primary" />
-              Event Details
+              {t("booking.eventDetails")}
             </h2>
             <div className="grid gap-6 md:grid-cols-2">
               <Controller
@@ -847,9 +846,9 @@ const BookingSinger: React.FC = () => {
                 render={({ field }) => (
                   <Select
                     className="!bg-[#F9F7FF] !px-4 py-6 shadow-none"
-                    label="Event Type"
+                    label={t("booking.eventType")}
                     options={eventTypeOptions}
-                    placeholder="Select event type"
+                    placeholder={t("booking.selectEventType")}
                     value={field.value}
                     onChange={field.onChange}
                     error={errors.eventType?.message}
@@ -861,7 +860,7 @@ const BookingSinger: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <RadioGroup
-                    label="Venue Type"
+                    label={t("booking.venueType")}
                     options={venueTypeOptions}
                     value={field.value}
                     onChange={field.onChange}
@@ -876,9 +875,9 @@ const BookingSinger: React.FC = () => {
                 render={({ field }) => (
                   <Select
                     className="!bg-[#F9F7FF] !px-4 py-6 shadow-none !border-none"
-                    label="Number of Guests (Approximate)"
+                    label={t("booking.guestCount")}
                     options={guestOptions}
-                    placeholder="Select guest count"
+                    placeholder={t("booking.selectGuestCount")}
                     value={field.value}
                     onChange={field.onChange}
                     error={errors.numberOfGuests?.message}
@@ -891,8 +890,8 @@ const BookingSinger: React.FC = () => {
                 render={({ field }) => (
                   <Input
                     className="!bg-[#F9F7FF] !px-4 py-6"
-                    label="City"
-                    placeholder="Enter city"
+                    label={t("booking.city")}
+                    placeholder={t("booking.enterCity")}
                     {...field}
                     error={errors.city?.message}
                   />
@@ -904,8 +903,8 @@ const BookingSinger: React.FC = () => {
                 render={({ field }) => (
                   <Input
                     className="!bg-[#F9F7FF] !px-4 py-6"
-                    label="Postal Code"
-                    placeholder="Enter postal code"
+                    label={t("booking.postalCode")}
+                    placeholder={t("booking.enterPostalCode")}
                     {...field}
                     error={errors.postalCode?.message}
                   />
@@ -917,8 +916,8 @@ const BookingSinger: React.FC = () => {
                 render={({ field }) => (
                   <Input
                     className="!bg-[#F9F7FF] !px-4 py-6"
-                    label="Venue Name"
-                    placeholder="Enter venue name"
+                    label={t("booking.venueName")}
+                    placeholder={t("booking.enterVenueName")}
                     {...field}
                     error={errors.venueName?.message}
                   />
@@ -931,8 +930,8 @@ const BookingSinger: React.FC = () => {
                   render={({ field }) => (
                     <Input
                       className="!bg-[#F9F7FF] !px-4 py-6"
-                      label="Venue Address"
-                      placeholder="Street address"
+                      label={t("booking.venueAddress")}
+                      placeholder={t("booking.streetAddress")}
                       {...field}
                       error={errors.venueAddress?.message}
                     />
@@ -946,7 +945,7 @@ const BookingSinger: React.FC = () => {
           <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-lg border border-[#E7DEFF]">
             <h2 className="text-2xl lg:text-4xl font-bold text-[#2E1B4D] mb-6 flex items-center gap-2">
               <User className="h-6 w-6 text-primary" />
-              Your Information
+              {t("booking.yourInformation")}
             </h2>
             <div className="grid gap-6 md:grid-cols-2">
               <div className="md:col-span-2">
@@ -956,8 +955,8 @@ const BookingSinger: React.FC = () => {
                   render={({ field }) => (
                     <Input
                       className="!bg-[#F9F7FF] !px-4 py-6"
-                      label="Full Name"
-                      placeholder="Enter your full name"
+                      label={t("booking.fullName")}
+                      placeholder={t("booking.enterFullName")}
                       {...field}
                       error={errors.fullName?.message}
                     />
@@ -970,7 +969,7 @@ const BookingSinger: React.FC = () => {
                 render={({ field }) => (
                   <Input
                     className="!bg-[#F9F7FF] !px-4 py-6"
-                    label="Email Address"
+                    label={t("booking.email")}
                     type="email"
                     placeholder="your.email@example.com"
                     {...field}
@@ -984,7 +983,7 @@ const BookingSinger: React.FC = () => {
                 render={({ field }) => (
                   <Input
                     className="!bg-[#F9F7FF] !px-4 py-6"
-                    label="Phone Number"
+                    label={t("booking.phone")}
                     type="tel"
                     placeholder="+1 (555) 000-0000"
                     {...field}
@@ -999,7 +998,7 @@ const BookingSinger: React.FC = () => {
           <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-lg border border-[#E7DEFF]">
             <h2 className="text-2xl lg:text-4xl font-bold text-[#2E1B4D] mb-6 flex items-start sm:items-center gap-2">
               <MessageSquare className="h-6 w-6 text-primary" />
-              Special Requirements & Message
+              {t("booking.specialRequirements")}
             </h2>
             <div className="space-y-6">
               <Controller
@@ -1007,8 +1006,8 @@ const BookingSinger: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <Textarea
-                    label="Message to the Singer (Optional)"
-                    placeholder="Share any special requests, event theme, dress code, or other details..."
+                    label={t("booking.messageToSinger")}
+                    placeholder={t("booking.messagePlaceholder")}
                     rows={4}
                     {...field}
                     error={errors.messageToSinger?.message}
@@ -1020,8 +1019,8 @@ const BookingSinger: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <Textarea
-                    label="Special Song Requests (Optional)"
-                    placeholder='e.g., "First dance song," "Company anthem," etc.'
+                    label={t("booking.songRequests")}
+                    placeholder={t("booking.songPlaceholder")}
                     rows={3}
                     {...field}
                     error={errors.specialSongRequests?.message}
@@ -1033,7 +1032,7 @@ const BookingSinger: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <RadioGroup
-                    label="Equipment"
+                    label={t("booking.equipment")}
                     options={equipmentOptions}
                     value={field.value}
                     onChange={field.onChange}
@@ -1048,18 +1047,18 @@ const BookingSinger: React.FC = () => {
           <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-lg border border-[#E7DEFF]">
             <h2 className="text-2xl lg:text-4xl font-bold text-[#2E1B4D] mb-6 flex items-center gap-2">
               <CreditCard className="h-6 w-6 text-primary" />
-              Payment Details
+              {t("booking.paymentDetails")}
             </h2>
             <div className="space-y-6">
               {/* Pricing Summary */}
               {baseFee > 0 ? (
                 <div className="bg-[#F9F7FF] rounded-2xl p-6 space-y-3">
                   <div className="flex justify-between text-sm">
-                    <span className="text-[#6F5D9E]">Selected Time Slot:</span>
-                    <span className="text-[#2E1B4D] font-semibold">{duration} hour{duration !== 1 ? 's' : ''}</span>
+                    <span className="text-[#6F5D9E]">{t("booking.selectedTimeSlot")}</span>
+                    <span className="text-[#2E1B4D] font-semibold">{t("booking.hours", { count: duration, plural: duration !== 1 ? "s" : "" })}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-[#6F5D9E]">{selectedCategory?.label || "Price"}:</span>
+                    <span className="text-[#6F5D9E]">{selectedCategory?.label || t("common.price")}:</span>
                     <span className="text-[#2E1B4D] font-semibold">SAR {baseFee.toLocaleString()}</span>
                   </div>
                   {/* Extra hour charges disabled
@@ -1080,7 +1079,7 @@ const BookingSinger: React.FC = () => {
                   */}
                   <div className="h-px bg-[#E7DEFF]" />
                   <div className="flex justify-between text-lg">
-                    <span className="text-[#2E1B4D] font-bold">Total Price:</span>
+                    <span className="text-[#2E1B4D] font-bold">{t("booking.totalPrice")}</span>
                     <span className="text-primary font-bold">
                       SAR {(bookingTotalAmount ?? totalPrice).toFixed(2)}
                     </span>
@@ -1088,7 +1087,7 @@ const BookingSinger: React.FC = () => {
                 </div>
               ) : (
                 <div className="bg-[#F9F7FF] rounded-2xl p-6 text-sm text-[#6F5D9E] text-center">
-                  Loading pricing...
+                  {t("booking.loadingPricing")}
                 </div>
               )}
 
@@ -1097,8 +1096,8 @@ const BookingSinger: React.FC = () => {
                 control={control}
                 render={({ field }) => (
                   <Input
-                    label="Promo Code (Optional)"
-                    placeholder="Enter promo code"
+                    label={t("booking.promoCode")}
+                    placeholder={t("booking.enterPromoCode")}
                     {...field}
                     error={errors.promoCode?.message}
                   />
@@ -1111,7 +1110,7 @@ const BookingSinger: React.FC = () => {
                 render={({ field }) => (
                   <Checkbox
                     id="agreeToTerms"
-                    label="I agree to the Terms & Conditions and Privacy Policy"
+                    label={t("booking.agreeTerms")}
                     checked={field.value}
                     onCheckedChange={field.onChange}
                     error={errors.agreeToTerms?.message}
@@ -1144,11 +1143,11 @@ const BookingSinger: React.FC = () => {
                 if (errorFields.length > 0) {
                   e.preventDefault();
                   const firstError = formErrors[errorFields[0] as keyof typeof formErrors];
-                  toast.error(firstError?.message || "Please fill all required fields");
+                  toast.error(firstError?.message || t("booking.requiredFields"));
                 }
               }}
             >
-              {loading ? "Creating Booking..." : "Review Booking"}
+              {loading ? t("booking.creatingBooking") : t("booking.reviewBooking")}
             </Button>
           </div>
         </form>

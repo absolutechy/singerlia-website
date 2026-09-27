@@ -3,8 +3,10 @@ import { useNavigate, useLocation } from "react-router";
 import AuthModalLayout from "@/components/auth/AuthModalLayout";
 import { Button, Input } from "@/components/common";
 import authService from "@/api/services/authService";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const Login: React.FC = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
   // Where to return after login (e.g. a deep-linked checkout page). Defaults to home.
@@ -44,7 +46,7 @@ const Login: React.FC = () => {
   const handleLogin = async () => {
     // Validation
     if (!formData.identifier || !formData.password) {
-      setError("Please fill in all fields");
+      setError(t("auth.fillFields"));
       return;
     }
 
@@ -73,7 +75,7 @@ const Login: React.FC = () => {
       // Navigate to the return path (or home) after successful login
       navigate(from);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Login failed. Please check your credentials.");
+      setError(err.response?.data?.message || t("auth.loginFailed"));
     } finally {
       setLoading(false);
     }
@@ -81,16 +83,16 @@ const Login: React.FC = () => {
 
   return (
     <AuthModalLayout
-      title="Welcome to SingerLia Log In" size="lg"
+      title={t("auth.loginTitle")} size="lg"
       footerNote={
         <p className="text-center text-sm text-[#6F5D9E]">
-          Don't have an account?{" "}
+          {t("auth.noAccount")}{" "}
           <button
             type="button"
             className="font-semibold cursor-pointer text-primary underline-offset-4 hover:underline"
             onClick={() => navigate("/auth/choose-role")}
           >
-            Sign Up
+            {t("auth.signup")}
           </button>
         </p>
       }
@@ -117,7 +119,7 @@ const Login: React.FC = () => {
           </div> */}
           <div className="md:w-[500px] w-full mx-auto">
             <div className="space-y-5 md:space-y-9">
-              <h3 className="text-xl text-start font-semibold">Login</h3>
+              <h3 className="text-xl text-start font-semibold">{t("auth.loginHeading")}</h3>
               {error && (
                 <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
                   {error}
@@ -127,7 +129,7 @@ const Login: React.FC = () => {
                 id="identifier"
                 // label="Phone Number or Email"
                 type="text"
-                placeholder="Phone Number or Email"
+                placeholder={t("auth.identifier")}
                 className="bg-[#F7FBFF] border border-[#D4D7E3] !pl-2 !py-6"
                 value={formData.identifier}
                 onChange={handleInputChange}
@@ -136,7 +138,7 @@ const Login: React.FC = () => {
                 id="password"
                 // label="Password"
                 type="password"
-                placeholder="Password"
+                placeholder={t("auth.password")}
                 className="bg-[#F7FBFF] !font-sans border border-[#D4D7E3] !pl-2 py-6"
                 value={formData.password}
                 onChange={handleInputChange}
@@ -150,7 +152,7 @@ const Login: React.FC = () => {
                   checked={rememberPassword}
                   onChange={(e) => setRememberPassword(e.target.checked)}
                 />
-                Remember Password
+                {t("auth.rememberPassword")}
               </label>
             </div>
           </div>
@@ -162,14 +164,14 @@ const Login: React.FC = () => {
           onClick={handleLogin}
           disabled={loading}
         >
-          <span className="font-semibold">{loading ? "Logging In..." : "Log In"}</span>
+          <span className="font-semibold">{loading ? t("auth.loggingIn") : t("auth.login")}</span>
         </Button>
         <Button
           // variant="primary"
           className="!text-primary btn-text !text-base border border-primary underline-offset-4 hover:underline"
           onClick={() => navigate("/auth/forgot-password")}
         >
-          Forgot Password
+          {t("auth.forgotPassword")}
         </Button>
       </div>
     </AuthModalLayout>

@@ -8,6 +8,7 @@ import { Dot } from "lucide-react";
 import { useNavigate } from "react-router";
 import SocialIcons from "./SocialIcons";
 import VerifiedArtistsLogo from "./VerifiedArtists";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const users = [
   { id: 1, src: UserOneAvatar, alt: "@user1", fallback: "U1" },
@@ -18,6 +19,7 @@ const users = [
 
 const Hero = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   return (
     <div className="px-5">
       <SearchBar
@@ -46,9 +48,9 @@ const Hero = () => {
           ))}
         </div>
         <div className="flex flex-col lg:flex-row gap-x-2 items-center mt-4">
-        <span>10.5k active users</span>
+        <span>{t("hero.activeUsers")}</span>
         <Dot size={40}/>
-        <span>Trusted by customers worldwide</span>
+        <span>{t("hero.trusted")}</span>
         </div>
       </div>
       <SocialIcons />

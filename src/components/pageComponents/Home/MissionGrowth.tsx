@@ -1,22 +1,22 @@
 import React from "react";
+import { useLanguage, type TranslationKey } from "@/i18n/LanguageContext";
 
 type Highlight = {
-  title: string;
-  description: string;
+  titleKey: TranslationKey;
+  descriptionKey: TranslationKey;
   icon: React.ReactNode;
 };
 
 type Stat = {
-  label: string;
-  subLabel: string;
+  labelKey: TranslationKey;
+  subLabelKey: TranslationKey;
   icon: React.ReactNode;
 };
 
 const highlightCards: Highlight[] = [
   {
-    title: "Customer",
-    description:
-      "Book top-rated stylists near you, view real portfolios, and pay securely.",
+    titleKey: "home.customerCardTitle",
+    descriptionKey: "home.customerCardBody",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -40,9 +40,8 @@ const highlightCards: Highlight[] = [
     ),
   },
   {
-    title: "Artists",
-    description:
-      "Showcase your work, accept bookings, and manage your calendar from your phone.",
+    titleKey: "home.artistCardTitle",
+    descriptionKey: "home.artistCardBody",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -69,8 +68,8 @@ const highlightCards: Highlight[] = [
 
 const growthStats: Stat[] = [
   {
-    label: "10K+ Reviews",
-    subLabel: "4.9 Rating",
+    labelKey: "home.statReviews",
+    subLabelKey: "home.statRating",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -89,8 +88,8 @@ const growthStats: Stat[] = [
     ),
   },
   {
-    label: "50K+ Monthly",
-    subLabel: "Active Customers",
+    labelKey: "home.statMonthly",
+    subLabelKey: "home.statActiveCustomers",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -109,8 +108,8 @@ const growthStats: Stat[] = [
     ),
   },
   {
-    label: "4.9 / 5",
-    subLabel: "Average Rating",
+    labelKey: "home.statRating",
+    subLabelKey: "home.statAverageRating",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -129,8 +128,8 @@ const growthStats: Stat[] = [
     ),
   },
   {
-    label: "500+ Locations",
-    subLabel: "Partner Artists",
+    labelKey: "home.statLocations",
+    subLabelKey: "home.statPartnerArtists",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -150,8 +149,8 @@ const growthStats: Stat[] = [
     ),
   },
   {
-    label: "25,000+",
-    subLabel: "Events Completed",
+    labelKey: "home.statEvents",
+    subLabelKey: "home.statEventsCompleted",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -171,8 +170,8 @@ const growthStats: Stat[] = [
     ),
   },
   {
-    label: "12,000+",
-    subLabel: "Verified Artists",
+    labelKey: "home.statVerified",
+    subLabelKey: "home.statVerifiedArtists",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -203,20 +202,22 @@ const growthStats: Stat[] = [
 ];
 
 const MissionGrowth: React.FC = () => {
+  const { t } = useLanguage();
+
   return (
     <div className="w-full bg-white">
       <div className="custom-container px-6 py-10 lg:py-24 lg:px-24 space-y-20">
         <section className="space-y-8">
-          <h2 className="font-bold text-4xl lg:text-6xl text-primary">About Our Mission</h2>
+          <h2 className="font-bold text-4xl lg:text-6xl text-primary">{t("home.missionTitle")}</h2>
           
           {/* For Customers Section */}
           <div className="grid items-start gap-8 lg:grid-cols-[1fr_600px]">
             <div className="space-y-3">
               <h3 className="text-xl font-semibold text-primary">
-                For Customers
+                {t("home.forCustomers")}
               </h3>
               <p className="text-base text-gray-700 leading-relaxed">
-                Our mission is to make finding the perfect singer effortless. We connect you with talented performers who match your event&apos;s style, whether it&apos;s a wedding, corporate function, private party, or concert. Customers can explore a wide range of artists, listen to their samples, and book with confidence—all in one convenient platform.
+                {t("home.forCustomersBody")}
               </p>
             </div>
             
@@ -226,8 +227,8 @@ const MissionGrowth: React.FC = () => {
                 {highlightCards[0].icon}
               </div>
               <div className="space-y-2">
-                <p className="text-xl font-semibold">{highlightCards[0].title}</p>
-                <p className="text-sm text-white/90 leading-relaxed">{highlightCards[0].description}</p>
+                <p className="text-xl font-semibold">{t(highlightCards[0].titleKey)}</p>
+                <p className="text-sm text-white/90 leading-relaxed">{t(highlightCards[0].descriptionKey)}</p>
               </div>
             </div>
           </div>
@@ -236,10 +237,10 @@ const MissionGrowth: React.FC = () => {
           <div className="grid items-start gap-8 lg:grid-cols-[1fr_600px]">
             <div className="space-y-3">
               <h3 className="text-xl font-semibold text-primary">
-                For Artists
+                {t("home.forArtists")}
               </h3>
               <p className="text-base text-gray-700 leading-relaxed">
-                We are committed to supporting artists by providing them with greater visibility, valuable opportunities, and direct connections with clients who truly appreciate their art. From solo acts to bands, classical to contemporary, we give artists the tools to showcase their talent, grow their audience, and build lasting relationships with customers.
+                {t("home.forArtistsBody")}
               </p>
             </div>
             
@@ -249,19 +250,19 @@ const MissionGrowth: React.FC = () => {
                 {highlightCards[1].icon}
               </div>
               <div className="space-y-2">
-                <p className="text-xl font-semibold">{highlightCards[1].title}</p>
-                <p className="text-sm text-white/90 leading-relaxed">{highlightCards[1].description}</p>
+                <p className="text-xl font-semibold">{t(highlightCards[1].titleKey)}</p>
+                <p className="text-sm text-white/90 leading-relaxed">{t(highlightCards[1].descriptionKey)}</p>
               </div>
             </div>
           </div>
         </section>
         <section className="space-y-12">
           <div className="text-center">
-            <h2 className="font-bold text-4xl lg:text-6xl text-primary">Today Growth Singerlia</h2>
+            <h2 className="font-bold text-4xl lg:text-6xl text-primary">{t("home.growthTitle")}</h2>
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {growthStats.map((stat, index) => (
-              <React.Fragment key={stat.label}>
+              <React.Fragment key={stat.labelKey}>
                 {/* Insert empty cell at the start of 2nd row (after 4th item) */}
                 {index === 4 && <div className="hidden lg:block"></div>}
                 <div className="rounded-2xl p-6 text-center">
@@ -269,9 +270,9 @@ const MissionGrowth: React.FC = () => {
                     {stat.icon}
                   </div>
                   <p className="text-lg font-semibold text-gray-900">
-                    {stat.label}
+                    {t(stat.labelKey)}
                   </p>
-                  <p className="text-sm text-gray-600">{stat.subLabel}</p>
+                  <p className="text-sm text-gray-600">{t(stat.subLabelKey)}</p>
                 </div>
               </React.Fragment>
             ))}
@@ -279,10 +280,7 @@ const MissionGrowth: React.FC = () => {
 
           <div className="border-t border-dashed border-gray-300 pt-10">
             <p className="mx-auto max-w-3xl text-center text-base text-gray-700">
-              Our mission is to bridge the gap between customers and artists by
-              creating a seamless, trustworthy, and enjoyable experience. We aim
-              to celebrate music, uplift artists, and make every event
-              unforgettable through the power of live performance.
+              {t("home.growthMission")}
             </p>
           </div>
         </section>

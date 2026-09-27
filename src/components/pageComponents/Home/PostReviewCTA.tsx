@@ -1,4 +1,5 @@
 import { Button } from "@/components/common";
+import { useLanguage } from "@/i18n/LanguageContext";
 import React from "react";
 
 const backgroundImages = [
@@ -35,6 +36,8 @@ const backgroundImages = [
 ];
 
 const PostReviewCTA: React.FC = () => {
+  const { t } = useLanguage();
+
   return (
     <div className="w-full bg-white py-14">
       <div className="custom-container px-6 lg:px-24">
@@ -53,11 +56,10 @@ const PostReviewCTA: React.FC = () => {
 
           <div className="relative z-10 mx-auto flex max-w-2xl flex-col items-center gap-6">
             <h2 className="text-3xl font-semibold md:text-4xl">
-              Ready to Experience the Future of Live Music?
+              {t("home.postReviewTitle")}
             </h2>
             <p className="text-sm font-medium text-[#FBEEDD] md:text-base">
-              Join thousands of event organizers who trust Singerlia for their
-              most important moments.
+              {t("home.postReviewBody")}
             </p>
             <Button
               variant="primary"
@@ -65,7 +67,7 @@ const PostReviewCTA: React.FC = () => {
               type="button"
               className="flex items-center gap-2 col-span-2 bg-gradient-to-r from-[#FFD700] to-[#B8860B99] text-primary hover:opacity-90"
             >
-              <p className="font-medium">Send Message</p>
+              <p className="font-medium">{t("home.sendMessage")}</p>
             </Button>
           </div>
         </div>

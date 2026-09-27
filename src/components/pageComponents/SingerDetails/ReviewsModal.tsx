@@ -2,6 +2,7 @@ import React from "react";
 import Modal from "@/components/common/Modal";
 import ReviewCard from "@/components/common/ReviewCard";
 import { X } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 type Review = {
   id: number;
@@ -22,6 +23,9 @@ type Props = {
 };
 
 const ReviewsModal: React.FC<Props> = ({ open, onClose, reviews, averageRating, reviewCount }) => {
+  const { t, language } = useLanguage();
+  const plural = language === "en" && reviewCount !== 1 ? "s" : "";
+
   return (
     <Modal open={open} onClose={onClose} panelClassName="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
       <div className="flex items-center justify-between px-5 py-4 border-b">
@@ -29,10 +33,10 @@ const ReviewsModal: React.FC<Props> = ({ open, onClose, reviews, averageRating, 
           <span className="text-xl">{averageRating.toFixed(1)}</span>
           <span className="inline-block w-1 h-1 rounded-full bg-gray-300"></span>
           <span className="text-xl">
-            {reviewCount} review{reviewCount === 1 ? "" : "s"}
+            {t("singerDetails.reviewCount", { count: reviewCount, plural })}
           </span>
         </div>
-        <button onClick={onClose} aria-label="Close" className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200">
+        <button onClick={onClose} aria-label={t("singerDetails.close")} className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200">
           <X size={16} />
         </button>
       </div>

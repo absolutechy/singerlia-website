@@ -3,10 +3,12 @@ import { useNavigate, useLocation } from "react-router";
 import { AlertCircle, Loader2, ShieldCheck } from "lucide-react";
 import Button from "@/components/common/Button";
 import paymentService from "@/api/services/paymentService";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 type VerificationState = "loading" | "success" | "pending_capture" | "failed";
 
 const PaymentResult: React.FC = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
   const [status, setStatus] = useState<VerificationState>("loading");
@@ -64,9 +66,7 @@ const PaymentResult: React.FC = () => {
           retryCount += 1;
           if (retryCount > maxClientRetries) {
             setStatus("failed");
-            setErrorMessage(
-              "Payment is still processing or the payment session is not ready. Please check your booking in the portal instead of retrying the same checkout."
-            );
+            setErrorMessage(t("payment.stillProcessing"));
             return;
           }
 
@@ -93,7 +93,7 @@ const PaymentResult: React.FC = () => {
           setStatus("pending_capture");
           setErrorMessage(
             result.message ||
-              "Payment authorized. Capture is pending and will be retried by Singerlia."
+              t("payment.capturePendingRetry")
           );
           return;
         }
@@ -102,7 +102,7 @@ const PaymentResult: React.FC = () => {
         setErrorMessage(
           result.resultDescription ||
             result.message ||
-            "Payment was not completed. Please try again."
+            t("payment.wasNotCompleted")
         );
       } catch (err: any) {
         if (cancelled) return;
@@ -111,21 +111,12 @@ const PaymentResult: React.FC = () => {
         setStatus("failed");
         setErrorDetails(errorData);
 
-        let message =
-          "Unable to verify payment status. Please contact support if you were charged.";
+        let message = t("payment.verifyUnable");
 
         if (errorData?.resultCode === "800.100.152") {
-          message =
-            "Transaction declined by the authorization system.\n\n" +
-            "Use a HyperPay-supported test VISA or Mastercard instead of MADA for PA verification.\n" +
-            "Recommended test cards:\n" +
-            "4200000000000000\n" +
-            "5453010000059780";
+          message = t("payment.transactionDeclined");
         } else if (errorData?.resultCode === "200.300.404") {
-          message =
-            "Payment session not found yet.\n\n" +
-            "This is usually caused by querying before HyperPay makes the payment session available, " +
-            "or by missing resourcePath on redirect.";
+          message = t("payment.sessionNotFound");
         } else if (errorData?.resultDescription) {
           message = errorData.resultDescription;
         } else if (errorData?.message) {
@@ -157,10 +148,10 @@ const PaymentResult: React.FC = () => {
             </div>
             <div>
               <h1 className="heading-3 text-[#2E1B4D] mb-2">
-                Verifying Your Payment
+                {t("payment.verifying")}
               </h1>
               <p className="text-[#6F5D9E]">
-                Please wait while we confirm and process your payment...
+                {t("payment.verifyingText")}
               </p>
             </div>
           </div>
@@ -175,10 +166,10 @@ const PaymentResult: React.FC = () => {
             </div>
             <div>
               <h1 className="heading-3 text-[#2E1B4D] mb-2">
-                Payment Verified
+                {t("payment.verified")}
               </h1>
               <p className="text-[#6F5D9E]">
-                Redirecting you to your booking confirmation...
+                {t("payment.redirecting")}
               </p>
             </div>
           </div>
@@ -193,13 +184,13 @@ const PaymentResult: React.FC = () => {
             </div>
             <div>
               <h1 className="heading-3 text-[#2E1B4D] mb-2">
-                Payment Authorized
+                {t("payment.authorized")}
               </h1>
               <p className="text-[#6F5D9E] mb-6 whitespace-pre-line">
                 {errorMessage}
               </p>
               <p className="text-sm text-[#6F5D9E]">
-                Booking ID: <span className="font-mono">{bookingId}</span>
+                {t("payment.bookingId")} <span className="font-mono">{bookingId}</span>
               </p>
             </div>
 
@@ -215,7 +206,7 @@ const PaymentResult: React.FC = () => {
                   })
                 }
               >
-                Continue
+                {t("payment.continue")}
               </Button>
               <Button
                 variant="default"
@@ -223,7 +214,7 @@ const PaymentResult: React.FC = () => {
                 className="w-full !h-14"
                 onClick={() => navigate("/")}
               >
-                Return Home
+                {t("payment.returnHome")}
               </Button>
             </div>
           </div>
@@ -238,7 +229,7 @@ const PaymentResult: React.FC = () => {
             </div>
             <div>
               <h1 className="heading-3 text-[#2E1B4D] mb-2">
-                Payment Failed
+                {t("payment.failed")}
               </h1>
               <p className="text-[#6F5D9E] mb-6 whitespace-pre-line">
                 {errorMessage}
@@ -247,26 +238,26 @@ const PaymentResult: React.FC = () => {
               {import.meta.env.DEV && (
                 <details className="text-left bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
                   <summary className="cursor-pointer text-sm font-semibold text-red-800 mb-2">
-                    Debug Information
+                    {t("payment.debug")}
                   </summary>
                   <div className="text-xs font-mono text-red-700 space-y-2">
                     <div>
-                      <strong>Error Code:</strong> {errorDetails?.resultCode || "N/A"}
+                      <strong>{t("payment.errorCode")}</strong> {errorDetails?.resultCode || "N/A"}
                     </div>
                     <div>
-                      <strong>Description:</strong> {errorDetails?.resultDescription || "N/A"}
+                      <strong>{t("payment.description")}</strong> {errorDetails?.resultDescription || "N/A"}
                     </div>
                     <div>
-                      <strong>Booking ID:</strong> {errorDetails?.bookingId || bookingId}
+                      <strong>{t("payment.bookingId")}</strong> {errorDetails?.bookingId || bookingId}
                     </div>
                     <div>
-                      <strong>Resource Path:</strong> {resolvedResourcePath || "missing"}
+                      <strong>{t("payment.resourcePath")}</strong> {resolvedResourcePath || "missing"}
                     </div>
                     <div>
-                      <strong>Frontend HyperPay URL:</strong> {import.meta.env.VITE_HYPERPAY_URL}
+                      <strong>{t("payment.frontendUrl")}</strong> {import.meta.env.VITE_HYPERPAY_URL}
                     </div>
                     <div>
-                      <strong>API Base URL:</strong> {import.meta.env.VITE_API_BASE_URL}
+                      <strong>{t("payment.apiBaseUrl")}</strong> {import.meta.env.VITE_API_BASE_URL}
                     </div>
                   </div>
                 </details>
@@ -280,7 +271,7 @@ const PaymentResult: React.FC = () => {
                 className="w-full !h-14"
                 onClick={() => navigate(-1)}
               >
-                Back to Booking
+                {t("payment.backToBooking")}
               </Button>
               <Button
                 variant="default"
@@ -288,7 +279,7 @@ const PaymentResult: React.FC = () => {
                 className="w-full !h-14"
                 onClick={() => navigate("/")}
               >
-                Return Home
+                {t("payment.returnHome")}
               </Button>
             </div>
           </div>

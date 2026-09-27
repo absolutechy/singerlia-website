@@ -1,5 +1,6 @@
 import React from "react";
 import { Star } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 type PreviewReview = {
   id: number;
@@ -18,6 +19,9 @@ type Props = {
 };
 
 const ReviewsPreview: React.FC<Props> = ({ items, averageRating, reviewCount, onShowAll }) => {
+  const { t, language } = useLanguage();
+  const plural = language === "en" && reviewCount !== 1 ? "s" : "";
+
   return (
     <div className="pt-2">
       <div className="h-px bg-[#E7DEFF] my-4" />
@@ -26,7 +30,7 @@ const ReviewsPreview: React.FC<Props> = ({ items, averageRating, reviewCount, on
         <span className="text-base">{averageRating.toFixed(1)}</span>
         <span className="inline-block w-1 h-1 rounded-full bg-gray-300"></span>
         <span className="text-base">
-          {reviewCount} review{reviewCount === 1 ? "" : "s"}
+          {t("singerDetails.reviewCount", { count: reviewCount, plural })}
         </span>
       </div>
 
@@ -56,7 +60,7 @@ const ReviewsPreview: React.FC<Props> = ({ items, averageRating, reviewCount, on
       </div>
 
       <button onClick={onShowAll} className="mt-2 w-full h-11 rounded-xl border border-[#E7DEFF] bg-white text-[#2E1B4D] font-medium">
-        Show all reviews
+        {t("singerDetails.showAllReviews")}
       </button>
     </div>
   );

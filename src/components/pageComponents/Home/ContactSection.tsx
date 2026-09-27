@@ -5,15 +5,16 @@ import * as z from "zod";
 import { Button, Input, Select, Textarea } from "@/components/common";
 import contactFormService from "@/api/services/contactFormService";
 import { toast } from "sonner";
+import { useLanguage, type TranslationKey } from "@/i18n/LanguageContext";
 
 const TOPIC_VALUES = ["booking", "support", "signup", "partnership", "other"] as const;
 
-const TOPIC_OPTIONS: { label: string; value: (typeof TOPIC_VALUES)[number] }[] = [
-  { label: "Booking assistance", value: "booking" },
-  { label: "Platform support", value: "support" },
-  { label: "Sign Up Support", value: "signup" },
-  { label: "Partnership inquiry", value: "partnership" },
-  { label: "Other", value: "other" },
+const TOPIC_OPTIONS: { labelKey: TranslationKey; value: (typeof TOPIC_VALUES)[number] }[] = [
+  { labelKey: "contact.topic.booking", value: "booking" },
+  { labelKey: "contact.topic.support", value: "support" },
+  { labelKey: "contact.topic.signup", value: "signup" },
+  { labelKey: "contact.topic.partnership", value: "partnership" },
+  { labelKey: "contact.topic.other", value: "other" },
 ];
 
 // Company/Address are only required for partnership inquiries — the UI itself only shows
@@ -56,6 +57,7 @@ const contactSchema = z
 type ContactFormValues = z.infer<typeof contactSchema>;
 
 const ContactSection: React.FC = () => {
+  const { t } = useLanguage();
   const {
     control,
     handleSubmit,
@@ -77,15 +79,19 @@ const ContactSection: React.FC = () => {
   });
 
   const topic = watch("topic");
+  const topicOptions = TOPIC_OPTIONS.map((option) => ({
+    label: t(option.labelKey),
+    value: option.value,
+  }));
 
   const onSubmit = async (data: ContactFormValues) => {
     try {
       await contactFormService.submitContactForm(data);
-      toast.success("Message sent! Our team will reach out to you soon.");
+      toast.success(t("contact.sent"));
       reset();
     } catch (err: any) {
       const message =
-        err?.response?.data?.message || err?.message || "Failed to send your message. Please try again.";
+        err?.response?.data?.message || err?.message || t("contact.failed");
       toast.error(message);
     }
   };
@@ -93,9 +99,9 @@ const ContactSection: React.FC = () => {
   return (
     <div className="custom-container px-6 ">
       <div className="mb-12 text-center">
-        <h2 className="font-bold text-4xl lg:text-6xl text-primary">Contact Us</h2>
+        <h2 className="font-bold text-4xl lg:text-6xl text-primary">{t("contact.title")}</h2>
         <p className="mt-2 text-sm font-medium text-[#7C6AA6]">
-          Need help? Any questions? Fill out the form and our team will reach out to you soon.
+          {t("contact.subtitle")}
         </p>
       </div>
       <div className="rounded-[32px] border border-[#ECE3FF] bg-[#FCFBFF] p-8 shadow-lg">
@@ -105,9 +111,9 @@ const ContactSection: React.FC = () => {
             control={control}
             render={({ field }) => (
               <Select
-                label="How can we help you*"
-                options={[...TOPIC_OPTIONS]}
-                placeholder="Select an option"
+                label={t("contact.topicLabel")}
+                options={topicOptions}
+                placeholder={t("contact.selectOption")}
                 value={field.value}
                 onChange={field.onChange}
                 error={errors.topic?.message}
@@ -122,7 +128,7 @@ const ContactSection: React.FC = () => {
               control={control}
               render={({ field }) => (
                 <Input
-                  label="First Name"
+                  label={t("contact.firstName")}
                   placeholder="John"
                   className="w-full !rounded-none border-b border-gray-300 bg-transparent pb-2 text-sm text-gray-800 focus:border-primary focus:outline-none"
                   {...field}
@@ -135,7 +141,7 @@ const ContactSection: React.FC = () => {
               control={control}
               render={({ field }) => (
                 <Input
-                  label="Last Name"
+                  label={t("contact.lastName")}
                   placeholder="Doe"
                   className="w-full !rounded-none border-b border-gray-300 bg-transparent pb-2 text-sm text-gray-800 focus:border-primary focus:outline-none"
                   {...field}
@@ -148,7 +154,7 @@ const ContactSection: React.FC = () => {
               control={control}
               render={({ field }) => (
                 <Input
-                  label="Email"
+                  label={t("contact.email")}
                   type="email"
                   placeholder="john@example.com"
                   className="w-full !rounded-none border-b border-gray-300 bg-transparent pb-2 text-sm text-gray-800 focus:border-primary focus:outline-none"
@@ -162,7 +168,7 @@ const ContactSection: React.FC = () => {
               control={control}
               render={({ field }) => (
                 <Input
-                  label="Phone Number"
+                  label={t("contact.phone")}
                   type="tel"
                   placeholder="+1 012 3456 789"
                   className="w-full !rounded-none border-b border-gray-300 bg-transparent pb-2 text-sm text-gray-800 focus:border-primary focus:outline-none"
@@ -179,7 +185,7 @@ const ContactSection: React.FC = () => {
                   control={control}
                   render={({ field }) => (
                     <Input
-                      label="Company Name"
+                      label={t("contact.company")}
                       placeholder="Company Inc."
                       className="w-full !rounded-none border-b border-gray-300 bg-transparent pb-2 text-sm text-gray-800 focus:border-primary focus:outline-none"
                       {...field}
@@ -192,7 +198,7 @@ const ContactSection: React.FC = () => {
                   control={control}
                   render={({ field }) => (
                     <Input
-                      label="Office Address"
+                      label={t("contact.address")}
                       placeholder="City, Country"
                       className="w-full !rounded-none border-b border-gray-300 bg-transparent pb-2 text-sm text-gray-800 focus:border-primary focus:outline-none"
                       {...field}
@@ -209,8 +215,8 @@ const ContactSection: React.FC = () => {
             control={control}
             render={({ field }) => (
               <Textarea
-                label="Message"
-                placeholder="Write your message..."
+                label={t("contact.message")}
+                placeholder={t("contact.messagePlaceholder")}
                 rows={5}
                 className="w-full h-40 border border-gray-200 bg-white px-4 py-3 text-sm text-gray-800 rounded-md focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 focus:border-gray-300"
                 {...field}
@@ -227,7 +233,7 @@ const ContactSection: React.FC = () => {
               disabled={isSubmitting}
               className="flex items-center gap-2 col-span-2"
             >
-              <p className="font-medium">{isSubmitting ? "Sending..." : "Send Message"}</p>
+              <p className="font-medium">{isSubmitting ? t("contact.sending") : t("home.sendMessage")}</p>
             </Button>
           </div>
         </form>

@@ -10,10 +10,12 @@ import type { SearchData } from "@/components/common/SearchBar";
 import FilterSidebar, {
   type FilterState,
 } from "@/components/pageComponents/SearchResults/FIlterSidebar";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 import type { Singer } from "@/api/services/singerService";
 
 const SearchResults: React.FC = () => {
+  const { t } = useLanguage();
   // Applied filters
   const [filters, setFilters] = useState<FilterState>({
     priceRange: { min: 0, max: 75000 },
@@ -209,8 +211,10 @@ const SearchResults: React.FC = () => {
       {/* Heading */}
       <div className="mt-10 flex flex-col lg:flex-row justify-between items-center">
         <h2 className="heading-5 text-[#1C1C1C]">
-          {filteredItems.length}+ Singer’s spaces near{" "}
-          {query.singerName ? `"${query.singerName}"` : "you"}
+          {t("searchResults.heading", {
+            count: filteredItems.length,
+            location: query.singerName ? `"${query.singerName}"` : t("searchResults.you"),
+          })}
         </h2>
         {/* Filters pill */}
         <button
@@ -218,7 +222,7 @@ const SearchResults: React.FC = () => {
           className="cursor-pointer inline-flex items-center justify-end gap-2 rounded-xl bg-white px-4 py-3 shadow border border-[#EBE4FF] relative"
         >
           <Filter className="h-4 w-4 text-[#2E1B4D]" />
-          <span className="text-sm font-semibold text-[#2E1B4D]">Filters</span>
+          <span className="text-sm font-semibold text-[#2E1B4D]">{t("common.filters")}</span>
           {activeFilterCount > 0 && (
             <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-white text-xs font-bold">
               {activeFilterCount}
@@ -239,8 +243,8 @@ const SearchResults: React.FC = () => {
             {/* Results grid */}
             <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredItems.slice(0, visibleCount).map((it) => {
-                const name = it.name || "Artist";
-                const genre = getGenreLabels(it) || "Artist";
+                const name = it.name || t("common.artist");
+                const genre = getGenreLabels(it) || t("common.artist");
 
                 return (
                   <SingerCard
@@ -267,7 +271,7 @@ const SearchResults: React.FC = () => {
                     }
                     className="px-6 py-3 rounded-full bg-primary text-white text-lg font-semibold shadow-[0_8px_24px_rgba(55,21,82,0.25)] hover:shadow-[0_10px_28px_rgba(55,21,82,0.35)] transition-shadow"
                   >
-                    Show more
+                    {t("common.showMore")}
                   </Button>
                 )}
               </div>

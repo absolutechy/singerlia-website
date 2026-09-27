@@ -2,6 +2,7 @@ import { ArrowUp } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Marquee from "react-fast-marquee";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const carouselImages = [
   "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=500&q=80",
@@ -11,6 +12,7 @@ const carouselImages = [
 ];
 
 const PartyExperience: React.FC = () => {
+  const { t, dir } = useLanguage();
   // Custom cursor state/refs (lerped follower)
   const sectionRef = useRef<HTMLDivElement>(null);
   const targetPos = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -88,11 +90,11 @@ const PartyExperience: React.FC = () => {
               </defs>
             </svg>
             <ArrowUp className="absolute bottom-8 left-8 rotate-45" size={30} />
-            <span className="absolute rotate-45 bottom-4 right-6 outfit">View all</span>
+            <span className="absolute rotate-45 bottom-4 right-6 outfit">{t("home.partyCursor")}</span>
           </div>
         </div>
       )}
-      <div className="py-10 lg:py-24 pl-6 lg:pl-24">
+      <div className={`py-10 lg:py-24 ${dir === "rtl" ? "pr-6 lg:pr-24" : "pl-6 lg:pl-24"}`}>
         <div className="grid items-center gap-16 lg:grid-cols-2">
           <div className="space-y-6">
             <motion.h1
@@ -102,7 +104,7 @@ const PartyExperience: React.FC = () => {
               transition={{ duration: 0.7, ease: "easeOut" }}
               viewport={{ once: true, amount: 0.5 }}
             >
-              Together, let&apos;s make your event unforgettable!{" "}
+              {t("home.partyTitle")}{" "}
               <motion.span
                 className="text-primary inline-block"
                 initial={{ opacity: 0, y: 16 }}
@@ -110,14 +112,14 @@ const PartyExperience: React.FC = () => {
                 transition={{ duration: 0.6, ease: "easeOut", delay: 0.15 }}
                 viewport={{ once: true, amount: 0.6 }}
               >
-                with a ultimate party experience!
+                {t("home.partyHighlight")}
               </motion.span>
             </motion.h1>
             {/* Button replaced by custom cursor for this section */}
           </div>
-          <div className="relative">
-            <div className="rounded-l-3xl bg-[#3C1E66] px-8 py-10 text-white shadow-2xl">
-              <Marquee gradient={false} speed={50} pauseOnHover={true}>
+          <div className="relative" dir="ltr" style={{ direction: "ltr" }}>
+            <div className={`${dir === "rtl" ? "rounded-r-3xl" : "rounded-l-3xl"} bg-[#3C1E66] px-8 py-10 text-white shadow-2xl`}>
+              <Marquee gradient={false} speed={50} pauseOnHover={true} direction="left">
                 {carouselImages.map((src, index) => (
                   <div
                     key={`party-image-${index}`}
@@ -127,7 +129,7 @@ const PartyExperience: React.FC = () => {
                   >
                     <img
                       src={src}
-                      alt={`Party moment ${index + 1}`}
+                      alt={t("home.partyImageAlt", { count: index + 1 })}
                       className="w-56 h-80 object-cover"
                       loading="lazy"
                     />

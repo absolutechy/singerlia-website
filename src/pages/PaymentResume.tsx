@@ -14,6 +14,7 @@ import singerService, { type Singer } from "@/api/services/singerService";
 import paymentService from "@/api/services/paymentService";
 import HyperPayWidget from "@/components/pageComponents/BookingSinger/HyperPayWidget";
 import { toast } from "sonner";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 // Persisted payment statuses for a booking the customer can still pay for.
 // Mirrors the backend prepareCheckout allow-list (awaiting_payment / checkout_prepared / failed).
@@ -31,6 +32,7 @@ const PaymentResume: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { bookingId } = useParams<{ bookingId: string }>();
+  const { t } = useLanguage();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -66,7 +68,7 @@ const PaymentResume: React.FC = () => {
         if (cancelled) return;
 
         if (!fetched || !fetched.bookingId) {
-          setError("We couldn't find this booking.");
+          setError(t("payment.resume.notFound"));
           return;
         }
 
@@ -96,9 +98,9 @@ const PaymentResume: React.FC = () => {
         const message =
           (err as { response?: { data?: { message?: string }; status?: number } })?.response
             ?.data?.message ||
-          "Failed to load this booking. Please try again.";
+          t("payment.resume.loadFailed");
         const status = (err as { response?: { status?: number } })?.response?.status;
-        setError(status === 403 ? "You are not authorized to pay for this booking." : message);
+        setError(status === 403 ? t("payment.resume.notAuthorized") : message);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -126,13 +128,13 @@ const PaymentResume: React.FC = () => {
           setAmount(typeof response.amount === "string" ? parseFloat(response.amount) : response.amount);
         }
       } else {
-        setPaymentError("Invalid checkout response from server.");
+        setPaymentError(t("booking.invalidCheckout"));
       }
     } catch (err: unknown) {
       const message =
         (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
         (err as { message?: string })?.message ||
-        "Failed to initialize payment. Please try again.";
+        t("booking.paymentInitFailed");
       setPaymentError(message);
       toast.error(message);
     } finally {
@@ -145,7 +147,7 @@ const PaymentResume: React.FC = () => {
       <div className="custom-container py-24 flex items-center justify-center">
         <div className="flex items-center gap-3">
           <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          <span className="text-[#6F5D9E]">Loading your booking...</span>
+          <span className="text-[#6F5D9E]">{t("payment.resume.loading")}</span>
         </div>
       </div>
     );
@@ -157,7 +159,7 @@ const PaymentResume: React.FC = () => {
         <div className="max-w-lg mx-auto bg-white rounded-3xl p-8 shadow-lg border border-[#E7DEFF] text-center space-y-4">
           <p className="text-red-600 font-semibold">{error}</p>
           <Button variant="primary" className="!h-12" onClick={() => navigate("/")}>
-            Back to Home
+            {t("payment.resume.backHome")}
           </Button>
         </div>
       </div>
@@ -169,15 +171,15 @@ const PaymentResume: React.FC = () => {
       <div className="custom-container py-24">
         <div className="max-w-lg mx-auto bg-white rounded-3xl p-8 shadow-lg border border-[#E7DEFF] text-center space-y-4">
           <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto" />
-          <h1 className="heading-2 text-[#2E1B4D]">This booking is already paid</h1>
+          <h1 className="heading-2 text-[#2E1B4D]">{t("payment.resume.alreadyPaidTitle")}</h1>
           <p className="text-[#6F5D9E]">
-            No further payment is needed. You can track this booking from your portal.
+            {t("payment.resume.alreadyPaidText")}
           </p>
           <Link
             to="/"
             className="inline-block text-primary font-semibold underline-offset-4 hover:underline"
           >
-            Back to Home
+            {t("payment.resume.backHome")}
           </Link>
         </div>
       </div>
@@ -198,9 +200,9 @@ const PaymentResume: React.FC = () => {
             </span>
           </button>
           <div className="w-full text-center">
-            <h1 className="heading-2 text-[#2E1B4D]">Complete Your Payment</h1>
+            <h1 className="heading-2 text-[#2E1B4D]">{t("payment.resume.title")}</h1>
             <p className="text-[#6F5D9E] mt-2">
-              Review your booking details and finish paying to confirm it.
+              {t("payment.resume.subtitle")}
             </p>
           </div>
         </div>
@@ -211,29 +213,29 @@ const PaymentResume: React.FC = () => {
           <div>
             <h3 className="text-lg font-semibold text-[#2E1B4D] mb-3 flex items-center gap-2">
               <CalendarDays className="h-5 w-5 text-primary" />
-              Event Details
+              {t("payment.resume.eventDetails")}
             </h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-[#6F5D9E]">Singer:</span>
+                <span className="text-[#6F5D9E]">{t("payment.resume.singer")}</span>
                 <span className="text-[#2E1B4D] font-medium">{booking?.singerName || singer?.name || "-"}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#6F5D9E]">Date:</span>
+                <span className="text-[#6F5D9E]">{t("payment.resume.date")}</span>
                 <span className="text-[#2E1B4D] font-medium">
                   {booking?.eventDate ? new Date(booking.eventDate).toLocaleDateString() : "-"}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#6F5D9E]">Time:</span>
+                <span className="text-[#6F5D9E]">{t("payment.resume.time")}</span>
                 <span className="text-[#2E1B4D] font-medium">{booking?.timeSlot}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#6F5D9E]">Event Type:</span>
+                <span className="text-[#6F5D9E]">{t("payment.resume.eventType")}</span>
                 <span className="text-[#2E1B4D] font-medium">{booking?.eventType}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#6F5D9E]">Guests:</span>
+                <span className="text-[#6F5D9E]">{t("payment.resume.guests")}</span>
                 <span className="text-[#2E1B4D] font-medium">{booking?.numberOfGuests}</span>
               </div>
             </div>
@@ -245,19 +247,19 @@ const PaymentResume: React.FC = () => {
           <div>
             <h3 className="text-lg font-semibold text-[#2E1B4D] mb-3 flex items-center gap-2">
               <MapPin className="h-5 w-5 text-primary" />
-              Venue Information
+              {t("payment.resume.venueInfo")}
             </h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-[#6F5D9E]">Venue:</span>
+                <span className="text-[#6F5D9E]">{t("payment.resume.venue")}</span>
                 <span className="text-[#2E1B4D] font-medium">{booking?.venueName}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#6F5D9E]">Address:</span>
+                <span className="text-[#6F5D9E]">{t("payment.resume.address")}</span>
                 <span className="text-[#2E1B4D] font-medium text-right max-w-xs">{booking?.venueAddress}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#6F5D9E]">City:</span>
+                <span className="text-[#6F5D9E]">{t("payment.resume.city")}</span>
                 <span className="text-[#2E1B4D] font-medium">{booking?.city}</span>
               </div>
             </div>
@@ -269,10 +271,10 @@ const PaymentResume: React.FC = () => {
           <div>
             <h3 className="text-lg font-semibold text-[#2E1B4D] mb-3 flex items-center gap-2">
               <CreditCard className="h-5 w-5 text-primary" />
-              Payment Summary
+              {t("payment.resume.summary")}
             </h3>
             <div className="flex justify-between text-lg">
-              <span className="text-[#2E1B4D] font-bold">Total:</span>
+              <span className="text-[#2E1B4D] font-bold">{t("booking.totalPrice")}</span>
               <span className="text-[#2E1B4D] font-bold">
                 {amount != null && Number.isFinite(amount) ? `SAR ${amount.toFixed(2)}` : "—"}
               </span>
@@ -285,7 +287,7 @@ const PaymentResume: React.FC = () => {
               <div className="text-center py-6 space-y-3">
                 <p className="text-red-600 text-sm">{paymentError}</p>
                 <Button variant="primary" className="!h-12" onClick={handleProceed}>
-                  Retry Payment
+                  {t("booking.retryPayment")}
                 </Button>
               </div>
             )}
@@ -297,7 +299,7 @@ const PaymentResume: React.FC = () => {
                 onClick={handleProceed}
                 disabled={proceeding}
               >
-                {proceeding ? "Preparing secure payment..." : "Proceed to Payment"}
+                {proceeding ? t("booking.preparingPayment") : t("payment.resume.proceed")}
               </Button>
             )}
 

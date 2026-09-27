@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import singer1 from "@/assets/images/singer/singer-detail-1.png";
+import { useLanguage } from "@/i18n/LanguageContext";
 const WhatsApp = () => {
   return (
     <svg
@@ -40,13 +41,15 @@ type Props = {
 };
 
 const ShareModal: React.FC<Props> = ({ open, onClose, name, profileUrl, averageRating = 0, reviewCount = 0 }) => {
+  const { t, language } = useLanguage();
   const [copied, setCopied] = useState(false);
   const link = useMemo(() => profileUrl || window.location.href, [profileUrl]);
 
   // Short pre-filled context so the recipient knows what they're clicking, not a bare link.
-  const shareTitle = `${name} on Singerlia`;
-  const shareMessage = `Check out ${name} on Singerlia — book them for your next event!`;
+  const shareTitle = t("singerDetails.shareSubject", { name });
+  const shareMessage = t("singerDetails.shareMessage", { name });
   const shareText = `${shareMessage} ${link}`;
+  const plural = language === "en" && reviewCount !== 1 ? "s" : "";
 
   const handleCopy = async () => {
     try {
@@ -71,7 +74,7 @@ const ShareModal: React.FC<Props> = ({ open, onClose, name, profileUrl, averageR
       setTimeout(() => setCopied(false), 1500);
     } catch (error) {
       console.error("Failed to copy link:", error);
-      toast.error("Failed to copy link. Please copy it manually.");
+      toast.error(t("singerDetails.shareCopyFailed"));
     }
   };
 
@@ -121,7 +124,7 @@ const ShareModal: React.FC<Props> = ({ open, onClose, name, profileUrl, averageR
     if (await tryNativeShare()) return;
     try {
       await navigator.clipboard.writeText(shareText);
-      toast.info("Link copied — paste it into Messenger");
+      toast.info(t("singerDetails.shareMessengerCopied"));
     } catch {
       // ignore
     }
@@ -147,11 +150,11 @@ const ShareModal: React.FC<Props> = ({ open, onClose, name, profileUrl, averageR
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b">
         <h3 className="text-xl font-bold text-[#2E1B4D]">
-          Share this experience
+          {t("singerDetails.shareTitle")}
         </h3>
         <button
           onClick={onClose}
-          aria-label="Close"
+          aria-label={t("singerDetails.close")}
           className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200"
         >
           <X size={16} />
@@ -171,10 +174,10 @@ const ShareModal: React.FC<Props> = ({ open, onClose, name, profileUrl, averageR
           </div>
           <div className="flex items-center gap-2 text-white/90">
             <Star size={16} className="text-yellow-400 fill-yellow-400" />
-            <span>{reviewCount > 0 ? averageRating.toFixed(1) : "New"}</span>
+            <span>{reviewCount > 0 ? averageRating.toFixed(1) : t("singerDetails.new")}</span>
             {reviewCount > 0 && (
               <span>
-                · {reviewCount} review{reviewCount === 1 ? "" : "s"}
+                · {t("singerDetails.reviewCount", { count: reviewCount, plural })}
               </span>
             )}
           </div>
@@ -185,21 +188,21 @@ const ShareModal: React.FC<Props> = ({ open, onClose, name, profileUrl, averageR
           <div className="relative">
             <ActionBtn
               icon={<Copy size={18} />}
-              label="Copy link"
+              label={t("singerDetails.copyLink")}
               onClick={handleCopy}
             />
             {copied && (
               <div className="absolute -top-9 left-3 rounded-lg bg-white text-[#1C1C1C] px-3 py-1 shadow flex items-center gap-2 text-sm">
                 <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
-                Link Copied
+                {t("singerDetails.linkCopied")}
               </div>
             )}
           </div>
-          <ActionBtn icon={<Mail size={18} />} label="Email" onClick={handleEmail} />
-          <ActionBtn icon={<WhatsApp />} label="WhatsApp" onClick={handleWhatsApp} />
-          <ActionBtn icon={<Facebook size={18} />} label="Facebook" onClick={handleFacebook} />
-          <ActionBtn icon={<MessageSquare size={18} />} label="Messages" onClick={handleMessages} />
-          <ActionBtn icon={<MessageCircle size={18} />} label="Messenger" onClick={handleMessenger} />
+          <ActionBtn icon={<Mail size={18} />} label={t("singerDetails.emailShare")} onClick={handleEmail} />
+          <ActionBtn icon={<WhatsApp />} label={t("singerDetails.whatsApp")} onClick={handleWhatsApp} />
+          <ActionBtn icon={<Facebook size={18} />} label={t("singerDetails.facebook")} onClick={handleFacebook} />
+          <ActionBtn icon={<MessageSquare size={18} />} label={t("singerDetails.messages")} onClick={handleMessages} />
+          <ActionBtn icon={<MessageCircle size={18} />} label={t("singerDetails.messenger")} onClick={handleMessenger} />
         </div>
       </div>
     </Modal>
