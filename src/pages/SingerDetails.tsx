@@ -15,30 +15,6 @@ import ReviewsPreview from "@/components/pageComponents/SingerDetails/ReviewsPre
 import FAQSection from "@/components/pageComponents/SingerDetails/FAQSection";
 import { useLanguage } from "@/i18n/LanguageContext";
 
-// FAQ data with dummy answers (UI shows questions only to match design)
-const faqs = [
-  {
-    question: "add singer faq's about event safety and terms policy.",
-    answer:
-      "Dummy answer explaining safety protocols, performance timings, and cancellation terms for events.",
-  },
-  {
-    question: "add artist faq's about event safety and terms policy.",
-    answer:
-      "Dummy answer covering on-site precautions, equipment handling, and client responsibilities.",
-  },
-  {
-    question: "add artist faq's about event safety and terms policy.",
-    answer:
-      "Dummy answer with details on deposits, refunds, and weather considerations.",
-  },
-  {
-    question: "add artist faq's about event safety and terms policy.",
-    answer:
-      "Dummy answer about performance length, breaks, and communication guidelines.",
-  },
-];
-
 const SingerDetails: React.FC = () => {
   const { language, t } = useLanguage();
   const { id } = useParams<{ id: string }>();
@@ -140,6 +116,24 @@ const SingerDetails: React.FC = () => {
   }
 
   const name = singer.name || t("common.artist");
+  const faqs = [
+    {
+      question: t("singerDetails.faqBookingQuestion"),
+      answer: t("singerDetails.faqBookingAnswer"),
+    },
+    {
+      question: t("singerDetails.faqPaymentQuestion"),
+      answer: t("singerDetails.faqPaymentAnswer"),
+    },
+    {
+      question: t("singerDetails.faqEquipmentQuestion"),
+      answer: t("singerDetails.faqEquipmentAnswer"),
+    },
+    {
+      question: t("singerDetails.faqCancellationQuestion"),
+      answer: t("singerDetails.faqCancellationAnswer"),
+    },
+  ];
 
   // Single source of truth for the rating badge shown in the Share modal, the reviews preview,
   // and the "all reviews" modal — they must not each compute/hardcode their own number.

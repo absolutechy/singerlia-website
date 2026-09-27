@@ -12,7 +12,6 @@ const FAQSection: React.FC<{ faqs: Faq[] }> = ({ faqs }) => {
     <div className="my-[8rem] rounded-3xl bg-[#F7F7F7] p-6 sm:p-8">
       <div className="text-center">
         <h3 className="text-2xl sm:text-4xl font-bold text-[#000]">{t("singerDetails.faqTitle")}</h3>
-        <p className="mt-1 texl-lg sm:text-2xl font-semibold text-[#121212]">{t("singerDetails.faqSubtitle")}</p>
       </div>
 
       <div className="mt-6 space-y-4 flex flex-col items-center">
