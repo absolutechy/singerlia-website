@@ -9,6 +9,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -27,6 +28,7 @@ const Input: React.FC<InputProps> = ({
   ref,
   ...props
 }) => {
+  const { dir } = useLanguage();
   const [date, setDate] = useState<Date | undefined>(
     value && type === 'date' ? new Date(value as string) : undefined
   );
@@ -110,7 +112,8 @@ const Input: React.FC<InputProps> = ({
           className={cn(
             'rounded-lg pr-10 !pl-0 !text-base !font-normal bg-white text-gray-900 placeholder:text-gray-400 border-0 outline-none focus:border-0 focus:ring-0 focus-visible:ring-0 focus-visible:border-0 focus-visible:outline-none transition-all',
             error && 'border-red-500',
-            className
+            className,
+            isPasswordType && (dir === 'rtl' ? '!pl-10' : '!pr-10')
           )}
           ref={ref}
           {...props}
@@ -119,7 +122,7 @@ const Input: React.FC<InputProps> = ({
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+            className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
             tabIndex={-1}
             aria-label={showPassword ? 'Hide password' : 'Show password'}
           >

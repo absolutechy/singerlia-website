@@ -5,34 +5,34 @@ import { Button, Input, Select } from "@/components/common";
 import authService from "@/api/services/authService";
 import genreService, { type Genre } from "@/api/services/genreService";
 import { SAUDI_CITIES } from "@/constants/cities";
+import { useLanguage, type TranslationKey } from "@/i18n/LanguageContext";
 
 const genderOptions = [
-  { value: "male", label: "Male" },
-  { value: "female", label: "Female" },
-  { value: "other", label: "Other" },
+  { value: "male", labelKey: "auth.gender.male" },
+  { value: "female", labelKey: "auth.gender.female" },
+  { value: "other", labelKey: "auth.gender.other" },
 ];
 
-const cityOptions = SAUDI_CITIES;
-
 const selects = [
-    { id: "gender", label: "Select Gender", options: genderOptions },
-    { id: "city", label: "Select City", options: cityOptions },
+    { id: "gender", labelKey: "auth.gender", type: "gender" },
+    { id: "city", labelKey: "auth.city", type: "city" },
   ];
 
 const fields = [
-    { id: "firstName", label: "First Name", placeholder: "Type here", required: true },
-    { id: "lastName", label: "Last Name", placeholder: "Type here", required: true },
-    { id: "phone", label: "Phone Number", type: "tel", placeholder: "Type here", required: true },
-    { id: "email", label: "Email", type: "email", placeholder: "Type here", required: true },
-    { id: "dateOfBirth", label: "Date of Birth", type: "date", placeholder: "Type here", required: true },
-    { id: "iqamaNumber", label: "ID / Iqama Number", type: "text", placeholder: "Type here", required: true },
-    { id: "introVideo", label: "Introduction Video Link", type: "url", placeholder: "Add YouTube video link" },
-    { id: "location", label: "Add Location", placeholder: "Type here" },
-    { id: "password", label: "Password", type: "password", placeholder: "Type here", required: true },
-    { id: "confirmPassword", label: "Re-Enter Password", type: "password", placeholder: "Type here", required: true },
+    { id: "firstName", labelKey: "auth.firstName", placeholderKey: "auth.typeHere", required: true },
+    { id: "lastName", labelKey: "auth.lastName", placeholderKey: "auth.typeHere", required: true },
+    { id: "phone", labelKey: "auth.phone", type: "tel", placeholderKey: "auth.typeHere", required: true },
+    { id: "email", labelKey: "auth.email", type: "email", placeholderKey: "auth.typeHere", required: true },
+    { id: "dateOfBirth", labelKey: "auth.dateOfBirth", type: "date", placeholderKey: "auth.typeHere", required: true },
+    { id: "iqamaNumber", labelKey: "auth.iqama", type: "text", placeholderKey: "auth.typeHere", required: true },
+    { id: "introVideo", labelKey: "auth.introVideo", type: "url", placeholderKey: "auth.introVideoPlaceholder" },
+    { id: "location", labelKey: "auth.location", placeholderKey: "auth.typeHere" },
+    { id: "password", labelKey: "auth.password", type: "password", placeholderKey: "auth.typeHere", required: true },
+    { id: "confirmPassword", labelKey: "auth.confirmPassword", type: "password", placeholderKey: "auth.typeHere", required: true },
   ];
 
 const SingerSignup: React.FC = () => {
+  const { t, dir } = useLanguage();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: "",
@@ -53,6 +53,25 @@ const SingerSignup: React.FC = () => {
   const [error, setError] = useState("");
   const [genres, setGenres] = useState<Genre[]>([]);
   const [selectedGenreIds, setSelectedGenreIds] = useState<string[]>([]);
+
+  const cityLabel = (value: string, fallback: string) => {
+    const key = `city.${value}` as TranslationKey;
+    return t(key) || fallback;
+  };
+
+  const selectOptions = (type: string) => {
+    if (type === "gender") {
+      return genderOptions.map((option) => ({
+        value: option.value,
+        label: t(option.labelKey as TranslationKey),
+      }));
+    }
+
+    return SAUDI_CITIES.map((city) => ({
+      value: city.value,
+      label: cityLabel(city.value, city.label),
+    }));
+  };
 
   useEffect(() => {
     genreService
@@ -93,14 +112,14 @@ const SingerSignup: React.FC = () => {
     if (!formData.firstName || !formData.lastName || !formData.phone || 
         !formData.email || !formData.dateOfBirth || !formData.iqamaNumber || 
         !formData.password || !formData.confirmPassword) {
-      setError("Please fill in all required fields");
+      setError(t("auth.fillRequired"));
       return;
     }
 
     // Validate email format
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(formData.email)) {
-      setError("Please enter a valid email address");
+      setError(t("auth.invalidEmail"));
       return;
     }
 
@@ -113,24 +132,24 @@ const SingerSignup: React.FC = () => {
       age--;
     }
     if (age < 18) {
-      setError("You must be at least 18 years old to sign up");
+      setError(t("auth.minimumAge"));
       return;
     }
 
     // Validate Iqama number (must be exactly 10 digits)
     const iqamaRegex = /^\d{10}$/;
     if (!iqamaRegex.test(formData.iqamaNumber)) {
-      setError("Iqama number must be exactly 10 digits");
+      setError(t("auth.invalidIqama"));
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+      setError(t("auth.passwordMismatch"));
       return;
     }
 
     if (!agreedToTerms) {
-      setError("Please agree to the Terms of Service and Privacy Policy");
+      setError(t("auth.agreeRequired"));
       return;
     }
 
@@ -163,7 +182,7 @@ const SingerSignup: React.FC = () => {
       // navigate("/auth/verification-code");
       navigate("/auth/verification-method");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Registration failed. Please try again.");
+      setError(err.response?.data?.message || t("auth.registrationFailed"));
     } finally {
       setLoading(false);
     }
@@ -171,16 +190,16 @@ const SingerSignup: React.FC = () => {
 
   return (
     <AuthModalLayout
-      title="Welcome to SingerLia Sign Up"
+      title={t("auth.artistSignupTitle")}
       footerNote={
         <p className="text-center text-sm text-[#6F5D9E]">
-          Already have an account?{" "}
+          {t("auth.haveAccount")}{" "}
           <button
             type="button"
             className="font-semibold cursor-pointer text-primary underline-offset-4 hover:underline"
             onClick={() => navigate("/auth/login")}
           >
-            Log In
+            {t("auth.login")}
           </button>
         </p>
       }
@@ -199,10 +218,10 @@ const SingerSignup: React.FC = () => {
             <Input 
               key={field.id}
               id={field.id}
-              label={field.label}
+              label={t(field.labelKey as TranslationKey)}
               type={field.type}
-              placeholder="Type here"
-              className="bg-[#F7FBFF] border border-[#D4D7E3] !pl-2 !py-6"
+              placeholder={t(field.placeholderKey as TranslationKey)}
+              className={`bg-[#F7FBFF] border border-[#D4D7E3] ${dir === "rtl" ? "!pr-2" : "!pl-2"} !py-6`}
               value={formData[field.id as keyof typeof formData]}
               onChange={handleInputChange}
               required={field.required}
@@ -213,10 +232,11 @@ const SingerSignup: React.FC = () => {
           ))}
           {selects.map((select) => (
             <Select 
-              key={select.label}
-              label={select.label}
-              options={select.options}
-              className="bg-[#F7FBFF] border border-[#D4D7E3] !pl-2 !py-6"
+              key={select.id}
+              label={t(select.labelKey as TranslationKey)}
+              options={selectOptions(select.type)}
+              placeholder={t("auth.selectOption")}
+              className={`bg-[#F7FBFF] border border-[#D4D7E3] ${dir === "rtl" ? "!pr-2" : "!pl-2"} !py-6`}
               value={formData[select.id as keyof typeof formData]}
               onChange={(value) => handleSelectChange(select.id, value)}
             />
@@ -226,7 +246,7 @@ const SingerSignup: React.FC = () => {
         {genres.length > 0 && (
           <div className="mb-6">
             <p className="text-sm font-medium text-[#2E1B4D] mb-2">
-              Genres <span className="text-[#6F5D9E] font-normal">(select all that apply)</span>
+              {t("auth.genres")} <span className="text-[#6F5D9E] font-normal">({t("auth.selectAllApply")})</span>
             </p>
             <div className="flex flex-wrap gap-2">
               {genres.map((genre) => {
@@ -258,23 +278,23 @@ const SingerSignup: React.FC = () => {
             onChange={(e) => setAgreedToTerms(e.target.checked)}
           />
           <span>
-            I agree to the{" "}
+            {t("auth.agreePrefix")}{" "}
             <a
               href="/terms-and-conditions"
               target="_blank"
               rel="noopener noreferrer"
               className="font-semibold text-primary underline hover:text-primary/80"
             >
-              Terms of Service
+              {t("auth.termsService")}
             </a>
-            {" "}and{" "}
+            {" "}{t("auth.and")}{" "}
             <a
               href="/privacy-policy"
               target="_blank"
               rel="noopener noreferrer"
               className="font-semibold text-primary underline hover:text-primary/80"
             >
-              Privacy Policy
+              {t("auth.privacyPolicy")}
             </a>
             .
           </span>
@@ -287,7 +307,7 @@ const SingerSignup: React.FC = () => {
           onClick={handleSignup}
           disabled={loading}
         >
-          <span className="font-semibold">{loading ? "Signing Up..." : "Sign Up"}</span>
+          <span className="font-semibold">{loading ? t("auth.signingUp") : t("auth.signup")}</span>
         </Button>
 
         {/* <div className="grid gap-3 md:grid-cols-2">

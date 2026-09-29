@@ -39,14 +39,14 @@ const AuthModalLayout: React.FC<AuthModalLayoutProps> = ({
       <div
         className={`relative w-full h-full sm:h-auto sm:max-h-[90vh] ${sizeMap[size]} sm:rounded-[32px] border-0 sm:border border-[#F0E6FF] bg-white shadow-[0_40px_80px_-30px_rgba(55,21,82,0.35)] flex flex-col ${className}`}
       >
-        <div className="flex py-4 px-6 border-b border-[#CDCDCD] flex-shrink-0">
-          <h2 className="text-2xl font-semibold ms-auto font-chocolates text-primary-text md:text-3xl">
+        <div className="relative py-4 px-16 border-b border-[#CDCDCD] flex-shrink-0">
+          <h2 className="text-center text-2xl font-semibold font-chocolates text-primary-text md:text-3xl">
             {title}
           </h2>
           <button
             aria-label="Close"
             onClick={handleClose}
-            className="ml-auto h-8 w-8 flex group justify-center items-center rounded-full border border-[#E5DAFF] p-1 text-[#7264A4] transition bg-[#979797] hover:bg-[#F7F4FF] cursor-pointer"
+            className="absolute top-4 end-4 h-8 w-8 flex group justify-center items-center rounded-full border border-[#E5DAFF] p-1 text-[#7264A4] transition bg-[#979797] hover:bg-[#F7F4FF] cursor-pointer"
           >
             <X className="h-4 w-4 text-white group-hover:text-black" />
           </button>
