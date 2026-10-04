@@ -1,6 +1,7 @@
-import { useEffect, useId, useState } from "react";
+import { useEffect, useState } from "react";
 import axiosInstance from "@/api/axiosInstance";
 import { useLanguage } from "@/i18n/LanguageContext";
+import Select from "./Select";
 
 export interface LocationSelection {
   regionId: string;
@@ -23,7 +24,6 @@ interface Props {
 
 export default function LocationFields({ value, onChange, disabled = false, legacyCity }: Props) {
   const { t, dir } = useLanguage();
-  const id = useId();
   const [data, setData] = useState<Locations>({ regions: [], cities: [] });
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
@@ -43,27 +43,36 @@ export default function LocationFields({ value, onChange, disabled = false, lega
   }, [attempt]);
 
   const cities = data.cities.filter((city) => city.regionId === value.regionId);
-  const selectClass = "w-full min-w-0 h-12 rounded-lg border border-gray-300 bg-white px-3 text-start text-gray-900 disabled:opacity-60";
+  const provincePlaceholder = loading ? t("common.loading") : t("common.selectProvince");
+  const cityPlaceholder = !value.regionId && legacyCity ? legacyCity : t("common.selectCity");
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full" dir={dir}>
-      <div className="min-w-0">
-        <label htmlFor={id + "-province"} className="block text-sm text-start mb-2">{t("common.province")}</label>
-        <select id={id + "-province"} required className={selectClass}
-          disabled={disabled || loading || failed} value={value.regionId}
-          onChange={(event) => onChange({ regionId: event.target.value, cityId: "", city: "", province: data.regions.find((region) => region.id === event.target.value)?.name || "" })}>
-          <option value="">{loading ? t("common.loading") : t("common.selectProvince")}</option>
-          {data.regions.map((region) => <option key={region.id} value={region.id}>{region.name}</option>)}
-        </select>
-      </div>
-      <div className="min-w-0">
-        <label htmlFor={id + "-city"} className="block text-sm text-start mb-2">{t("common.city")}</label>
-        <select id={id + "-city"} required className={selectClass}
-          disabled={disabled || loading || failed || !value.regionId} value={value.cityId}
-          onChange={(event) => onChange({ ...value, cityId: event.target.value, city: cities.find((city) => city.id === event.target.value)?.name || "" })}>
-          <option value="">{!value.regionId && legacyCity ? legacyCity : t("common.selectCity")}</option>
-          {cities.map((city) => <option key={city.id} value={city.id}>{city.name}</option>)}
-        </select>
-      </div>
+      <Select
+        label={t("common.province")}
+        placeholder={provincePlaceholder}
+        value={value.regionId}
+        disabled={disabled || loading || failed}
+        options={data.regions.map((region) => ({ value: region.id, label: region.name }))}
+        onChange={(regionId) => onChange({
+          regionId,
+          cityId: "",
+          city: "",
+          province: data.regions.find((region) => region.id === regionId)?.name || "",
+        })}
+      />
+      <Select
+        label={t("common.city")}
+        placeholder={cityPlaceholder}
+        value={value.cityId}
+        disabled={disabled || loading || failed || !value.regionId}
+        options={cities.map((city) => ({ value: city.id, label: city.name }))}
+        onChange={(cityId) => onChange({
+          ...value,
+          cityId,
+          city: cities.find((city) => city.id === cityId)?.name || "",
+        })}
+      />
       {failed && <div role="alert" className="sm:col-span-2 text-red-600 text-sm text-start">
         {t("common.locationsError")}
         <button type="button" className="ms-2 underline" onClick={() => setAttempt((count) => count + 1)}>{t("common.retry")}</button>
