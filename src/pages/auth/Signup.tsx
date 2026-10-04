@@ -4,6 +4,7 @@ import AuthModalLayout from "@/components/auth/AuthModalLayout";
 import { Button, Input } from "@/components/common";
 import authService from "@/api/services/authService";
 import { useLanguage } from "@/i18n/LanguageContext";
+import LocationFields from "@/components/common/LocationFields";
 
 const fields = [
   { id: "firstName", labelKey: "auth.firstName", type: "text", required: true },
@@ -19,6 +20,7 @@ const fields = [
 const Signup: React.FC = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const [selectedLocation, setSelectedLocation] = useState({ regionId: "", cityId: "" });
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -50,6 +52,10 @@ const Signup: React.FC = () => {
   };
 
   const handleSignup = async () => {
+    if (!selectedLocation.regionId || !selectedLocation.cityId) {
+      setError(t("common.locationRequired"));
+      return;
+    }
     // Validation for required fields
     if (!formData.firstName || !formData.lastName || !formData.phone || 
         !formData.email || !formData.dateOfBirth || !formData.iqamaNumber || 
@@ -101,6 +107,7 @@ const Signup: React.FC = () => {
 
     try {
       const response = await authService.register("user", {
+        ...selectedLocation,
         first_name: formData.firstName,
         last_name: formData.lastName,
         phonenumber: formData.phone,
@@ -157,7 +164,7 @@ const Signup: React.FC = () => {
       title={t("auth.signupTitle")}
       size="lg"
     >
-      <div className="space-y-4 pt-[430px] lg:pt-0">
+      <div className="space-y-4">
         {/* <LogoBadge size="lg" /> */}
         {error && (
           <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
@@ -182,6 +189,7 @@ const Signup: React.FC = () => {
             />
           ))}
         </div>
+        <LocationFields value={selectedLocation} onChange={setSelectedLocation} disabled={loading} />
         <label className="flex items-center gap-3 text-sm text-primary-text mb-10">
           <input
             type="checkbox"

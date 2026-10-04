@@ -1,6 +1,12 @@
 import type en from "../en/common";
 
 const common = {
+  "common.province": "المنطقة",
+  "common.city": "المدينة",
+  "common.selectProvince": "اختر المنطقة",
+  "common.selectCity": "اختر المدينة",
+  "common.locationRequired": "يرجى اختيار المنطقة والمدينة.",
+  "common.locationsError": "تعذر تحميل المواقع. يرجى المحاولة مرة أخرى.",
   "common.loading": "جار التحميل...",
   "common.search": "بحث",
   "common.showMore": "عرض المزيد",

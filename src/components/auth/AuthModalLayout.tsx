@@ -51,7 +51,7 @@ const AuthModalLayout: React.FC<AuthModalLayoutProps> = ({
             <X className="h-4 w-4 text-white group-hover:text-black" />
           </button>
         </div>
-        <div className="px-4 sm:px-8 py-5 text-center md:px-14 flex-1 overflow-y-auto flex items-center justify-center">
+        <div className="px-4 sm:px-8 py-5 text-center md:px-14 flex-1 min-h-0 overflow-y-auto">
           <div className="mt-4 w-full">{children}</div>
         </div>
         <h6 className="rounded-b-none sm:rounded-b-[32px] border-t border-[#EFE5FF] bg-[#FBF9FF] py-4 text-center text-base font-medium flex-shrink-0">

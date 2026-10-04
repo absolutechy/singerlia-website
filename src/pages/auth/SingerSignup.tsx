@@ -4,7 +4,7 @@ import AuthModalLayout from "@/components/auth/AuthModalLayout";
 import { Button, Input, Select } from "@/components/common";
 import authService from "@/api/services/authService";
 import genreService, { type Genre } from "@/api/services/genreService";
-import { SAUDI_CITIES } from "@/constants/cities";
+import LocationFields from "@/components/common/LocationFields";
 import { useLanguage, type TranslationKey } from "@/i18n/LanguageContext";
 
 const genderOptions = [
@@ -15,7 +15,6 @@ const genderOptions = [
 
 const selects = [
     { id: "gender", labelKey: "auth.gender", type: "gender" },
-    { id: "city", labelKey: "auth.city", type: "city" },
   ];
 
 const fields = [
@@ -34,6 +33,7 @@ const fields = [
 const SingerSignup: React.FC = () => {
   const { t, dir } = useLanguage();
   const navigate = useNavigate();
+  const [selectedLocation, setSelectedLocation] = useState({ regionId: "", cityId: "" });
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -54,23 +54,11 @@ const SingerSignup: React.FC = () => {
   const [genres, setGenres] = useState<Genre[]>([]);
   const [selectedGenreIds, setSelectedGenreIds] = useState<string[]>([]);
 
-  const cityLabel = (value: string, fallback: string) => {
-    const key = `city.${value}` as TranslationKey;
-    return t(key) || fallback;
-  };
-
-  const selectOptions = (type: string) => {
-    if (type === "gender") {
+  const selectOptions = () => {
       return genderOptions.map((option) => ({
         value: option.value,
         label: t(option.labelKey as TranslationKey),
       }));
-    }
-
-    return SAUDI_CITIES.map((city) => ({
-      value: city.value,
-      label: cityLabel(city.value, city.label),
-    }));
   };
 
   useEffect(() => {
@@ -108,6 +96,10 @@ const SingerSignup: React.FC = () => {
   };
 
   const handleSignup = async () => {
+    if (!selectedLocation.regionId || !selectedLocation.cityId) {
+      setError(t("common.locationRequired"));
+      return;
+    }
     // Validation for required fields
     if (!formData.firstName || !formData.lastName || !formData.phone || 
         !formData.email || !formData.dateOfBirth || !formData.iqamaNumber || 
@@ -158,6 +150,7 @@ const SingerSignup: React.FC = () => {
 
     try {
       const response = await authService.register("singer", {
+        ...selectedLocation,
         first_name: formData.firstName,
         last_name: formData.lastName,
         phonenumber: formData.phone,
@@ -165,7 +158,6 @@ const SingerSignup: React.FC = () => {
         password: formData.password,
         gender: formData.gender,
         intro_vid_link: formData.introVideo,
-        city: formData.city,
         address: formData.location,
         DOB: formData.dateOfBirth,
         iqama_number: formData.iqamaNumber,
@@ -205,7 +197,7 @@ const SingerSignup: React.FC = () => {
       }
       size="xl"
     >
-      <div className="space-y-2 pt-[800px] lg:pt-0">
+      <div className="space-y-2">
         {/* <LogoBadge size="md" /> */}
         {error && (
           <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
@@ -234,7 +226,7 @@ const SingerSignup: React.FC = () => {
             <Select 
               key={select.id}
               label={t(select.labelKey as TranslationKey)}
-              options={selectOptions(select.type)}
+              options={selectOptions()}
               placeholder={t("auth.selectOption")}
               className={`bg-[#F7FBFF] border border-[#D4D7E3] ${dir === "rtl" ? "!pr-2" : "!pl-2"} !py-6`}
               value={formData[select.id as keyof typeof formData]}
@@ -243,6 +235,7 @@ const SingerSignup: React.FC = () => {
           ))}
         </div>
 
+        <LocationFields value={selectedLocation} onChange={setSelectedLocation} disabled={loading} />
         {genres.length > 0 && (
           <div className="mb-6">
             <p className="text-sm font-medium text-[#2E1B4D] mb-2">

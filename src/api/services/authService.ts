@@ -2,6 +2,8 @@ import axiosInstance from '../axiosInstance';
 
 // Types
 export interface RegisterUserData {
+  regionId: string;
+  cityId: string;
   first_name: string;
   last_name: string;
   phonenumber: string;

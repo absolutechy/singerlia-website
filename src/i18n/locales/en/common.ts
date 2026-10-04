@@ -1,4 +1,10 @@
 const common = {
+  "common.province": "Province",
+  "common.city": "City",
+  "common.selectProvince": "Select a province",
+  "common.selectCity": "Select a city",
+  "common.locationRequired": "Please select a province and city.",
+  "common.locationsError": "Unable to load locations. Please try again.",
   "common.loading": "Loading...",
   "common.search": "Search",
   "common.showMore": "Show more",
