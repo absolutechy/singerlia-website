@@ -6,6 +6,8 @@ import axiosInstance from '../axiosInstance';
 
 // Create Booking Request
 export interface CreateBookingData {
+  regionId: string;
+  cityId: string;
   singerId: string;
   eventDate: string;
   timeSlot: string;

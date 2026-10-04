@@ -1,4 +1,8 @@
 const bookings = {
+  "booking.province": "Province",
+  "booking.selectProvince": "Select a province",
+  "booking.selectCity": "Select a city",
+  "booking.locationsError": "Unable to load provinces and cities. Please try again.",
   "booking.title": "Book Your Artist",
   "booking.subtitle": "Fill in the details to complete your booking",
   "booking.eventDateTime": "Event Date & Time",

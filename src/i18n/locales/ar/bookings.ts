@@ -1,6 +1,10 @@
 import type en from "../en/bookings";
 
 const bookings = {
+  "booking.province": "المنطقة",
+  "booking.selectProvince": "اختر المنطقة",
+  "booking.selectCity": "اختر المدينة",
+  "booking.locationsError": "تعذر تحميل المناطق والمدن. يرجى المحاولة مرة أخرى.",
   "booking.title": "احجز فنانك",
   "booking.subtitle": "املأ التفاصيل لإكمال الحجز",
   "booking.eventDateTime": "تاريخ ووقت المناسبة",

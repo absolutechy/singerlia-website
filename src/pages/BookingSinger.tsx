@@ -27,6 +27,7 @@ import eventCategoryService, { type EventCategory } from "@/api/services/eventCa
 import HyperPayWidget from "@/components/pageComponents/BookingSinger/HyperPayWidget";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { getLocations, type Locations } from "@/api/services/locationService";
 
 // Zod validation schema
 const bookingSchema = z.object({
@@ -41,7 +42,9 @@ const bookingSchema = z.object({
   eventType: z.string().trim().min(1, "Event type is required"),
   venueName: z.string().trim().min(1, "Venue name is required").max(100, "Venue name must be 100 characters or less"),
   venueAddress: z.string().trim().min(1, "Venue address is required").max(100, "Venue address must be 100 characters or less"),
-  city: z.string().trim().min(1, "City is required").max(50, "City must be 50 characters or less"),
+  city: z.string().trim().min(1, "City is required"),
+  regionId: z.string().min(1, "Province is required"),
+  cityId: z.string().min(1, "City is required"),
   postalCode: z.string().trim().min(1, "Postal code is required").max(16, "Postal code must be 16 characters or less"),
   venueType: z.enum(["indoor", "outdoor"], {
     message: "Please select venue type",
@@ -82,6 +85,24 @@ const BookingSinger: React.FC = () => {
   const location = useLocation();
   const state = location.state as LocationState | undefined;
   const [showSummary, setShowSummary] = useState(false);
+  const [locations, setLocations] = useState<Locations>({ regions: [], cities: [] });
+  const [locationsLoading, setLocationsLoading] = useState(true);
+  const [locationsError, setLocationsError] = useState(false);
+  const [locationAttempt, setLocationAttempt] = useState(0);
+
+  useEffect(() => {
+    let active = true;
+    setLocationsLoading(true);
+    setLocationsError(false);
+    getLocations().then((data) => {
+      if (active) setLocations(data);
+    }).catch(() => {
+      if (active) setLocationsError(true);
+    }).finally(() => {
+      if (active) setLocationsLoading(false);
+    });
+    return () => { active = false; };
+  }, [locationAttempt]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [bookingId, setBookingId] = useState<string>("");
@@ -114,6 +135,8 @@ const BookingSinger: React.FC = () => {
       venueName: "",
       venueAddress: "",
       city: "",
+      regionId: "",
+      cityId: "",
       postalCode: "",
       venueType: "" as BookingFormData["venueType"],
       numberOfGuests: "",
@@ -414,6 +437,8 @@ const BookingSinger: React.FC = () => {
         venueName: data.venueName,
         venueAddress: data.venueAddress,
         city: data.city,
+        regionId: data.regionId,
+        cityId: data.cityId,
         postalCode: data.postalCode,
         venueType: data.venueType.charAt(0).toUpperCase() + data.venueType.slice(0),
         numberOfGuests: data.numberOfGuests,
@@ -587,7 +612,7 @@ const BookingSinger: React.FC = () => {
                 <div className="flex justify-between">
                   <span className="text-[#6F5D9E]">City:</span>
                   <span className="text-[#2E1B4D] font-medium">
-                    {formValues.city}
+                    {formValues.city}, {locations.regions.find((region) => region.id === formValues.regionId)?.name}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -884,16 +909,48 @@ const BookingSinger: React.FC = () => {
                   />
                 )}
               />
+              {locationsError && (
+                <div role="alert" className="md:col-span-2 text-red-600">
+                  {t("booking.locationsError")}
+                  <button type="button" className="ms-3 underline" onClick={() => setLocationAttempt((value) => value + 1)}>{t("common.retry")}</button>
+                </div>
+              )}
               <Controller
-                name="city"
+                name="regionId"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    className="!bg-[#F9F7FF] !px-4 py-6"
+                  <Select
+                    className="!bg-[#F9F7FF] !px-4 py-6 shadow-none !border-none"
+                    label={t("booking.province")}
+                    placeholder={locationsLoading ? t("common.loading") : t("booking.selectProvince")}
+                    options={locations.regions.map((region) => ({ value: region.id, label: region.name }))}
+                    disabled={locationsLoading || locationsError}
+                    value={field.value}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      setValue("cityId", "");
+                      setValue("city", "");
+                    }}
+                    error={errors.regionId ? t("booking.selectProvince") : undefined}
+                  />
+                )}
+              />
+              <Controller
+                name="cityId"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    className="!bg-[#F9F7FF] !px-4 py-6 shadow-none !border-none"
                     label={t("booking.city")}
-                    placeholder={t("booking.enterCity")}
-                    {...field}
-                    error={errors.city?.message}
+                    placeholder={t("booking.selectCity")}
+                    options={locations.cities.filter((city) => city.regionId === watch("regionId")).map((city) => ({ value: city.id, label: city.name }))}
+                    disabled={!watch("regionId") || locationsLoading || locationsError}
+                    value={field.value}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      setValue("city", locations.cities.find((city) => city.id === value)?.name || "", { shouldValidate: true });
+                    }}
+                    error={errors.cityId ? t("booking.selectCity") : undefined}
                   />
                 )}
               />
