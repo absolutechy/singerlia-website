@@ -1,6 +1,7 @@
 import { Button } from "@/components/common";
 import { useLanguage } from "@/i18n/LanguageContext";
 import React from "react";
+import founderImage from "@/assets/images/common/co-founder.png"
 
 const Welcome: React.FC = () => {
   const { t } = useLanguage();
@@ -25,7 +26,9 @@ const Welcome: React.FC = () => {
           </Button>
         </div>
         <div className="bg-white text-black rounded-2xl max-w-md p-5">
-          <div className="w-full h-64 rounded-xl bg-primary" />
+          <div className="w-full h-64 rounded-xl bg-primary">
+            <img src={founderImage} alt="Welcome" className="w-full h-full object-cover rounded-xl" />
+          </div>
           <p className="font-semibold text-2xl my-10 max-w-sm">
             “{t("home.welcomeQuote")}”
           </p>

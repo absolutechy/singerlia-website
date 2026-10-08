@@ -41,7 +41,10 @@ const Artists: React.FC = () => {
     try {
       setLoading(true);
       const response = await singerService.getFeaturedSingers(50);
-      setSingers(response.singers || []);
+      const featuredSingers = (response.singers || []).filter(
+        (singer) => singer.highlight?.toLowerCase() === "featured"
+      );
+      setSingers(featuredSingers);
       setError("");
     } catch (err: any) {
       console.error("Failed to fetch featured singers:", err);
@@ -53,7 +56,7 @@ const Artists: React.FC = () => {
 
   const displayedSingers = singers.slice(0, visibleCount);
 
-  if (!loading && !error && singers.length === 0) return null;
+  if (loading || error || singers.length === 0) return null;
 
   return (
     <div className="py-10 !px-4 w-full custom-container">
@@ -61,52 +64,38 @@ const Artists: React.FC = () => {
       <p className="text-[#666666] text-center">
         {t("home.featuredSubtitle")}
       </p>
-      
-      {loading && (
-        <div className="flex justify-center items-center my-14">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+
+      <>
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 my-14">
+          {displayedSingers.map((singer) => {
+            const name = singer.name || t("common.artist");
+            const genre = getGenreLabels(singer) || t("common.artist");
+
+            return (
+              <SingerCard
+                key={singer.userId}
+                singerId={singer.userId}
+                name={name}
+                serviceTitle={genre}
+                images={singer.photoUrls?.length > 0 ? singer.photoUrls : undefined}
+                isInWishlist={wishlist.includes(singer.userId)}
+                responseTimeHours={singer.responseTimeHours}
+                onViewDetails={() => navigate(`/singers/${singer.userId}`)}
+              />
+            );
+          })}
         </div>
-      )}
-
-      {error && (
-        <div className="text-center text-red-600 my-14">
-          <p>{error}</p>
-        </div>
-      )}
-
-      {!loading && !error && singers.length > 0 && (
-        <>
-          <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 my-14">
-            {displayedSingers.map((singer) => {
-              const name = singer.name || t("common.artist");
-              const genre = getGenreLabels(singer) || t("common.artist");
-
-              return (
-                <SingerCard
-                  key={singer.userId}
-                  singerId={singer.userId}
-                  name={name}
-                  serviceTitle={genre}
-                  images={singer.photoUrls?.length > 0 ? singer.photoUrls : undefined}
-                  isInWishlist={wishlist.includes(singer.userId)}
-                  responseTimeHours={singer.responseTimeHours}
-                  onViewDetails={() => navigate(`/singers/${singer.userId}`)}
-                />
-              );
-            })}
+        {visibleCount < singers.length && (
+          <div className="w-full flex justify-center">
+            <button
+              onClick={() => setVisibleCount(prev => Math.min(singers.length, prev + 6))}
+              className="text-lg font-medium text-white bg-primary px-5 py-3 rounded-full cursor-pointer shadow-2xl hover:bg-primary/90 transition-colors"
+            >
+              {t("common.showMore")}
+            </button>
           </div>
-          {visibleCount < singers.length && (
-            <div className="w-full flex justify-center">
-              <button 
-                onClick={() => setVisibleCount(prev => Math.min(singers.length, prev + 6))}
-                className="text-lg font-medium text-white bg-primary px-5 py-3 rounded-full cursor-pointer shadow-2xl hover:bg-primary/90 transition-colors"
-              >
-                {t("common.showMore")}
-              </button>
-            </div>
-          )}
-        </>
-      )}
+        )}
+      </>
     </div>
   );
 };
