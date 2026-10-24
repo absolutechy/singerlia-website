@@ -115,14 +115,11 @@ const HyperPayWidget: React.FC<HyperPayWidgetProps> = ({
     };
   }, [checkoutId, integrity, nonce, hyperPayUrl]);
 
-  // Must point to the frontend SPA route (not backend API host).
-  // Optional override: VITE_FRONTEND_URL (public frontend URL for payment redirects)
-  const frontendBaseUrl = (
-    import.meta.env.VITE_FRONTEND_URL ||
-    import.meta.env.VITE_APP_URL ||
-    window.location.origin
-  ).replace(/\/+$/, "");
-  const shopperResultUrl = `${frontendBaseUrl}/payment/result?bookingId=${bookingId}`;
+  // Must return to the exact origin the customer is paying from: the auth token lives in that
+  // origin's localStorage, and www.singerlia.com / singerlia.com are separate origins. A fixed
+  // URL here sent www customers back to the apex domain logged out, so their payment was never
+  // confirmed even though they were charged.
+  const shopperResultUrl = `${window.location.origin}/payment/result?bookingId=${bookingId}`;
   console.log("[HyperPay] Shopper result URL:", shopperResultUrl);
 
   if (scriptError) {

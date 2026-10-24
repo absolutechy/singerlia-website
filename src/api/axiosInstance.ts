@@ -38,9 +38,12 @@ axiosInstance.interceptors.response.use(
           // Unauthorized - Only redirect to login if:
           // 1. User is on a protected page (not home, search, singer details, etc.)
           // 2. Or if the request was explicitly for authentication
+          // The post-payment pages also stay put: they show their own "confirming your payment"
+          // state rather than bouncing a just-charged customer to the login screen.
+          // Home must match exactly — as a startsWith prefix, '/' matches every path.
           const currentPath = window.location.pathname;
-          const publicPaths = ['/', '/search', '/singers', '/contact', '/terms-and-conditions', '/privacy-policy', '/auth'];
-          const isPublicPath = publicPaths.some(path => currentPath.startsWith(path));
+          const publicPaths = ['/search', '/singers', '/contact', '/terms-and-conditions', '/privacy-policy', '/auth', '/payment/result', '/booking/success'];
+          const isPublicPath = currentPath === '/' || publicPaths.some(path => currentPath.startsWith(path));
           
           // Only clear token and redirect if on a protected page
           if (!isPublicPath) {

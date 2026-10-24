@@ -131,6 +131,12 @@ const PaymentResume: React.FC = () => {
         setPaymentError(t("booking.invalidCheckout"));
       }
     } catch (err: unknown) {
+      // The backend found this booking was already charged (e.g. an earlier attempt that was
+      // never confirmed) and refused a second checkout.
+      if ((err as { response?: { data?: { paymentStatus?: string } } })?.response?.data?.paymentStatus === "paid") {
+        setAlreadyPaid(true);
+        return;
+      }
       const message =
         (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
         (err as { message?: string })?.message ||

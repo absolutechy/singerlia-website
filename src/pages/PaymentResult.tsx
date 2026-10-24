@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router";
-import { AlertCircle, Loader2, ShieldCheck } from "lucide-react";
+import { AlertCircle, Clock, Loader2, ShieldCheck } from "lucide-react";
 import Button from "@/components/common/Button";
 import paymentService from "@/api/services/paymentService";
+import authService from "@/api/services/authService";
 import { useLanguage } from "@/i18n/LanguageContext";
 
-type VerificationState = "loading" | "success" | "pending_capture" | "failed";
+// "confirming" = we couldn't determine the outcome. Never shown as a failure: the customer may
+// well have been charged, and the backend reconciles the payment with HyperPay on its own.
+type VerificationState = "loading" | "success" | "pending_capture" | "confirming" | "failed";
 
 const PaymentResult: React.FC = () => {
   const { t } = useLanguage();
@@ -65,8 +68,7 @@ const PaymentResult: React.FC = () => {
         if (result.retryable) {
           retryCount += 1;
           if (retryCount > maxClientRetries) {
-            setStatus("failed");
-            setErrorMessage(t("payment.stillProcessing"));
+            setStatus("confirming");
             return;
           }
 
@@ -98,34 +100,24 @@ const PaymentResult: React.FC = () => {
           return;
         }
 
-        setStatus("failed");
-        setErrorMessage(
-          result.resultDescription ||
-            result.message ||
-            t("payment.wasNotCompleted")
-        );
-      } catch (err: any) {
-        if (cancelled) return;
-
-        const errorData = err?.response?.data;
-        setStatus("failed");
-        setErrorDetails(errorData);
-
-        let message = t("payment.verifyUnable");
-
-        if (errorData?.resultCode === "800.100.152") {
-          message = t("payment.transactionDeclined");
-        } else if (errorData?.resultCode === "200.300.404") {
-          message = t("payment.sessionNotFound");
-        } else if (errorData?.resultDescription) {
-          message = errorData.resultDescription;
-        } else if (errorData?.message) {
-          message = errorData.message;
-        } else if (err?.message) {
-          message = err.message;
+        // Only HyperPay explicitly declining the payment counts as a failure.
+        if (result.paymentStatus === "failed") {
+          setStatus("failed");
+          setErrorDetails(result);
+          setErrorMessage(
+            result.resultDescription ||
+              result.message ||
+              t("payment.wasNotCompleted")
+          );
+          return;
         }
 
-        setErrorMessage(message);
+        setStatus("confirming");
+      } catch {
+        if (cancelled) return;
+        // The status check itself failed (session, network, server error) — that says nothing
+        // about whether the card was charged, so don't report a failure.
+        setStatus("confirming");
       }
     };
 
@@ -207,6 +199,45 @@ const PaymentResult: React.FC = () => {
                 }
               >
                 {t("payment.continue")}
+              </Button>
+              <Button
+                variant="default"
+                size="large"
+                className="w-full !h-14"
+                onClick={() => navigate("/")}
+              >
+                {t("payment.returnHome")}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {status === "confirming" && (
+          <div className="space-y-6">
+            <div className="flex justify-center">
+              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-100 to-yellow-100 flex items-center justify-center">
+                <Clock className="w-10 h-10 text-amber-600" />
+              </div>
+            </div>
+            <div>
+              <h1 className="heading-3 text-[#2E1B4D] mb-2">
+                {t("payment.confirmingTitle")}
+              </h1>
+              <p className="text-[#6F5D9E] whitespace-pre-line">
+                {t("payment.confirmingText")}
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <Button
+                variant="primary"
+                size="large"
+                className="w-full !h-14"
+                onClick={() => {
+                  window.location.href = authService.getPortalDashboardUrl();
+                }}
+              >
+                {t("payment.viewBookings")}
               </Button>
               <Button
                 variant="default"
