@@ -28,6 +28,7 @@ import HyperPayWidget from "@/components/pageComponents/BookingSinger/HyperPayWi
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getLocations, type Locations } from "@/api/services/locationService";
+import { getOfferedEventTypes } from "@/lib/eventTypes";
 
 // Zod validation schema
 const bookingSchema = z.object({
@@ -308,8 +309,9 @@ const BookingSinger: React.FC = () => {
   const duration = slotDurationMap[formValues.timeSlot] || 1;
   // Price is category-specific, not a flat base price — reactive to the selected Event Type
   // (formValues.eventType holds the category's categoryId; see eventCategoryOptions below).
-  const selectedCategory = eventCategories.find((c) => c.categoryId === formValues.eventType);
-  const baseFee = (formValues.eventType && singer?.categoryPricing?.[formValues.eventType]?.price) || 0;
+  const offeredEventTypes = getOfferedEventTypes(eventCategories, singer?.categoryPricing);
+  const selectedCategory = offeredEventTypes.find((c) => c.categoryId === formValues.eventType);
+  const baseFee = selectedCategory?.price || 0;
   const totalPrice = baseFee;
 
   // Fetch HyperPay checkout when summary is shown
@@ -486,11 +488,9 @@ const BookingSinger: React.FC = () => {
     }
   };
 
-  // Only offer event categories this singer has actually priced — otherwise the price couldn't
-  // be resolved at booking-request submission (see createBookingHandler on the backend).
-  const eventTypeOptions = eventCategories
-    .filter((category) => singer?.categoryPricing?.[category.categoryId]?.price)
-    .map((category) => ({ value: category.categoryId, label: category.label }));
+  // Only offer event types this singer has actually priced (including their own "Other" types) —
+  // otherwise the price couldn't be resolved at booking-request submission (see createBookingHandler).
+  const eventTypeOptions = offeredEventTypes.map((category) => ({ value: category.categoryId, label: category.label }));
 
   const guestOptions = [
     { value: "0-50", label: "0-50 guests" },

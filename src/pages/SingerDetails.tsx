@@ -178,7 +178,7 @@ const SingerDetails: React.FC = () => {
           id={singer.userId}
           name={name}
           categoryPricing={singer.categoryPricing}
-          city={singer.city}
+          city={singer.availableAcrossKsa ? t("serviceArea.nationwide") : singer.city}
           isVerified={singer.isVerified}
           unavailability={unavailability}
           averageRating={averageRating}
@@ -252,7 +252,7 @@ const SingerDetails: React.FC = () => {
               </li>
               <li>
                 <p className="font-semibold">{t("singerDetails.location")}</p>
-                <p className="text-[#6F5D9E]">{singer.city}{singer.address ? `, ${singer.address}` : ""}</p>
+                <p className="text-[#6F5D9E]">{singer.availableAcrossKsa ? t("serviceArea.nationwide") : singer.city}{singer.address ? `, ${singer.address}` : ""}</p>
               </li>
               <li>
                 <p className="font-semibold">{t("singerDetails.memberSince")}</p>

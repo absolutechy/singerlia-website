@@ -4,11 +4,14 @@ import AuthModalLayout from "@/components/auth/AuthModalLayout";
 import { Button } from "@/components/common";
 import { Upload, FileText, X } from "lucide-react";
 import authService, { dispatchAuthEvent } from "@/api/services/authService";
+import { isDocumentType } from "@/components/auth/identityDocuments";
+import { useLanguage, type TranslationKey } from "@/i18n/LanguageContext";
 
 const DocumentUpload: React.FC = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -24,22 +27,22 @@ const DocumentUpload: React.FC = () => {
     }
   }, [documentType, navigate, isNavigatingAway]);
 
-  const getDocumentTypeName = () => {
-    return documentType === "national_id" ? "National ID Card" : "Passport";
-  };
+  const documentName = isDocumentType(documentType)
+    ? t(`docs.${documentType}` as TranslationKey)
+    : t("docs.passport");
 
   const handleFileSelect = (file: File) => {
     // Validate file type
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
     if (!allowedTypes.includes(file.type)) {
-      setError("Please upload a valid file (JPG, PNG, or PDF)");
+      setError(t("docs.invalidFile"));
       return;
     }
 
     // Validate file size (max 5MB)
     const maxSize = 5 * 1024 * 1024; // 5MB in bytes
     if (file.size > maxSize) {
-      setError("File size must be less than 5MB");
+      setError(t("docs.tooLarge"));
       return;
     }
 
@@ -84,12 +87,12 @@ const DocumentUpload: React.FC = () => {
 
   const handleUpload = async () => {
     if (!selectedFile) {
-      setError("Please select a file to upload");
+      setError(t("docs.selectFile"));
       return;
     }
 
     if (!documentType) {
-      setError("Document type not selected");
+      setError(t("docs.typeMissing"));
       return;
     }
 
@@ -98,46 +101,38 @@ const DocumentUpload: React.FC = () => {
 
     try {
       await authService.uploadVerificationDocument(documentType, selectedFile);
-      
-      console.log("Document uploaded successfully - Singer logged out, awaiting approval");
-      
+
       // Set flag to prevent useEffect redirect
       setIsNavigatingAway(true);
-      
+
       // Clear session storage and ensure singer is logged out
       sessionStorage.clear();
       localStorage.removeItem("authToken");
       localStorage.removeItem("user");
-      
-      console.log("Auth data cleared from storage");
-      
+
       // Small delay to ensure storage is cleared before dispatching event
       setTimeout(() => {
         // Dispatch auth event to update header and other components
         dispatchAuthEvent();
-        console.log("Auth event dispatched");
-        
+
         // Navigate to verification pending screen
         navigate("/auth/verification-pending", { replace: true });
       }, 100);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Upload failed. Please try again.");
+      setError(err.response?.data?.message || t("docs.uploadFailed"));
       setLoading(false);
     }
   };
 
   return (
-    <AuthModalLayout
-      title="Upload Document"
-      size="md"
-    >
+    <AuthModalLayout title={t("docs.uploadTitle")} size="md">
       <div className="space-y-6 pt-40 sm:pt-0 px-4">
         <div className="text-center space-y-2">
           <p className="text-lg font-semibold text-primary-text">
-            Upload Your {getDocumentTypeName()}
+            {t("docs.uploadYour", { document: documentName })}
           </p>
           <p className="text-sm text-[#6F5D9E]">
-            Please upload a clear photo or scan of your {getDocumentTypeName().toLowerCase()}
+            {t("docs.uploadHelp", { document: documentName })}
           </p>
         </div>
 
@@ -168,39 +163,33 @@ const DocumentUpload: React.FC = () => {
                 onChange={handleFileInputChange}
                 className="hidden"
               />
-              
+
               <div className="flex flex-col items-center space-y-4">
                 <div className="w-16 h-16 rounded-full bg-[#F7F4FF] flex items-center justify-center">
                   <Upload className="w-8 h-8 text-primary" />
                 </div>
-                
+
                 <div className="space-y-2">
-                  <p className="text-sm font-semibold text-primary-text">
-                    Drag and drop your file here
-                  </p>
-                  <p className="text-xs text-[#6F5D9E]">
-                    or
-                  </p>
+                  <p className="text-sm font-semibold text-primary-text">{t("docs.dragDrop")}</p>
+                  <p className="text-xs text-[#6F5D9E]">{t("docs.or")}</p>
                   <Button
                     variant="default"
                     size="medium"
                     className="rounded-full border-primary !text-primary hover:bg-[#F7F4FF] bg-transparent"
                     onClick={() => fileInputRef.current?.click()}
                   >
-                    Browse Files
+                    {t("docs.browse")}
                   </Button>
                 </div>
-                
-                <p className="text-xs text-[#6F5D9E]">
-                  Supported formats: JPG, PNG, PDF (Max 5MB)
-                </p>
+
+                <p className="text-xs text-[#6F5D9E]">{t("docs.formats")}</p>
               </div>
             </div>
           ) : (
             // Selected File Preview
             <div className="border-2 border-[#D5CAFF] rounded-xl p-6">
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-lg bg-[#F7F4FF] flex items-center justify-center">
                     <FileText className="w-6 h-6 text-primary" />
                   </div>
@@ -216,7 +205,7 @@ const DocumentUpload: React.FC = () => {
                 <button
                   onClick={handleRemoveFile}
                   className="p-2 rounded-full hover:bg-red-50 text-red-500 transition"
-                  aria-label="Remove file"
+                  aria-label={t("docs.removeFile")}
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -225,15 +214,15 @@ const DocumentUpload: React.FC = () => {
           )}
 
           {/* Information Box */}
-          <div className="bg-[#F7F4FF] border border-[#E5DAFF] rounded-lg p-4">
+          <div className="bg-[#F7F4FF] border border-[#E5DAFF] rounded-lg p-4 text-start">
             <p className="text-xs text-[#6F5D9E] leading-relaxed">
-              <strong className="text-primary">Important:</strong> Make sure your document is:
+              <strong className="text-primary">{t("docs.important")}</strong> {t("docs.makeSure")}
             </p>
-            <ul className="mt-2 text-xs text-[#6F5D9E] space-y-1 ml-4 list-disc">
-              <li>Clear and readable</li>
-              <li>Not expired</li>
-              <li>Shows your full name and photo</li>
-              <li>All corners of the document are visible</li>
+            <ul className="mt-2 text-xs text-[#6F5D9E] space-y-1 ms-4 list-disc">
+              <li>{t("docs.rule.clear")}</li>
+              <li>{t("docs.rule.notExpired")}</li>
+              <li>{t("docs.rule.showsName")}</li>
+              <li>{t("docs.rule.corners")}</li>
             </ul>
           </div>
         </div>
@@ -247,7 +236,7 @@ const DocumentUpload: React.FC = () => {
             onClick={() => navigate("/auth/select-document-type")}
             disabled={loading}
           >
-            <span className="font-semibold">Back</span>
+            <span className="font-semibold">{t("docs.back")}</span>
           </Button>
           <Button
             variant="secondary"
@@ -257,7 +246,7 @@ const DocumentUpload: React.FC = () => {
             disabled={loading || !selectedFile}
           >
             <span className="font-semibold">
-              {loading ? "Uploading..." : "Upload Document"}
+              {loading ? t("docs.uploading") : t("docs.upload")}
             </span>
           </Button>
         </div>

@@ -5,8 +5,11 @@ import { Button } from "@/components/common";
 import { Upload, FileText, X, AlertCircle } from "lucide-react";
 import authService from "@/api/services/authService";
 import { toast } from "sonner";
+import { isDocumentType } from "@/components/auth/identityDocuments";
+import { useLanguage, type TranslationKey } from "@/i18n/LanguageContext";
 
 const DocumentReupload: React.FC = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -22,7 +25,7 @@ const DocumentReupload: React.FC = () => {
   // Redirect if no email provided
   React.useEffect(() => {
     if (!email) {
-      toast.error("Email is required for document reupload");
+      toast.error(t("docs.emailRequired"));
       navigate("/auth/login");
       return;
     }
@@ -30,25 +33,29 @@ const DocumentReupload: React.FC = () => {
     // Get document type from session storage
     const storedDocType = sessionStorage.getItem("reuploadDocumentType");
     if (!storedDocType) {
-      toast.error("Please select a document type first");
+      toast.error(t("docs.selectTypeFirst"));
       navigate(`/auth/reupload-document-type?email=${encodeURIComponent(email)}`);
       return;
     }
     setDocumentType(storedDocType);
-  }, [email, navigate]);
+  }, [email, navigate, t]);
+
+  const documentName = isDocumentType(documentType)
+    ? t(`docs.${documentType}` as TranslationKey)
+    : t("docs.passport");
 
   const handleFileSelect = (file: File) => {
     // Validate file type
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
     if (!allowedTypes.includes(file.type)) {
-      setError("Please upload a valid file (JPG, PNG, or PDF)");
+      setError(t("docs.invalidFile"));
       return;
     }
 
     // Validate file size (max 5MB)
     const maxSize = 5 * 1024 * 1024; // 5MB in bytes
     if (file.size > maxSize) {
-      setError("File size must be less than 5MB");
+      setError(t("docs.tooLarge"));
       return;
     }
 
@@ -93,17 +100,17 @@ const DocumentReupload: React.FC = () => {
 
   const handleUpload = async () => {
     if (!selectedFile) {
-      setError("Please select a file to upload");
+      setError(t("docs.selectFile"));
       return;
     }
 
     if (!email) {
-      setError("Email is required");
+      setError(t("docs.emailRequired"));
       return;
     }
 
     if (!documentType) {
-      setError("Document type is required");
+      setError(t("docs.typeMissing"));
       return;
     }
 
@@ -113,14 +120,14 @@ const DocumentReupload: React.FC = () => {
     try {
       const response = await authService.reuploadVerificationDocument(email, selectedFile, documentType);
       
-      toast.success(response.message || "Document uploaded successfully");
+      toast.success(response.message || t("docs.uploaded"));
       
       // Navigate to verification pending or success page
       setTimeout(() => {
         navigate("/auth/verification-pending", { replace: true });
       }, 1000);
     } catch (err: any) {
-      const errorMessage = err.response?.data?.message || "Upload failed. Please try again.";
+      const errorMessage = err.response?.data?.message || t("docs.uploadFailed");
       setError(errorMessage);
       toast.error(errorMessage);
       setLoading(false);
@@ -129,20 +136,20 @@ const DocumentReupload: React.FC = () => {
 
   return (
     <AuthModalLayout
-      title="Reupload Document"
+      title={t("docs.reuploadTitle")}
       size="md"
     >
       <div className="space-y-6 pt-40 sm:pt-0 px-4">
         <div className="text-center space-y-2">
           <p className="text-lg font-semibold text-primary-text">
-            Reupload Your {documentType === "national_id" ? "National ID" : "Passport"}
+            {t("docs.reuploadYour", { document: documentName })}
           </p>
           <p className="text-sm text-[#6F5D9E]">
-            Please upload a clear photo or scan of your {documentType === "national_id" ? "National ID card" : "passport"}
+            {t("docs.uploadHelp", { document: documentName })}
           </p>
           {email && (
             <p className="text-xs text-[#6F5D9E] bg-[#F7F4FF] p-2 rounded-lg">
-              Uploading for: <span className="font-semibold text-primary">{email}</span>
+              {t("docs.uploadingFor")} <span className="font-semibold text-primary">{email}</span>
             </p>
           )}
         </div>
@@ -151,9 +158,9 @@ const DocumentReupload: React.FC = () => {
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-semibold text-blue-900">Document Reupload Required</p>
+            <p className="text-sm font-semibold text-blue-900">{t("docs.reuploadNotice")}</p>
             <p className="text-xs text-blue-700 mt-1">
-              Your previous document submission needs to be replaced. Please upload a new, clear document that meets all requirements.
+              {t("docs.reuploadNoticeBody")}
             </p>
           </div>
         </div>
@@ -193,10 +200,10 @@ const DocumentReupload: React.FC = () => {
                 
                 <div className="space-y-2">
                   <p className="text-sm font-semibold text-primary-text">
-                    Drag and drop your file here
+                    {t("docs.dragDrop")}
                   </p>
                   <p className="text-xs text-[#6F5D9E]">
-                    or
+                    {t("docs.or")}
                   </p>
                   <Button
                     variant="default"
@@ -204,12 +211,12 @@ const DocumentReupload: React.FC = () => {
                     className="rounded-full border-primary !text-primary hover:bg-[#F7F4FF] bg-transparent"
                     onClick={() => fileInputRef.current?.click()}
                   >
-                    Browse Files
+                    {t("docs.browse")}
                   </Button>
                 </div>
                 
                 <p className="text-xs text-[#6F5D9E]">
-                  Supported formats: JPG, PNG, PDF (Max 5MB)
+                  {t("docs.formats")}
                 </p>
               </div>
             </div>
@@ -233,7 +240,7 @@ const DocumentReupload: React.FC = () => {
                 <button
                   onClick={handleRemoveFile}
                   className="p-2 rounded-full hover:bg-red-50 text-red-500 transition"
-                  aria-label="Remove file"
+                  aria-label={t("docs.removeFile")}
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -244,14 +251,13 @@ const DocumentReupload: React.FC = () => {
           {/* Information Box */}
           <div className="bg-[#F7F4FF] border border-[#E5DAFF] rounded-lg p-4">
             <p className="text-xs text-[#6F5D9E] leading-relaxed">
-              <strong className="text-primary">Important:</strong> Make sure your document is:
+              <strong className="text-primary">{t("docs.important")}</strong> {t("docs.makeSure")}
             </p>
             <ul className="mt-2 text-xs text-[#6F5D9E] space-y-1 ml-4 list-disc">
-              <li>Clear and readable with no blur or glare</li>
-              <li>Not expired</li>
-              <li>Shows your full name and photo clearly</li>
-              <li>All corners of the document are visible</li>
-              <li>Taken in good lighting conditions</li>
+              <li>{t("docs.rule.clear")}</li>
+              <li>{t("docs.rule.notExpired")}</li>
+              <li>{t("docs.rule.showsName")}</li>
+              <li>{t("docs.rule.corners")}</li>
             </ul>
           </div>
         </div>
@@ -265,7 +271,7 @@ const DocumentReupload: React.FC = () => {
             onClick={() => navigate(-1)}
             disabled={loading}
           >
-            <span className="font-semibold">Cancel</span>
+            <span className="font-semibold">{t("docs.cancel")}</span>
           </Button>
           <Button
             variant="secondary"
@@ -275,7 +281,7 @@ const DocumentReupload: React.FC = () => {
             disabled={loading || !selectedFile}
           >
             <span className="font-semibold">
-              {loading ? "Uploading..." : "Upload Document"}
+              {loading ? t("docs.uploading") : t("docs.upload")}
             </span>
           </Button>
         </div>

@@ -5,25 +5,27 @@ import LogoBadge from "@/components/auth/LogoBadge";
 import { Button } from "@/components/common";
 import { Mail, Phone } from "lucide-react";
 import authService from "@/api/services/authService";
+import { useLanguage, type TranslationKey } from "@/i18n/LanguageContext";
 
 type VerificationType = "email" | "phone";
 
 const options = [
   {
     id: "email" as VerificationType,
-    title: "Email",
-    description: "Select Email Verification",
+    titleKey: "verify.email",
+    descriptionKey: "verify.emailDescription",
     icon: <Mail className="h-6 w-6" />,
   },
   {
     id: "phone" as VerificationType,
-    title: "Phone",
-    description: "Select Phone Call Verification",
+    titleKey: "verify.phone",
+    descriptionKey: "verify.phoneDescription",
     icon: <Phone className="h-6 w-6" />,
   },
 ];
 
 const SelectVerification: React.FC = () => {
+  const { t } = useLanguage();
   const [selected, setSelected] = useState<VerificationType>("email");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -45,7 +47,7 @@ const SelectVerification: React.FC = () => {
 
   const handleContinue = async () => {
     if (!userId) {
-      setError("User ID not found. Please sign up again.");
+      setError(t("verify.userMissing"));
       return;
     }
 
@@ -66,14 +68,14 @@ const SelectVerification: React.FC = () => {
       // Navigate to verification code page
       navigate("/auth/verification-code");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to send OTP. Please try again.");
+      setError(err.response?.data?.message || t("verify.sendFailed"));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <AuthModalLayout title="Select Verification">
+    <AuthModalLayout title={t("verify.selectTitle")}>
       <div className="space-y-8">
         <LogoBadge size="md" />
         {error && (
@@ -89,7 +91,7 @@ const SelectVerification: React.FC = () => {
                 key={option.id}
                 type="button"
                 onClick={() => setSelected(option.id)}
-                className={`flex w-full items-center justify-between rounded-2xl border px-5 py-4 text-left transition ${
+                className={`flex w-full items-center justify-between rounded-2xl border px-5 py-4 text-start transition ${
                   isSelected
                     ? "border-primary bg-[#F8F4FF] shadow-[0_16px_34px_-24px_rgba(55,21,82,0.45)]"
                     : "border-[#E8DEFF] bg-white hover:border-[#CBB9FF]"
@@ -107,9 +109,9 @@ const SelectVerification: React.FC = () => {
                   </span>
                   <div>
                     <p className="text-base font-semibold text-[#2F1C4E]">
-                      {option.title}
+                      {t(option.titleKey as TranslationKey)}
                     </p>
-                    <p className="text-sm text-[#6F5D9E]">{option.description}</p>
+                    <p className="text-sm text-[#6F5D9E]">{t(option.descriptionKey as TranslationKey)}</p>
                   </div>
                 </div>
                 <span
@@ -132,7 +134,7 @@ const SelectVerification: React.FC = () => {
           onClick={handleContinue}
           disabled={loading}
         >
-          <span className="font-semibold">{loading ? "Sending..." : "Continue"}</span>
+          <span className="font-semibold">{loading ? t("verify.sending") : t("verify.continue")}</span>
         </Button>
       </div>
     </AuthModalLayout>

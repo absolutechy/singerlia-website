@@ -25,6 +25,7 @@ import eventCategoryService, { type EventCategory } from "@/api/services/eventCa
 import authService from "@/api/services/authService";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { getOfferedEventTypes } from "@/lib/eventTypes";
 
 type Props = {
   name: string;
@@ -104,11 +105,9 @@ const ProfileSidebar: React.FC<Props> = ({ name, id, categoryPricing, city, isVe
     }
   };
 
-  // Only the categories this singer has actually priced — a category they don't offer can't be
-  // selected here at all (matches the search-side exclusion rule).
-  const offeredCategories = eventCategories.filter(
-    (category) => categoryPricing?.[category.categoryId]?.price
-  );
+  // Only the event types this singer has actually priced (including their own "Other" types) — one
+  // they don't offer can't be selected here at all (matches the search-side exclusion rule).
+  const offeredCategories = getOfferedEventTypes(eventCategories, categoryPricing);
   const selectedPrice = selectedCategory ? categoryPricing?.[selectedCategory]?.price : undefined;
 
   const timeSlotOptions = [

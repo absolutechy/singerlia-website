@@ -6,6 +6,7 @@ import bookings from "./bookings";
 import payments from "./payments";
 import auth from "./auth";
 import contact from "./contact";
+import registration from "./registration";
 
 const ar = {
   ...common,
@@ -16,6 +17,7 @@ const ar = {
   ...payments,
   ...auth,
   ...contact,
+  ...registration,
 } as const;
 
 export default ar;

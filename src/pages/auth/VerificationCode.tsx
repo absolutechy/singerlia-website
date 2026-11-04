@@ -5,8 +5,10 @@ import LogoBadge from "@/components/auth/LogoBadge";
 import OtpInput from "@/components/auth/OtpInput";
 import { Button, Input } from "@/components/common";
 import authService from "@/api/services/authService";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const VerificationCode: React.FC = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
@@ -63,7 +65,7 @@ const VerificationCode: React.FC = () => {
 
   const handleVerify = async () => {
     if (code.length < 6) {
-      setError("Please enter the complete OTP code");
+      setError(t("verify.incomplete"));
       return;
     }
 
@@ -79,7 +81,7 @@ const VerificationCode: React.FC = () => {
         otp: code,
       });
 
-      setSuccess("Verification successful! Redirecting...");
+      setSuccess(t("verify.success"));
       
       // Clear some session storage but keep userId temporarily for document upload
       sessionStorage.removeItem("userPhone");
@@ -100,7 +102,7 @@ const VerificationCode: React.FC = () => {
         }
       }, 1000);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Verification failed. Please check your code and try again.");
+      setError(err.response?.data?.message || t("verify.failed"));
     } finally {
       setLoading(false);
     }
@@ -112,7 +114,7 @@ const VerificationCode: React.FC = () => {
     // Validate new contact if changing
     if (useNewContact) {
       if (!newContact.trim()) {
-        setError(`Please enter a valid ${verificationType === "phone" ? "phone number" : "email address"}`);
+        setError(verificationType === "phone" ? t("verify.invalidPhone") : t("verify.invalidEmail"));
         return;
       }
     }
@@ -151,9 +153,9 @@ const VerificationCode: React.FC = () => {
         }
         setIsEditingContact(false);
         setNewContact("");
-        setSuccess(`Verification code sent to ${newContact.trim()}!`);
+        setSuccess(t("verify.sentToNew", { contact: newContact.trim() }));
       } else {
-        setSuccess("Verification code resent successfully!");
+        setSuccess(t("verify.resent"));
       }
       
       setTimer(60);
@@ -161,7 +163,7 @@ const VerificationCode: React.FC = () => {
       
       setTimeout(() => setSuccess(""), 3000);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to resend code. Please try again.");
+      setError(err.response?.data?.message || t("verify.resendFailed"));
     } finally {
       setLoading(false);
     }
@@ -181,37 +183,36 @@ const VerificationCode: React.FC = () => {
   };
 
   const displayContact = verificationType === "phone" ? userPhone : userEmail;
-  const contactLabel = verificationType === "phone" ? "Phone Number" : "Email";
   const contactType = verificationType === "phone" ? "tel" : "email";
 
   return (
-    <AuthModalLayout title="Identify Verification">
+    <AuthModalLayout title={t("verify.title")}>
       <div className="space-y-5 text-center">
         <LogoBadge size="md" />
         <div className="space-y-2">
           <h3 className="text-xl font-semibold text-[#2F1C4E]">
-            {verificationType === "phone" ? "Text Confirmation" : "Email Confirmation"}
+            {verificationType === "phone" ? t("verify.textConfirmation") : t("verify.emailConfirmation")}
           </h3>
           {!isEditingContact ? (
             <div className="flex items-center justify-center gap-2">
               <p className="text-sm text-[#6F5D9E]">
-                A code was sent to {displayContact || "your " + contactLabel.toLowerCase()}
+                {t("verify.codeSentTo", { contact: displayContact || (verificationType === "phone" ? t("verify.yourPhone") : t("verify.yourEmail")) })}
               </p>
               <button
                 type="button"
                 onClick={handleChangeContact}
                 className="text-xs text-primary font-semibold hover:underline"
               >
-                Change
+                {t("verify.change")}
               </button>
             </div>
           ) : (
             <div className="space-y-3 px-4">
-              <p className="text-sm text-[#6F5D9E]">Enter new {contactLabel.toLowerCase()}</p>
+              <p className="text-sm text-[#6F5D9E]">{verificationType === "phone" ? t("verify.enterNewPhone") : t("verify.enterNewEmail")}</p>
               <Input
                 id="newContact"
                 type={contactType}
-                placeholder={`New ${contactLabel}`}
+                placeholder={verificationType === "phone" ? t("verify.newPhone") : t("verify.newEmail")}
                 className="bg-[#F7FBFF] border border-[#D4D7E3] !pl-2 !py-3 text-sm"
                 value={newContact}
                 onChange={(e) => setNewContact(e.target.value)}
@@ -223,7 +224,7 @@ const VerificationCode: React.FC = () => {
                   onClick={() => handleResendCode(true)}
                   disabled={loading || !newContact.trim()}
                 >
-                  Send Code
+                  {t("verify.sendCode")}
                 </Button>
                 <Button
                   variant="default"
@@ -231,7 +232,7 @@ const VerificationCode: React.FC = () => {
                   onClick={handleCancelChangeContact}
                   disabled={loading}
                 >
-                  Cancel
+                  {t("verify.cancel")}
                 </Button>
               </div>
             </div>
@@ -253,7 +254,7 @@ const VerificationCode: React.FC = () => {
             <>
               {timer > 0 ? (
                 <p className="text-sm text-[#6F5D9E] mb-5">
-                  Resend code in {timer} seconds
+                  {t("verify.resendIn", { seconds: timer })}
                 </p>
               ) : (
                 <Button
@@ -262,7 +263,7 @@ const VerificationCode: React.FC = () => {
                   onClick={() => handleResendCode(false)}
                   disabled={loading || !canResend}
                 >
-                  Resend code
+                  {t("verify.resend")}
                 </Button>
               )}
             </>
@@ -274,16 +275,16 @@ const VerificationCode: React.FC = () => {
             onClick={handleVerify}
             disabled={code.length < 6 || loading}
           >
-            <span className="font-semibold">{loading ? "Verifying..." : "Verify"}</span>
+            <span className="font-semibold">{loading ? t("verify.verifying") : t("verify.verify")}</span>
           </Button>
         </div>
         <p className="text-sm text-[#6F5D9E]">
-          Having problems?{" "}
+          {t("verify.problems")}{" "}
           <a
             href="#"
             className="font-semibold text-primary underline-offset-4 hover:underline"
           >
-            Let us help and contact us!
+            {t("verify.contactUs")}
           </a>
         </p>
       </div>

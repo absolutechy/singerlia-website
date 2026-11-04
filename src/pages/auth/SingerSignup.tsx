@@ -4,7 +4,13 @@ import AuthModalLayout from "@/components/auth/AuthModalLayout";
 import { Button, Input, Select } from "@/components/common";
 import authService from "@/api/services/authService";
 import genreService, { type Genre } from "@/api/services/genreService";
-import LocationFields from "@/components/common/LocationFields";
+import ServiceAreaSelect, { type ServiceAreaValue } from "@/components/common/ServiceAreaSelect";
+import {
+  IDENTITY_CATEGORIES,
+  isValidIdentityNumber,
+  normalizeIdentityNumber,
+  type IdentityCategory,
+} from "@/components/auth/identityDocuments";
 import { useLanguage, type TranslationKey } from "@/i18n/LanguageContext";
 
 const genderOptions = [
@@ -23,9 +29,7 @@ const fields = [
     { id: "phone", labelKey: "auth.phone", type: "tel", placeholderKey: "auth.typeHere", required: true },
     { id: "email", labelKey: "auth.email", type: "email", placeholderKey: "auth.typeHere", required: true },
     { id: "dateOfBirth", labelKey: "auth.dateOfBirth", type: "date", placeholderKey: "auth.typeHere", required: true },
-    { id: "iqamaNumber", labelKey: "auth.iqama", type: "text", placeholderKey: "auth.typeHere", required: true },
     { id: "introVideo", labelKey: "auth.introVideo", type: "url", placeholderKey: "auth.introVideoPlaceholder" },
-    { id: "location", labelKey: "auth.location", placeholderKey: "auth.typeHere" },
     { id: "password", labelKey: "auth.password", type: "password", placeholderKey: "auth.typeHere", required: true },
     { id: "confirmPassword", labelKey: "auth.confirmPassword", type: "password", placeholderKey: "auth.typeHere", required: true },
   ];
@@ -33,20 +37,19 @@ const fields = [
 const SingerSignup: React.FC = () => {
   const { t, dir } = useLanguage();
   const navigate = useNavigate();
-  const [selectedLocation, setSelectedLocation] = useState({ regionId: "", cityId: "" });
+  const [serviceArea, setServiceArea] = useState<ServiceAreaValue>({ availableAcrossKsa: false, serviceCityIds: [] });
+  const [identityCategory, setIdentityCategory] = useState<IdentityCategory | "">("");
+  const [identityNumber, setIdentityNumber] = useState("");
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     phone: "",
     email: "",
     dateOfBirth: "",
-    iqamaNumber: "",
     introVideo: "",
-    location: "",
     password: "",
     confirmPassword: "",
     gender: "",
-    city: "",
   });
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -76,17 +79,7 @@ const SingerSignup: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-    
-    // Special handling for Iqama number - only allow numbers and max 10 digits
-    if (id === "iqamaNumber") {
-      const numericValue = value.replace(/\D/g, ""); // Remove non-digits
-      if (numericValue.length <= 10) {
-        setFormData((prev) => ({ ...prev, [id]: numericValue }));
-      }
-    } else {
-      setFormData((prev) => ({ ...prev, [id]: value }));
-    }
-    
+    setFormData((prev) => ({ ...prev, [id]: value }));
     setError("");
   };
 
@@ -95,16 +88,33 @@ const SingerSignup: React.FC = () => {
     setError("");
   };
 
+  const handleIdentityCategoryChange = (value: string) => {
+    const category = value as IdentityCategory;
+    setIdentityCategory(category);
+    setIdentityNumber((current) => normalizeIdentityNumber(category, current));
+    setError("");
+  };
+
   const handleSignup = async () => {
-    if (!selectedLocation.regionId || !selectedLocation.cityId) {
-      setError(t("common.locationRequired"));
-      return;
-    }
     // Validation for required fields
-    if (!formData.firstName || !formData.lastName || !formData.phone || 
-        !formData.email || !formData.dateOfBirth || !formData.iqamaNumber || 
+    if (!formData.firstName || !formData.lastName || !formData.phone ||
+        !formData.email || !formData.dateOfBirth ||
         !formData.password || !formData.confirmPassword) {
       setError(t("auth.fillRequired"));
+      return;
+    }
+
+    if (!identityCategory) {
+      setError(t("reg.identityRequired"));
+      return;
+    }
+    if (!isValidIdentityNumber(identityCategory, identityNumber)) {
+      setError(t(`reg.invalidIdentity.${identityCategory}` as TranslationKey));
+      return;
+    }
+
+    if (!serviceArea.availableAcrossKsa && serviceArea.serviceCityIds.length === 0) {
+      setError(t("serviceArea.required"));
       return;
     }
 
@@ -128,13 +138,6 @@ const SingerSignup: React.FC = () => {
       return;
     }
 
-    // Validate Iqama number (must be exactly 10 digits)
-    const iqamaRegex = /^\d{10}$/;
-    if (!iqamaRegex.test(formData.iqamaNumber)) {
-      setError(t("auth.invalidIqama"));
-      return;
-    }
-
     if (formData.password !== formData.confirmPassword) {
       setError(t("auth.passwordMismatch"));
       return;
@@ -150,7 +153,10 @@ const SingerSignup: React.FC = () => {
 
     try {
       const response = await authService.register("singer", {
-        ...selectedLocation,
+        availableAcrossKsa: serviceArea.availableAcrossKsa,
+        serviceCityIds: serviceArea.availableAcrossKsa ? [] : serviceArea.serviceCityIds,
+        identityCategory,
+        identityNumber,
         first_name: formData.firstName,
         last_name: formData.lastName,
         phonenumber: formData.phone,
@@ -158,9 +164,7 @@ const SingerSignup: React.FC = () => {
         password: formData.password,
         gender: formData.gender,
         intro_vid_link: formData.introVideo,
-        address: formData.location,
         DOB: formData.dateOfBirth,
-        iqama_number: formData.iqamaNumber,
         genreIds: selectedGenreIds,
       });
 
@@ -169,6 +173,8 @@ const SingerSignup: React.FC = () => {
       sessionStorage.setItem("userPhone", formData.phone);
       sessionStorage.setItem("userEmail", formData.email);
       sessionStorage.setItem("userRole", "singer");
+      // The document step asks only for the document that matches this category.
+      sessionStorage.setItem("identityCategory", identityCategory);
       
       // Navigate directly to verification code page
       // navigate("/auth/verification-code");
@@ -217,13 +223,10 @@ const SingerSignup: React.FC = () => {
               value={formData[field.id as keyof typeof formData]}
               onChange={handleInputChange}
               required={field.required}
-              maxLength={field.id === "iqamaNumber" ? 10 : undefined}
-              pattern={field.id === "iqamaNumber" ? "[0-9]*" : undefined}
-              inputMode={field.id === "iqamaNumber" ? "numeric" : undefined}
             />
           ))}
           {selects.map((select) => (
-            <Select 
+            <Select
               key={select.id}
               label={t(select.labelKey as TranslationKey)}
               options={selectOptions()}
@@ -233,9 +236,37 @@ const SingerSignup: React.FC = () => {
               onChange={(value) => handleSelectChange(select.id, value)}
             />
           ))}
+          <Select
+            label={`${t("reg.identityCategory")} *`}
+            options={IDENTITY_CATEGORIES.map((category) => ({
+              value: category,
+              label: t(`reg.identity.${category}` as TranslationKey),
+            }))}
+            placeholder={t("auth.selectOption")}
+            className={`bg-[#F7FBFF] border border-[#D4D7E3] ${dir === "rtl" ? "!pr-2" : "!pl-2"} !py-6`}
+            value={identityCategory}
+            onChange={handleIdentityCategoryChange}
+          />
+          <Input
+            id="identityNumber"
+            label={identityCategory ? t(`reg.identityNumber.${identityCategory}` as TranslationKey) : t("auth.iqama")}
+            placeholder={identityCategory ? t("auth.typeHere") : t("reg.identityNumber.pending")}
+            className={`bg-[#F7FBFF] border border-[#D4D7E3] ${dir === "rtl" ? "!pr-2" : "!pl-2"} !py-6`}
+            value={identityNumber}
+            disabled={!identityCategory}
+            required
+            onChange={(e) => {
+              setIdentityNumber(normalizeIdentityNumber(identityCategory, e.target.value));
+              setError("");
+            }}
+            maxLength={identityCategory === "visiting_performer" ? 20 : 10}
+            inputMode={identityCategory === "visiting_performer" ? "text" : "numeric"}
+          />
         </div>
 
-        <LocationFields value={selectedLocation} onChange={setSelectedLocation} disabled={loading} />
+        <div className="mb-6">
+          <ServiceAreaSelect value={serviceArea} onChange={(value) => { setServiceArea(value); setError(""); }} disabled={loading} />
+        </div>
         {genres.length > 0 && (
           <div className="mb-6">
             <p className="text-sm font-medium text-[#2E1B4D] mb-2">

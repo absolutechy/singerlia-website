@@ -33,7 +33,6 @@ const auth = {
   "auth.iqama": "رقم الهوية / الإقامة",
   "auth.introVideo": "رابط الفيديو التعريفي",
   "auth.introVideoPlaceholder": "أضف رابط فيديو YouTube",
-  "auth.location": "إضافة الموقع",
   "auth.gender": "اختر الجنس",
   "auth.city": "اختر المدينة",
   "auth.selectOption": "اختر خياراً",

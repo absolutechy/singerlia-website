@@ -31,7 +31,6 @@ const auth = {
   "auth.iqama": "ID / Iqama Number",
   "auth.introVideo": "Introduction Video Link",
   "auth.introVideoPlaceholder": "Add YouTube video link",
-  "auth.location": "Add Location",
   "auth.gender": "Select Gender",
   "auth.city": "Select City",
   "auth.selectOption": "Select an option",

@@ -24,7 +24,9 @@ export interface Review {
 
 // Per-event-category prices, e.g. { weddings: { price: 3500 } }. Absent key = singer doesn't
 // offer/price that category. Replaces the old flat base_price/extra_hour_price/location_surcharge.
-export type CategoryPricing = Record<string, { price: number; updatedAt?: string }>;
+// Keyed by admin event category id, or "custom-…" for a singer's own "Other" event type (which
+// carries its own label).
+export type CategoryPricing = Record<string, { price: number; updatedAt?: string; label?: string; custom?: boolean }>;
 
 export interface PhotoFile {
   fileName: string;
@@ -62,6 +64,9 @@ export interface Singer {
   genreIds: string[];
   intro_vid_link: string | null;
   city: string;
+  // Where the singer performs — a list of cities, or the whole Kingdom.
+  availableAcrossKsa?: boolean;
+  serviceCities?: string[];
   address: string | null;
   joinedAt: string;
   isVerified: boolean;
@@ -173,6 +178,14 @@ const singerService = {
     const response = await axiosInstance.delete('/singer/remove-from-wishlist', {
       data: { singerId },
     });
+    return response.data;
+  },
+
+  /**
+   * The signed-in singer's own registration status, including which identity document they need.
+   */
+  getMyProfileStatus: async (): Promise<{ identityCategory: string | null }> => {
+    const response = await axiosInstance.get<{ identityCategory: string | null }>('/singer/profile-status/me');
     return response.data;
   },
 };

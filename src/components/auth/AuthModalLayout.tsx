@@ -1,6 +1,8 @@
 import React from "react";
-import { X } from "lucide-react";
+import { Globe, X } from "lucide-react";
 import { useNavigate } from "react-router";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { languages } from "@/i18n/translations";
 
 type ModalSize = "md" | "lg" | "xl";
 
@@ -11,6 +13,9 @@ interface AuthModalLayoutProps {
   className?: string;
   footerNote?: string | React.ReactNode;
   onClose?: () => void;
+  // Registration pages are translated, so they offer the language switch. Switching only changes
+  // context state, so anything already typed into the form is kept.
+  showLanguageSwitch?: boolean;
 }
 
 const sizeMap: Record<ModalSize, string> = {
@@ -26,8 +31,11 @@ const AuthModalLayout: React.FC<AuthModalLayoutProps> = ({
   className = "",
   footerNote = "Designed By Singerlia Booking",
   onClose,
+  showLanguageSwitch = true,
 }) => {
   const navigate = useNavigate();
+  const { language, setLanguage, t } = useLanguage();
+  const otherLanguage = language === "ar" ? "en" : "ar";
   const handleClose = () => {
     if (onClose) return onClose();
     navigate("/");
@@ -40,6 +48,17 @@ const AuthModalLayout: React.FC<AuthModalLayoutProps> = ({
         className={`relative w-full h-full sm:h-auto sm:max-h-[90vh] ${sizeMap[size]} sm:rounded-[32px] border-0 sm:border border-[#F0E6FF] bg-white shadow-[0_40px_80px_-30px_rgba(55,21,82,0.35)] flex flex-col ${className}`}
       >
         <div className="relative py-4 px-16 border-b border-[#CDCDCD] flex-shrink-0">
+          {showLanguageSwitch && (
+            <button
+              type="button"
+              aria-label={t("language.switch")}
+              onClick={() => setLanguage(otherLanguage)}
+              className="absolute top-4 start-4 h-8 inline-flex items-center gap-1.5 rounded-full border border-[#E5DAFF] px-3 text-xs font-semibold text-primary hover:bg-[#F7F4FF] cursor-pointer"
+            >
+              <Globe className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{languages[otherLanguage].nativeLabel}</span>
+            </button>
+          )}
           <h2 className="text-center text-2xl font-semibold font-chocolates text-primary-text md:text-3xl">
             {title}
           </h2>

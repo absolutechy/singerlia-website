@@ -140,7 +140,7 @@ const ResetPassword: React.FC = () => {
   }
 
   return (
-    <AuthModalLayout title="Reset Password" size="md">
+    <AuthModalLayout title="Reset Password" size="md" showLanguageSwitch={false}>
       <div className="flex flex-col items-center gap-8">
         <div className="w-full space-y-6">
           <div className="text-center space-y-2">

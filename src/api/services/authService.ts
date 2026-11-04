@@ -2,8 +2,15 @@ import axiosInstance from '../axiosInstance';
 
 // Types
 export interface RegisterUserData {
-  regionId: string;
-  cityId: string;
+  // Customers give one province + city.
+  regionId?: string;
+  cityId?: string;
+  // Singers give the cities they perform in, or all of KSA, plus the identity document that fits
+  // them (Saudi national -> National ID, resident -> Iqama, visiting performer -> passport).
+  availableAcrossKsa?: boolean;
+  serviceCityIds?: string[];
+  identityCategory?: "saudi_national" | "saudi_resident" | "visiting_performer";
+  identityNumber?: string;
   first_name: string;
   last_name: string;
   phonenumber: string;
